@@ -7,7 +7,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
-import { cn } from "@/lib/utils";
+import { cn } from "@/libs/utils";
 import {
     User,
     FolderPlus,
@@ -21,6 +21,7 @@ import Step3 from "@/components/steps/Step3";
 import { toast } from "sonner";
 import axiosAuth from "@/axios/instant";
 import { useUserStore } from "@/stores/userStore";
+import { fetchUserInfomation } from "@/utils/auth";
 
 const steps = [
     { id: 1, title: "Thông tin cá nhân", icon: User, schema: step1Schema },
@@ -41,11 +42,17 @@ function getFieldsForStep(step: number): (keyof FullFormData)[] {
 }
 export default function MultiStepForm() {
     const router = useRouter();
-    const { user, isLoading, isAuthenticated } =
-        useUserStore();
+    const { user, setUser} = useUserStore();
+    console.log("🚀 ~ file: page.tsx:34 ~ MultiStepForm ~ user:", user)
     const [currentStep, setCurrentStep] = useState(1);
     const [completedSteps, setCompletedSteps] = useState<number[]>([]);
-
+    // when user login success with google, we will get user infomation in first loading
+    useEffect(() => {
+        if (!user) {
+            fetchUserInfomation({setUser});
+        }
+    }, [user]);
+    // Mutil-step form
     const form = useForm<FullFormData>({
         resolver: zodResolver(fullFormSchema),
         defaultValues: {
@@ -78,7 +85,7 @@ export default function MultiStepForm() {
                 name: workspaceName,
                 description,
                 ownerId: user?.id,
-                inviteCode : crypto.randomUUID().split("-")[0],
+                inviteCode: crypto.randomUUID().split("-")[0],
             });
             await axiosAuth.patch(`/user/${user?.id}`, {
                 ...rest
