@@ -5,7 +5,6 @@ import axios, {
   InternalAxiosRequestConfig,
 } from "axios"
 
-let accessToken: string | null = null
 let isRefreshing = false
 let refreshSubscribers: ((token: string) => void)[] = []
 
