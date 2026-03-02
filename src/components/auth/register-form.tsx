@@ -1,5 +1,4 @@
 "use client";
-
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
@@ -9,12 +8,16 @@ import { useRouter } from "next/navigation";
 import { RegisterData, registerSchema } from "@/libs/auth-schema";
 import { toast } from "sonner";
 import axiosAuth from "@/axios/instant";
+import axios from "axios";
+import { User } from "@/types/user";
+import { useUserStore } from "@/stores/userStore";
 
 interface RegisterFormProps {
   onSubmit?: (data: RegisterData) => Promise<void>;
 }
 
 export default function RegisterForm({ onSubmit }: RegisterFormProps) {
+  const { setUser } = useUserStore();
   const router = useRouter();
   const form = useForm<RegisterData>({
     resolver: zodResolver(registerSchema),
@@ -24,16 +27,23 @@ export default function RegisterForm({ onSubmit }: RegisterFormProps) {
 
   const handleSubmit = async (data: RegisterData) => {
     try {
-      const res = await axiosAuth.post(`${process.env.NEXT_PUBLIC_API_URL}/auth/register`, {
+      // Register
+      const registerRes = await axiosAuth.post(`/auth/register`, {
         email: data.email,
         password: data.password,
       });
-      console.log("Res", res);
-      console.log("Response from register API:", res.data);
+      // Get user profile
+      const accessToken = registerRes.data.accessToken;
+      const profileRes = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/user/profile`, {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      });
+      const me: User = profileRes.data.data;
+      setUser(me);
       toast.success("Đăng ký thành công!");
-      router.push("/onboarding?sstep=1");
+      router.push("/onboarding");
     } catch (err: any) {
-      console.log("Error during registration:", err);
       toast.error(err?.response?.data?.message || "Đăng ký thất bại");
     }
   };

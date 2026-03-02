@@ -18,6 +18,9 @@ import { FullFormData, fullFormSchema, step1Schema, step2Schema, step3Schema } f
 import Step1 from "@/components/steps/Step1";
 import Step2 from "@/components/steps/Step2";
 import Step3 from "@/components/steps/Step3";
+import { toast } from "sonner";
+import axiosAuth from "@/axios/instant";
+import { useUserStore } from "@/stores/userStore";
 
 const steps = [
     { id: 1, title: "Thông tin cá nhân", icon: User, schema: step1Schema },
@@ -38,8 +41,8 @@ function getFieldsForStep(step: number): (keyof FullFormData)[] {
 }
 export default function MultiStepForm() {
     const router = useRouter();
-    const searchParams = useSearchParams();
-
+    const { user, isLoading, isAuthenticated } =
+        useUserStore();
     const [currentStep, setCurrentStep] = useState(1);
     const [completedSteps, setCompletedSteps] = useState<number[]>([]);
 
@@ -60,41 +63,31 @@ export default function MultiStepForm() {
         mode: "onChange",
     });
 
-    // Đọc ?sstep từ URL khi mount
-    useEffect(() => {
-        const sstep = searchParams.get("sstep");
-        if (sstep) {
-            const stepNum = parseInt(sstep, 10);
-            if (stepNum >= 1 && stepNum <= steps.length) {
-                // Chỉ cho phép nhảy đến step đã hoàn thành hoặc step tiếp theo
-                if (stepNum <= Math.max(...completedSteps, 1) + 1) {
-                    setCurrentStep(stepNum);
-                }
-            }
-        }
-    }, [searchParams, completedSteps]);
-
     const goToStep = (stepId: number) => {
         // Chỉ cho phép click vào step đã hoàn thành hoặc step hiện tại + 1
         if (stepId <= Math.max(...completedSteps, 1) + 1) {
             setCurrentStep(stepId);
-            // Update URL
-            router.replace(`?sstep=${stepId}`, { scroll: false });
         }
     };
 
     const onSubmit: SubmitHandler<FullFormData> = async (data) => {
         console.log("Form hoàn chỉnh submit:", data);
-        const {workspaceName, description, plan, ...rest} = data
-
-        // Ví dụ: gọi API
-        // try {
-        //   await fetch('/api/submit', { method: 'POST', body: JSON.stringify(data) });
-        //   toast.success("Đăng ký thành công!");
-        //   router.push("/success");
-        // } catch (err) {
-        //   toast.error("Có lỗi xảy ra");
-        // }
+        const { workspaceName, description, plan, ...rest } = data
+        try {
+            await axiosAuth.post(`/workspace`, {
+                name: workspaceName,
+                description,
+                ownerId: user?.id,
+                inviteCode : crypto.randomUUID().split("-")[0],
+            });
+            await axiosAuth.patch(`/user/${user?.id}`, {
+                ...rest
+            });
+            toast.success("Thành công!");
+            router.push("/dashboard");
+        } catch (error: any) {
+            toast.error(error?.response?.data?.message || "Something went wrong");
+        }
     };
     const handleNext = async () => {
         const currentStepFields = getFieldsForStep(currentStep); // tự định nghĩa hàm này
@@ -121,7 +114,6 @@ export default function MultiStepForm() {
         if (currentStep > 1) {
             const prev = currentStep - 1;
             setCurrentStep(prev);
-            router.replace(`?sstep=${prev}`, { scroll: false });
         }
     };
 
