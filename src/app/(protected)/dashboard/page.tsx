@@ -16,16 +16,6 @@ import { setAccessToken } from "@/libs/tokenStorage"
 import { Button } from "@/components/ui/button"
 
 export default function Dasboard() {
-  useEffect(() => {
-    axiosAuth.post("/auth/refresh")
-      .then(response => {
-        console.log("RefreshToken:", response);
-        setAccessToken(response.data.accessToken);
-      })
-      .catch(error => {
-        console.error("API Error:", error);
-      });
-  }, [])
   function handleTestApi() {
     axiosAuth.get("/user")
       .then(response => {
