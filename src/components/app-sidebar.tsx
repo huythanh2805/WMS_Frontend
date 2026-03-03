@@ -34,6 +34,7 @@ import {
 import { WorkspaceSwitcher } from "./workspace-switcher"
 import { ProjectSwitcher } from "./project-switcher"
 import axiosAuth from "@/axios/instant"
+import { useRouter } from "next/navigation"
 
 const data = {
   user: {
@@ -162,6 +163,7 @@ const mockProjects = [
   { id: "proj-3", name: "Mobile App v2", color: "green" },
 ];
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+  const router = useRouter()
   const [activeWs, setActiveWs] = React.useState("personal-1");
   const [activeProject, setActiveProject] = React.useState("proj-1");
   const fetchWorkSpace = async () => {
@@ -204,8 +206,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
           projects={mockProjects}
           onProjectChange={(id) => {
             setActiveProject(id);
-            console.log("Chuyển project:", id);
-            // → push route /projects/[id] hoặc update context
+            router.push(`/dashboard/${id}`);
           }}
           onCreateNew={() => alert("Mở modal tạo project mới")}
         />
