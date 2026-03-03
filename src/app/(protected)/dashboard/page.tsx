@@ -20,7 +20,6 @@ import { fetchUserInfomation } from "@/utils/auth"
 export default function Dasboard() {
   const { user, setUser } = useUserStore()
   const router = useRouter();
-  console.log({ user })
   // when user login success with google, we will get user infomation in first loading
   useEffect(() => {
     if (!user) {

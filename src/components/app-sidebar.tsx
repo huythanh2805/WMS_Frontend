@@ -20,7 +20,6 @@ import {
 } from "@tabler/icons-react"
 
 import { NavDocuments } from "@/components/nav-documents"
-import { NavMain } from "@/components/nav-main"
 import { NavSecondary } from "@/components/nav-secondary"
 import { NavUser } from "@/components/nav-user"
 import {
@@ -32,6 +31,9 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar"
+import { WorkspaceSwitcher } from "./workspace-switcher"
+import { ProjectSwitcher } from "./project-switcher"
+import axiosAuth from "@/axios/instant"
 
 const data = {
   user: {
@@ -149,8 +151,26 @@ const data = {
     },
   ],
 }
-
+const mockWorkspaces = [
+  { id: "personal-1", name: "My Workspace", isPersonal: true },
+  { id: "team-1", name: "Công ty ABC", logo: "https://example.com/logo-abc.png" },
+  { id: "team-2", name: "Team Dev", logo: "/team-dev.png" },
+];
+const mockProjects = [
+  { id: "proj-1", name: "First PROJECT", color: "blue" },
+  { id: "proj-2", name: "Website Redesign 2026", color: "purple" },
+  { id: "proj-3", name: "Mobile App v2", color: "green" },
+];
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+  const [activeWs, setActiveWs] = React.useState("personal-1");
+  const [activeProject, setActiveProject] = React.useState("proj-1");
+  const fetchWorkSpace = async () => {
+    const res = await axiosAuth.get("/workspace");
+    console.log("Workspaces từ API:", res.data);
+  }
+  React.useEffect(() => {
+    fetchWorkSpace()
+  })
   return (
     <Sidebar collapsible="offcanvas" {...props}>
       <SidebarHeader>
@@ -169,8 +189,26 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         </SidebarMenu>
       </SidebarHeader>
       <SidebarContent>
-        <NavMain items={data.navMain} />
+        <WorkspaceSwitcher
+          currentWorkspaceId={activeWs}
+          workspaces={mockWorkspaces}
+          onWorkspaceChange={(id) => {
+            setActiveWs(id);
+            console.log("Chuyển sang workspace:", id);
+            // → gọi router.push hoặc set context ở đây
+          }}
+        />
         <NavDocuments items={data.documents} />
+        <ProjectSwitcher
+          currentProjectId={activeProject}
+          projects={mockProjects}
+          onProjectChange={(id) => {
+            setActiveProject(id);
+            console.log("Chuyển project:", id);
+            // → push route /projects/[id] hoặc update context
+          }}
+          onCreateNew={() => alert("Mở modal tạo project mới")}
+        />
         <NavSecondary items={data.navSecondary} className="mt-auto" />
       </SidebarContent>
       <SidebarFooter>
