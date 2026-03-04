@@ -12,6 +12,7 @@ import { Progress } from "@/components/ui/progress";
 import { cn } from "@/libs/utils";
 import ProjectDashboardUI from "./project-dashboard-ui";
 import TaskKanban from "./task-kanban";
+import TaskCalender from "./task-calender";
 
 
 interface ProjectDashboardProps {
@@ -39,10 +40,12 @@ export function ProjectDashboard({ projectId }: ProjectDashboardProps) {
         <TabsContent value="kanban" className="space-y-6">
           <TaskKanban />
         </TabsContent>
+        <TabsContent value="calendar">
+          <TaskCalender />
+        </TabsContent>
 
         {/* Timeline & Activity content - thêm sau nếu cần */}
         <TabsContent value="table">Full activity log placeholder</TabsContent>
-        <TabsContent value="calendar">Calendar view placeholder</TabsContent>
         <TabsContent value="timeline">Timeline view placeholder</TabsContent>
       </Tabs>
     </div>
