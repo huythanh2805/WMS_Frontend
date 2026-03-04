@@ -2,17 +2,9 @@
 
 import * as React from "react"
 import {
-  IconCamera,
-  IconChartBar,
-  IconDashboard,
   IconDatabase,
-  IconFileAi,
-  IconFileDescription,
-  IconFileWord,
-  IconFolder,
   IconHelp,
   IconInnerShadowTop,
-  IconListDetails,
   IconReport,
   IconSearch,
   IconSettings,
@@ -36,6 +28,7 @@ import { ProjectSwitcher } from "./project-switcher"
 import axiosAuth from "@/axios/instant"
 import { useRouter } from "next/navigation"
 import { CreateProjectDialog } from "./project-dashboard/create-project"
+import { CreateWorkSpaceDialog } from "./create-workspace-dialog"
 
 const data = {
   user: {
@@ -141,7 +134,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
           onCreateNew={() => handleOnWorkspaceModelOpen(true)}
         />
         {/* Create Workspace dialog */}
-        <CreateProjectDialog open={isCreateWorkspaceModelOpen} onOpenChange={handleOnWorkspaceModelOpen} />
+        <CreateWorkSpaceDialog open={isCreateWorkspaceModelOpen} onOpenChange={handleOnWorkspaceModelOpen} />
 
         <NavDocuments items={data.documents} />
         <ProjectSwitcher
