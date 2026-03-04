@@ -79,7 +79,7 @@ export function CreateProjectDialog({ open, onOpenChange }: CreateProjectDialogP
               name="projectName"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Workspace Name</FormLabel>
+                  <FormLabel>Project Name</FormLabel>
                   <FormControl>
                     <Input placeholder="First PROJECT" {...field} />
                   </FormControl>

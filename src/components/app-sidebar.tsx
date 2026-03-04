@@ -98,6 +98,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const [activeWs, setActiveWs] = React.useState("personal-1");
   const [activeProject, setActiveProject] = React.useState("proj-1");
   const [isCreateProjectModelOpen, setIsCreateProjectModalOpen] = React.useState(false);
+  const [isCreateWorkspaceModelOpen, setIsCreateWorkspaceModalOpen] = React.useState(false);
   const fetchWorkSpace = async () => {
     const res = await axiosAuth.get("/workspace");
     console.log("Workspaces từ API:", res.data);
@@ -105,8 +106,11 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   React.useEffect(() => {
     fetchWorkSpace()
   })
-  const handleOnProjectModelOpen = (open: boolean) => {
-    setIsCreateProjectModalOpen(open);
+  const handleOnProjectModelOpen = (isOpen: boolean) => {
+    setIsCreateProjectModalOpen(isOpen);
+  }
+  const handleOnWorkspaceModelOpen = (isOpen: boolean) => {
+    setIsCreateWorkspaceModalOpen(isOpen);
   }
   return (
     <Sidebar collapsible="offcanvas" {...props}>
@@ -134,7 +138,11 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
             console.log("Chuyển sang workspace:", id);
             // → gọi router.push hoặc set context ở đây
           }}
+          onCreateNew={() => handleOnWorkspaceModelOpen(true)}
         />
+        {/* Create Workspace dialog */}
+        <CreateProjectDialog open={isCreateWorkspaceModelOpen} onOpenChange={handleOnWorkspaceModelOpen} />
+
         <NavDocuments items={data.documents} />
         <ProjectSwitcher
           currentProjectId={activeProject}
@@ -147,6 +155,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         />
         {/* Create Project dialog */}
         <CreateProjectDialog open={isCreateProjectModelOpen} onOpenChange={handleOnProjectModelOpen} />
+
         <NavSecondary items={data.navSecondary} className="mt-auto" />
       </SidebarContent>
       <SidebarFooter>

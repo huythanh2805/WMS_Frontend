@@ -27,6 +27,7 @@ interface WorkspaceSwitcherProps {
     currentWorkspaceId?: string;
     workspaces: Workspace[];
     onWorkspaceChange?: (workspaceId: string) => void;
+    onCreateNew?: () => void,
     className?: string;
 }
 
@@ -34,6 +35,7 @@ export function WorkspaceSwitcher({
     currentWorkspaceId,
     workspaces = [],
     onWorkspaceChange,
+    onCreateNew,
     className,
 }: WorkspaceSwitcherProps) {
     const currentWorkspace = workspaces.find((ws) => ws.id === currentWorkspaceId) || workspaces[0];
@@ -142,7 +144,7 @@ export function WorkspaceSwitcher({
                 )}
 
                 {/* Nút tạo workspace mới */}
-                <DropdownMenuItem className="flex cursor-pointer items-center gap-2 px-2 py-1.5 text-sm text-primary">
+                <DropdownMenuItem onClick={onCreateNew} className="flex cursor-pointer items-center gap-2 px-2 py-1.5 text-sm text-primary">
                     <Plus className="h-4 w-4" />
                     <span>Tạo workspace mới</span>
                 </DropdownMenuItem>
