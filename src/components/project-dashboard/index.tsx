@@ -13,6 +13,7 @@ import { cn } from "@/libs/utils";
 import ProjectDashboardUI from "./project-dashboard-ui";
 import TaskKanban from "./task-kanban";
 import TaskCalender from "./task-calender";
+import TaskTimeline from "./task-timeline";
 
 
 interface ProjectDashboardProps {
@@ -31,7 +32,7 @@ export function ProjectDashboard({ projectId }: ProjectDashboardProps) {
           <TabsTrigger value="table">Table</TabsTrigger>
           <TabsTrigger value="kanban">Kanban</TabsTrigger>
           <TabsTrigger value="calendar">Calendar</TabsTrigger>
-          <TabsTrigger value="timeline">Timeline</TabsTrigger>
+          <TabsTrigger value="timeline">TaskTimeline</TabsTrigger>
         </TabsList>
 
         <TabsContent value="dashboard" className="space-y-6">
@@ -43,10 +44,12 @@ export function ProjectDashboard({ projectId }: ProjectDashboardProps) {
         <TabsContent value="calendar">
           <TaskCalender />
         </TabsContent>
+        <TabsContent value="timeline">
+          <TaskTimeline />
+        </TabsContent>
 
         {/* Timeline & Activity content - thêm sau nếu cần */}
         <TabsContent value="table">Full activity log placeholder</TabsContent>
-        <TabsContent value="timeline">Timeline view placeholder</TabsContent>
       </Tabs>
     </div>
   );

@@ -9,6 +9,8 @@ export default function DashboardLayout({
   children: React.ReactNode
 }) {
   return (
+    <div className="overflow-x-hidden">
+
     <SidebarProvider
       style={
         {
@@ -26,5 +28,6 @@ export default function DashboardLayout({
         </div>
       </SidebarInset>
     </SidebarProvider>
+    </div>
   )
 }
