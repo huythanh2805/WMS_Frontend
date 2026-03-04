@@ -11,6 +11,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Progress } from "@/components/ui/progress";
 import { cn } from "@/libs/utils";
 import { TaskContributeChart } from "./pie-chart";
+import { CreateTaskDialog } from "./task/create-task-dialog";
 
 // Mock data (thay bằng fetch từ API sau)
 const projectData = {
@@ -30,11 +31,15 @@ const projectData = {
 
 interface ProjectDashboardProps {
   projectId: string;
-  // Có thể pass thêm data từ parent hoặc fetch ở đây
 }
 
-function ProjectMainUI({ projectId }: ProjectDashboardProps) {
+function ProjectDashboardUI({ projectId }: ProjectDashboardProps) {
+  const [isCreateTaskModelOpen, setIsCreateTaskModelOpen] = React.useState(false);
   const data = projectData; // Thay bằng useQuery hoặc props real data
+
+  const handleOnTaskModelOpen = (open: boolean) => {
+    setIsCreateTaskModelOpen(open);
+  };
 
   return (
     <div className="flex flex-col h-full space-y-6 p-6 pt-0 bg-background">
@@ -58,10 +63,11 @@ function ProjectMainUI({ projectId }: ProjectDashboardProps) {
             <Settings className="mr-2 h-4 w-4" />
             Settings
           </Button>
-          <Button className="bg-primary hover:bg-primary/90">
+          <Button  className="bg-primary hover:bg-primary/90" onClick={() => handleOnTaskModelOpen(true)}>
             <Plus className="mr-2 h-4 w-4" />
             New Task
           </Button>
+          <CreateTaskDialog open={isCreateTaskModelOpen} onOpenChange={handleOnTaskModelOpen} />
         </div>
       </div>
 
@@ -155,7 +161,7 @@ function ProjectMainUI({ projectId }: ProjectDashboardProps) {
   )
 }
 
-export default ProjectMainUI;
+export default ProjectDashboardUI;
 
 function StatCard({
   title,

@@ -35,6 +35,7 @@ import { WorkspaceSwitcher } from "./workspace-switcher"
 import { ProjectSwitcher } from "./project-switcher"
 import axiosAuth from "@/axios/instant"
 import { useRouter } from "next/navigation"
+import { CreateProjectDialog } from "./project-dashboard/create-project"
 
 const data = {
   user: {
@@ -96,6 +97,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const router = useRouter()
   const [activeWs, setActiveWs] = React.useState("personal-1");
   const [activeProject, setActiveProject] = React.useState("proj-1");
+  const [isCreateProjectModelOpen, setIsCreateProjectModalOpen] = React.useState(false);
   const fetchWorkSpace = async () => {
     const res = await axiosAuth.get("/workspace");
     console.log("Workspaces từ API:", res.data);
@@ -103,6 +105,9 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   React.useEffect(() => {
     fetchWorkSpace()
   })
+  const handleOnProjectModelOpen = (open: boolean) => {
+    setIsCreateProjectModalOpen(open);
+  }
   return (
     <Sidebar collapsible="offcanvas" {...props}>
       <SidebarHeader>
@@ -138,8 +143,10 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
             setActiveProject(id);
             router.push(`/dashboard/${id}`);
           }}
-          onCreateNew={() => alert("Mở modal tạo project mới")}
+          onCreateNew={() => handleOnProjectModelOpen(true)}
         />
+        {/* Create Project dialog */}
+        <CreateProjectDialog open={isCreateProjectModelOpen} onOpenChange={handleOnProjectModelOpen} />
         <NavSecondary items={data.navSecondary} className="mt-auto" />
       </SidebarContent>
       <SidebarFooter>

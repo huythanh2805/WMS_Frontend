@@ -10,7 +10,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Progress } from "@/components/ui/progress";
 import { cn } from "@/libs/utils";
-import ProjectMainUI from "./project-main-ui";
+import ProjectDashboardUI from "./project-dashboard-ui";
 
 
 interface ProjectDashboardProps {
@@ -33,7 +33,7 @@ export function ProjectDashboard({ projectId }: ProjectDashboardProps) {
         </TabsList>
 
         <TabsContent value="dashboard" className="space-y-6">
-          <ProjectMainUI projectId={projectId} />
+          <ProjectDashboardUI projectId={projectId} />
         </TabsContent>
 
         {/* Timeline & Activity content - thêm sau nếu cần */}

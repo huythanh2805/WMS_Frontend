@@ -14,7 +14,7 @@ import {
     MapPin,
     CheckCircle2,
 } from "lucide-react";
-import { FullFormData, fullFormSchema, step1Schema, step2Schema, step3Schema } from "@/libs/schema";
+import { FullFormData, fullFormSchema, step1Schema, step2Schema, step3Schema } from "@/libs/onboarding-schema";
 import Step1 from "@/components/steps/Step1";
 import Step2 from "@/components/steps/Step2";
 import Step3 from "@/components/steps/Step3";
