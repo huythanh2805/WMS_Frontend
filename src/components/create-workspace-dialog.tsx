@@ -26,13 +26,11 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
 import { toast } from "sonner";
+import { useApi } from "@/hooks/use-api";
 
 const formSchema = z.object({
   name: z.string().min(1, "Project name is required"),
   description: z.string().optional(),
-  members: z.array(z.string()).refine((value) => value.length > 0, {
-    message: "At least one member must have access",
-  }),
 });
 
 type FormValues = z.infer<typeof formSchema>;
@@ -40,9 +38,11 @@ type FormValues = z.infer<typeof formSchema>;
 interface CreateProjectDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  fetchWorkSpace: () => void
 }
 
-export function CreateWorkSpaceDialog({ open, onOpenChange }: CreateProjectDialogProps) {
+export function CreateWorkSpaceDialog({ open, onOpenChange, fetchWorkSpace }: CreateProjectDialogProps) {
+  const { loading, request } = useApi()
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -52,10 +52,22 @@ export function CreateWorkSpaceDialog({ open, onOpenChange }: CreateProjectDialo
   });
 
   function onSubmit(values: FormValues) {
-    console.log("New Project created:", values);
-    toast.success("Project created", {
-      description: `Workspace "${values.name}" has been created successfully.`,
-    });
+    console.log({ values })
+    if (!loading) {
+      request(
+        {
+        url: "/workspace",
+        method: "post",
+        data: { ...values, inviteCode: crypto.randomUUID().split("-")[0] }
+      },
+      {
+       onSuccess: (data) => {
+        console.log("Create Success", data)
+        fetchWorkSpace()
+       }
+      }
+    )
+    }
     onOpenChange(false);
     form.reset();
   }

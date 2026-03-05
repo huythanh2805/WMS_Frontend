@@ -29,6 +29,10 @@ import axiosAuth from "@/axios/instant"
 import { useRouter } from "next/navigation"
 import { CreateProjectDialog } from "./project-dashboard/create-project"
 import { CreateWorkSpaceDialog } from "./create-workspace-dialog"
+import { useApi } from "@/hooks/use-api"
+import { Workspace } from "@/types"
+import { useUserStore } from "@/stores/userStore"
+import { Skeleton } from "./ui/skeleton"
 
 const data = {
   user: {
@@ -88,23 +92,34 @@ const mockProjects = [
 ];
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const router = useRouter()
+  const {loading: isWorkSpaceLoading, request: workspaceRequest} = useApi()
+  const {loading: isProjectLoading, request: projectRequest} = useApi()
+  const { user, setUser } = useUserStore()
+  const [workspaces, setWorkspaces] = React.useState<Workspace[]>([])
   const [activeWs, setActiveWs] = React.useState("personal-1");
   const [activeProject, setActiveProject] = React.useState("proj-1");
   const [isCreateProjectModelOpen, setIsCreateProjectModalOpen] = React.useState(false);
   const [isCreateWorkspaceModelOpen, setIsCreateWorkspaceModalOpen] = React.useState(false);
-  const fetchWorkSpace = async () => {
-    const res = await axiosAuth.get("/workspace");
-    console.log("Workspaces từ API:", res.data);
+    const fetchWorkSpace = async () => {
+    const res = await workspaceRequest({
+      url: "/workspace",
+      method: "get"
+    });
+    const result: Workspace[] = res.data.items
+    setWorkspaces(result.map(item => 
+      item.ownerId == user?.id ? {...item, isPersonal: true} : item
+    ))
   }
   React.useEffect(() => {
     fetchWorkSpace()
-  })
+  },[])
   const handleOnProjectModelOpen = (isOpen: boolean) => {
     setIsCreateProjectModalOpen(isOpen);
   }
   const handleOnWorkspaceModelOpen = (isOpen: boolean) => {
     setIsCreateWorkspaceModalOpen(isOpen);
   }
+  console.log({workspaces})
   return (
     <Sidebar collapsible="offcanvas" {...props}>
       <SidebarHeader>
@@ -123,20 +138,27 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         </SidebarMenu>
       </SidebarHeader>
       <SidebarContent>
-        <WorkspaceSwitcher
+       {
+        isWorkSpaceLoading ?
+         <Skeleton className="h-8 w-full bg-gray-200" />
+        : 
+         <WorkspaceSwitcher
           currentWorkspaceId={activeWs}
-          workspaces={mockWorkspaces}
+          workspaces={workspaces}
           onWorkspaceChange={(id) => {
             setActiveWs(id);
             console.log("Chuyển sang workspace:", id);
-            // → gọi router.push hoặc set context ở đây
           }}
           onCreateNew={() => handleOnWorkspaceModelOpen(true)}
         />
+       }
         {/* Create Workspace dialog */}
-        <CreateWorkSpaceDialog open={isCreateWorkspaceModelOpen} onOpenChange={handleOnWorkspaceModelOpen} />
+        <CreateWorkSpaceDialog fetchWorkSpace={fetchWorkSpace} open={isCreateWorkspaceModelOpen} onOpenChange={handleOnWorkspaceModelOpen} />
 
         <NavDocuments items={data.documents} />
+        {
+
+        }
         <ProjectSwitcher
           currentProjectId={activeProject}
           projects={mockProjects}

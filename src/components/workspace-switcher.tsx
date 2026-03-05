@@ -40,7 +40,7 @@ export function WorkspaceSwitcher({
 }: WorkspaceSwitcherProps) {
     const currentWorkspace = workspaces.find((ws) => ws.id === currentWorkspaceId) || workspaces[0];
 
-    const personalWorkspace = workspaces.find((ws) => ws.isPersonal);
+    const personalWorkspaces = workspaces.filter((ws) => ws.isPersonal);
     const teamWorkspaces = workspaces.filter((ws) => !ws.isPersonal);
 
     return (
@@ -81,30 +81,35 @@ export function WorkspaceSwitcher({
 
             <DropdownMenuContent align="start" className="w-[240px] p-1">
                 {/* Personal workspace */}
-                {personalWorkspace && (
+                {personalWorkspaces.length > 0 && (
                     <>
                         <DropdownMenuLabel className="px-2 py-1.5 text-xs font-medium text-muted-foreground">
                             Cá nhân
                         </DropdownMenuLabel>
 
-                        <DropdownMenuItem
-                            className={cn(
-                                "flex cursor-pointer items-center gap-2 px-2 py-1.5 text-sm",
-                                currentWorkspace?.id === personalWorkspace.id && "bg-accent"
-                            )}
-                            onSelect={() => onWorkspaceChange?.(personalWorkspace.id)}
-                        >
-                            <Avatar className="h-6 w-6">
-                                <AvatarImage src={personalWorkspace.logo} />
-                                <AvatarFallback className="text-xs">
-                                    {personalWorkspace.name.slice(0, 2).toUpperCase()}
-                                </AvatarFallback>
-                            </Avatar>
-                            <span className="font-medium">{personalWorkspace.name}</span>
-                            {currentWorkspace?.id === personalWorkspace.id && (
-                                <span className="ml-auto text-xs text-muted-foreground">Hiện tại</span>
-                            )}
-                        </DropdownMenuItem>
+                        {
+                            personalWorkspaces.map(workspace => (
+                                <DropdownMenuItem
+                                    key={workspace.id}
+                                    className={cn(
+                                        "flex cursor-pointer items-center gap-2 px-2 py-1.5 text-sm",
+                                        currentWorkspace?.id === workspace.id && "bg-accent"
+                                    )}
+                                    onSelect={() => onWorkspaceChange?.(workspace.id)}
+                                >
+                                    <Avatar className="h-6 w-6">
+                                        <AvatarImage src={workspace.logo} />
+                                        <AvatarFallback className="text-xs">
+                                            {workspace.name.slice(0, 2).toUpperCase()}
+                                        </AvatarFallback>
+                                    </Avatar>
+                                    <span className="font-medium">{workspace.name}</span>
+                                    {currentWorkspace?.id === workspace.id && (
+                                        <span className="ml-auto text-xs text-muted-foreground">Hiện tại</span>
+                                    )}
+                                </DropdownMenuItem>
+                            ))
+                        }
 
                         <DropdownMenuSeparator className="my-1" />
                     </>
