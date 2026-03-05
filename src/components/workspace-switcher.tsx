@@ -24,7 +24,7 @@ type Workspace = {
 };
 
 interface WorkspaceSwitcherProps {
-    currentWorkspaceId?: string;
+    currentWorkspaceId?: string | null;
     workspaces: Workspace[];
     onWorkspaceChange?: (workspaceId: string) => void;
     onCreateNew?: () => void,

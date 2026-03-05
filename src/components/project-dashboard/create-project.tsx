@@ -26,9 +26,10 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
 import { toast } from "sonner";
+import { useApi } from "@/hooks/use-api";
 
 const formSchema = z.object({
-  projectName: z.string().min(1, "Project name is required"),
+  name: z.string().min(1, "Project name is required"),
   description: z.string().optional(),
   members: z.array(z.string()).refine((value) => value.length > 0, {
     message: "At least one member must have access",
@@ -40,23 +41,37 @@ type FormValues = z.infer<typeof formSchema>;
 interface CreateProjectDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  activeWorkSpaceId: string | null,
+  fetchProjects: () => void
 }
 
-export function CreateProjectDialog({ open, onOpenChange }: CreateProjectDialogProps) {
+export function CreateProjectDialog({ open, onOpenChange, activeWorkSpaceId, fetchProjects }: CreateProjectDialogProps) {
+  const { loading, request } = useApi()
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      projectName: "First PROJECT",
+      name: "First PROJECT",
       description: "",
-      members: ["codwave"], // mặc định owner được chọn
+      members: ["codwave"],
     },
   });
 
   function onSubmit(values: FormValues) {
-    console.log("New Project created:", values);
-    toast.success("Project created", {
-      description: `Workspace "${values.projectName}" has been created successfully.`,
-    });
+    if (!loading && activeWorkSpaceId) {
+      request(
+        {
+          url: "/project",
+          method: "post",
+          data: { ...values, workspaceId: activeWorkSpaceId }
+        },
+        {
+          onSuccess: (data) => {
+            console.log("Create Success", data)
+            fetchProjects()
+          }
+        }
+      )
+    }
     onOpenChange(false);
     form.reset();
   }
@@ -76,7 +91,7 @@ export function CreateProjectDialog({ open, onOpenChange }: CreateProjectDialogP
             {/* Project Name */}
             <FormField
               control={form.control}
-              name="projectName"
+              name="name"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Project Name</FormLabel>

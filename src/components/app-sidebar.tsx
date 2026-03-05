@@ -30,7 +30,7 @@ import { useRouter } from "next/navigation"
 import { CreateProjectDialog } from "./project-dashboard/create-project"
 import { CreateWorkSpaceDialog } from "./create-workspace-dialog"
 import { useApi } from "@/hooks/use-api"
-import { Workspace } from "@/types"
+import { Project, Workspace } from "@/types"
 import { useUserStore } from "@/stores/userStore"
 import { Skeleton } from "./ui/skeleton"
 
@@ -80,46 +80,63 @@ const data = {
     },
   ],
 }
-const mockWorkspaces = [
-  { id: "personal-1", name: "My Workspace", isPersonal: true },
-  { id: "team-1", name: "Công ty ABC", logo: "https://example.com/logo-abc.png" },
-  { id: "team-2", name: "Team Dev", logo: "/team-dev.png" },
-];
-const mockProjects = [
-  { id: "proj-1", name: "First PROJECT", color: "blue" },
-  { id: "proj-2", name: "Website Redesign 2026", color: "purple" },
-  { id: "proj-3", name: "Mobile App v2", color: "green" },
-];
+// const mockWorkspaces = [
+//   { id: "personal-1", name: "My Workspace", isPersonal: true },
+//   { id: "team-1", name: "Công ty ABC", logo: "https://example.com/logo-abc.png" },
+//   { id: "team-2", name: "Team Dev", logo: "/team-dev.png" },
+// ];
+// const mockProjects = [
+//   { id: "proj-1", name: "First PROJECT", color: "blue" },
+//   { id: "proj-2", name: "Website Redesign 2026", color: "purple" },
+//   { id: "proj-3", name: "Mobile App v2", color: "green" },
+// ];
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const router = useRouter()
-  const {loading: isWorkSpaceLoading, request: workspaceRequest} = useApi()
-  const {loading: isProjectLoading, request: projectRequest} = useApi()
-  const { user, setUser } = useUserStore()
+  const { loading: isWorkSpaceLoading, request: workspaceRequest } = useApi()
+  const { loading: isProjectLoading, request: projectRequest } = useApi()
+  const { user } = useUserStore()
   const [workspaces, setWorkspaces] = React.useState<Workspace[]>([])
-  const [activeWs, setActiveWs] = React.useState("personal-1");
+  const [activeWorkspaceID, setActiveWorkspaceID] = React.useState<string | null>(null)
+  const [projects, setProjects] = React.useState<Project[]>([])
   const [activeProject, setActiveProject] = React.useState("proj-1");
   const [isCreateProjectModelOpen, setIsCreateProjectModalOpen] = React.useState(false);
   const [isCreateWorkspaceModelOpen, setIsCreateWorkspaceModalOpen] = React.useState(false);
-    const fetchWorkSpace = async () => {
+  // Fetching workspaces
+  const fetchWorkSpaces = async () => {
     const res = await workspaceRequest({
       url: "/workspace",
       method: "get"
     });
     const result: Workspace[] = res.data.items
-    setWorkspaces(result.map(item => 
-      item.ownerId == user?.id ? {...item, isPersonal: true} : item
+    // Set active-workspace and add isPersonal field
+    setActiveWorkspaceID(result[0].id)
+    setWorkspaces(result.map(item =>
+      item.ownerId == user?.id ? { ...item, isPersonal: true } : item
     ))
   }
+  // Fetching projects
+  const fetchProjects = async () => {
+    const res = await projectRequest({
+      url: `/project/${activeWorkspaceID}`,
+      method: "get"
+    });
+    const result = res.data.items
+    setProjects(result)
+  }
   React.useEffect(() => {
-    fetchWorkSpace()
-  },[])
+    fetchWorkSpaces()
+  }, [])
+  React.useEffect(() => {
+    if (activeWorkspaceID) {
+      fetchProjects()
+    }
+  }, [activeWorkspaceID])
   const handleOnProjectModelOpen = (isOpen: boolean) => {
     setIsCreateProjectModalOpen(isOpen);
   }
   const handleOnWorkspaceModelOpen = (isOpen: boolean) => {
     setIsCreateWorkspaceModalOpen(isOpen);
   }
-  console.log({workspaces})
   return (
     <Sidebar collapsible="offcanvas" {...props}>
       <SidebarHeader>
@@ -138,38 +155,47 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         </SidebarMenu>
       </SidebarHeader>
       <SidebarContent>
-       {
-        isWorkSpaceLoading ?
-         <Skeleton className="h-8 w-full bg-gray-200" />
-        : 
-         <WorkspaceSwitcher
-          currentWorkspaceId={activeWs}
-          workspaces={workspaces}
-          onWorkspaceChange={(id) => {
-            setActiveWs(id);
-            console.log("Chuyển sang workspace:", id);
-          }}
-          onCreateNew={() => handleOnWorkspaceModelOpen(true)}
-        />
-       }
+        {
+          isWorkSpaceLoading ?
+            <Skeleton className="h-8 w-full bg-gray-200" />
+            :
+            <WorkspaceSwitcher
+              currentWorkspaceId={activeWorkspaceID}
+              workspaces={workspaces}
+              onWorkspaceChange={(id) => {
+                setActiveWorkspaceID(id);
+                console.log("Chuyển sang workspace:", id);
+              }}
+              onCreateNew={() => handleOnWorkspaceModelOpen(true)}
+            />
+        }
         {/* Create Workspace dialog */}
-        <CreateWorkSpaceDialog fetchWorkSpace={fetchWorkSpace} open={isCreateWorkspaceModelOpen} onOpenChange={handleOnWorkspaceModelOpen} />
+        <CreateWorkSpaceDialog
+          fetchWorkSpace={fetchWorkSpaces}
+          open={isCreateWorkspaceModelOpen}
+          onOpenChange={handleOnWorkspaceModelOpen} />
 
         <NavDocuments items={data.documents} />
         {
-
+          isWorkSpaceLoading || isProjectLoading ?
+            <Skeleton className="h-16 w-full bg-gray-200" />
+            :
+            <ProjectSwitcher
+              currentProjectId={activeProject}
+              projects={projects}
+              onProjectChange={(id) => {
+                setActiveProject(id);
+                router.push(`/dashboard/${id}`);
+              }}
+              onCreateNew={() => handleOnProjectModelOpen(true)}
+            />
         }
-        <ProjectSwitcher
-          currentProjectId={activeProject}
-          projects={mockProjects}
-          onProjectChange={(id) => {
-            setActiveProject(id);
-            router.push(`/dashboard/${id}`);
-          }}
-          onCreateNew={() => handleOnProjectModelOpen(true)}
-        />
         {/* Create Project dialog */}
-        <CreateProjectDialog open={isCreateProjectModelOpen} onOpenChange={handleOnProjectModelOpen} />
+        <CreateProjectDialog
+          activeWorkSpaceId={activeWorkspaceID}
+          fetchProjects={fetchProjects}
+          open={isCreateProjectModelOpen}
+          onOpenChange={handleOnProjectModelOpen} />
 
         <NavSecondary items={data.navSecondary} className="mt-auto" />
       </SidebarContent>
