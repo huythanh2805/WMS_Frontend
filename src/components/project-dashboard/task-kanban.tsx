@@ -34,7 +34,7 @@ export interface Task {
   description: string;
   project: string;
   priority: "LOW" | "MEDIUM" | "HIGH";
-  assignee: string;
+  assigneeId: string;
   status: Status;
 }
 
@@ -45,7 +45,7 @@ const initialTasks: Task[] = [
     description: "Description",
     project: "First PROJECT",
     priority: "MEDIUM",
-    assignee: "Codwave",
+    assigneeId: "Codwave",
     status: "TODO",
   },
   {
@@ -54,7 +54,7 @@ const initialTasks: Task[] = [
     description: "Description",
     project: "First PROJECT",
     priority: "MEDIUM",
-    assignee: "Codwave",
+    assigneeId: "Codwave",
     status: "TODO",
   },
   // Thêm task khác để test: { id: "task-2", title: "Task 2", ..., status: "TODO" },
@@ -122,10 +122,10 @@ export function TaskCard({ task }: { task: Task }) {
         <div className="flex items-center gap-2">
           <Avatar className="h-6 w-6">
             <AvatarFallback className="text-xs bg-blue-600 text-white">
-              {task.assignee.slice(0, 2).toUpperCase()}
+              {task.assigneeId.slice(0, 2).toUpperCase()}
             </AvatarFallback>
           </Avatar>
-          <span className="text-sm text-muted-foreground">{task.assignee}</span>
+          <span className="text-sm text-muted-foreground">{task.assigneeId}</span>
         </div>
       </CardContent>
     </Card>

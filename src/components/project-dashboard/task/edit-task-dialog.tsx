@@ -29,7 +29,7 @@ export function EditTaskDialog({ open, onOpenChange }: EditTaskDialogProps) {
     resolver: zodResolver(taskSchame),
     defaultValues: {
       title: "TEST TASK",
-      assignee: "Codewave",
+      assigneeId: "Codewave",
       priority: "Medium",
       startDate: new Date("2025-02-19"),
       dueDate: new Date("2025-02-22"),

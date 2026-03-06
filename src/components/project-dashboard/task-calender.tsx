@@ -10,7 +10,7 @@ interface Task {
   id: string;
   title: string;
   description: string;
-  assignee: string;
+  assigneeId: string;
   priority: "LOW" | "MEDIUM" | "HIGH";
   dueDate: string; // yyyy-mm-dd
 }
@@ -21,7 +21,7 @@ export default function TaskCalender() {
       id: "1",
       title: "TEST TASK",
       description: "Description",
-      assignee: "Codewave",
+      assigneeId: "Codewave",
       priority: "MEDIUM",
       dueDate: "2026-03-21",
     },
@@ -29,33 +29,33 @@ export default function TaskCalender() {
       id: "2",
       title: "TEST TASK",
       description: "Description",
-      assignee: "Codewave",
+      assigneeId: "Codewave",
       priority: "MEDIUM",
       dueDate: "2026-03-21",
     },
   ]);
 
- const handleEventDrop = (info: EventDropArg) => {
-  const date = info.event.start;
-  if (!date) return;
+  const handleEventDrop = (info: EventDropArg) => {
+    const date = info.event.start;
+    if (!date) return;
 
-  const localDate = new Date(
-    date.getFullYear(),
-    date.getMonth(),
-    date.getDate()
-  );
+    const localDate = new Date(
+      date.getFullYear(),
+      date.getMonth(),
+      date.getDate()
+    );
 
-  const formatted = localDate.toLocaleDateString("sv-SE"); 
-  // sv-SE => format yyyy-mm-dd chuẩn
+    const formatted = localDate.toLocaleDateString("sv-SE");
+    // sv-SE => format yyyy-mm-dd chuẩn
 
-  setTasks((prev) =>
-    prev.map((task) =>
-      task.id === info.event.id
-        ? { ...task, dueDate: formatted }
-        : task
-    )
-  );
-};
+    setTasks((prev) =>
+      prev.map((task) =>
+        task.id === info.event.id
+          ? { ...task, dueDate: formatted }
+          : task
+      )
+    );
+  };
 
   const events: EventInput[] = tasks.map((task) => ({
     id: task.id,
@@ -88,7 +88,7 @@ export default function TaskCalender() {
                 </div>
                 {task && (
                   <div className="opacity-80">
-                    {task.assignee} • {task.priority}
+                    {task.assigneeId} • {task.priority}
                   </div>
                 )}
               </div>

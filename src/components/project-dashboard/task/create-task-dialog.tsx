@@ -36,7 +36,7 @@ export function CreateTaskDialog({ open, onOpenChange, projectId }: EditTaskDial
     resolver: zodResolver(taskSchame),
     defaultValues: {
       title: "",
-      assignee: "",
+      assigneeId: "",
       priority: "MEDIUM",
       startDate: new Date(),
       dueDate: new Date(),

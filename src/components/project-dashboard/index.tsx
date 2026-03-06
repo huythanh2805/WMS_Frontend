@@ -6,6 +6,7 @@ import ProjectDashboardUI from "./project-dashboard-ui";
 import TaskKanban from "./task-kanban";
 import TaskCalender from "./task-calender";
 import TaskTimeline from "./task-timeline";
+import TaskTable from "./task/table";
 
 
 interface ProjectDashboardProps {
@@ -37,9 +38,9 @@ export function ProjectDashboard({ projectId }: ProjectDashboardProps) {
         <TabsContent value="timeline">
           <TaskTimeline />
         </TabsContent>
-
-        {/* Timeline & Activity content - thêm sau nếu cần */}
-        <TabsContent value="table">Full activity log placeholder</TabsContent>
+        <TabsContent value="table">
+          <TaskTable projectId={projectId} />
+        </TabsContent>
       </Tabs>
     </div>
   );

@@ -44,7 +44,7 @@ interface TaskDialogProps {
     onOpenChange: (open: boolean) => void
     workspaceMembers?: WorkspaceMember[] | null
 }
-function TaskForm({ form, onSubmit, onOpenChange, type, workspaceMembers}: TaskDialogProps) {
+function TaskForm({ form, onSubmit, onOpenChange, type, workspaceMembers }: TaskDialogProps) {
     return (
         <div>
             <Form {...form}>
@@ -64,14 +64,14 @@ function TaskForm({ form, onSubmit, onOpenChange, type, workspaceMembers}: TaskD
                         )}
                     />
 
-                    {/* Assignee + Priority */}
+                    {/* assigneeId + Priority */}
                     <div className="grid grid-cols-2 gap-4">
                         <FormField
                             control={form.control}
-                            name="assignee"
+                            name="assigneeId"
                             render={({ field }) => (
                                 <FormItem>
-                                    <FormLabel>Assignee</FormLabel>
+                                    <FormLabel>assignee</FormLabel>
                                     <Select onValueChange={field.onChange} defaultValue={field.value}>
                                         <FormControl>
                                             <SelectTrigger>
@@ -82,7 +82,7 @@ function TaskForm({ form, onSubmit, onOpenChange, type, workspaceMembers}: TaskD
                                             {
                                                 workspaceMembers && (
                                                     workspaceMembers.map(member =>
-                                                        <SelectItem key={member.id} value={member.id}>{member?.user?.name}</SelectItem>
+                                                        <SelectItem key={member.id} value={member.userId}>{member?.user?.name}</SelectItem>
                                                     )
                                                 )
                                             }
