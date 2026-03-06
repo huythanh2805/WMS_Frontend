@@ -1,37 +1,37 @@
-"use client";
+'use client';
 
-import { useState } from "react";
-import FullCalendar from "@fullcalendar/react";
-import dayGridPlugin from "@fullcalendar/daygrid";
-import interactionPlugin from "@fullcalendar/interaction";
-import { EventDropArg, EventInput } from "@fullcalendar/core";
+import { useState } from 'react';
+import FullCalendar from '@fullcalendar/react';
+import dayGridPlugin from '@fullcalendar/daygrid';
+import interactionPlugin from '@fullcalendar/interaction';
+import { EventDropArg, EventInput } from '@fullcalendar/core';
 
 interface Task {
   id: string;
   title: string;
   description: string;
   assigneeId: string;
-  priority: "LOW" | "MEDIUM" | "HIGH";
+  priority: 'LOW' | 'MEDIUM' | 'HIGH';
   dueDate: string; // yyyy-mm-dd
 }
 
 export default function TaskCalender() {
   const [tasks, setTasks] = useState<Task[]>([
     {
-      id: "1",
-      title: "TEST TASK",
-      description: "Description",
-      assigneeId: "Codewave",
-      priority: "MEDIUM",
-      dueDate: "2026-03-21",
+      id: '1',
+      title: 'TEST TASK',
+      description: 'Description',
+      assigneeId: 'Codewave',
+      priority: 'MEDIUM',
+      dueDate: '2026-03-21',
     },
     {
-      id: "2",
-      title: "TEST TASK",
-      description: "Description",
-      assigneeId: "Codewave",
-      priority: "MEDIUM",
-      dueDate: "2026-03-21",
+      id: '2',
+      title: 'TEST TASK',
+      description: 'Description',
+      assigneeId: 'Codewave',
+      priority: 'MEDIUM',
+      dueDate: '2026-03-21',
     },
   ]);
 
@@ -45,14 +45,12 @@ export default function TaskCalender() {
       date.getDate()
     );
 
-    const formatted = localDate.toLocaleDateString("sv-SE");
+    const formatted = localDate.toLocaleDateString('sv-SE');
     // sv-SE => format yyyy-mm-dd chuẩn
 
     setTasks((prev) =>
       prev.map((task) =>
-        task.id === info.event.id
-          ? { ...task, dueDate: formatted }
-          : task
+        task.id === info.event.id ? { ...task, dueDate: formatted } : task
       )
     );
   };
@@ -77,15 +75,11 @@ export default function TaskCalender() {
           eventDrop={handleEventDrop}
           height="auto"
           eventContent={(eventInfo) => {
-            const task = tasks.find(
-              (t) => t.id === eventInfo.event.id
-            );
+            const task = tasks.find((t) => t.id === eventInfo.event.id);
 
             return (
               <div className="text-xs p-1 rounded bg-blue-600 text-white">
-                <div className="font-semibold">
-                  {eventInfo.event.title}
-                </div>
+                <div className="font-semibold">{eventInfo.event.title}</div>
                 {task && (
                   <div className="opacity-80">
                     {task.assigneeId} • {task.priority}

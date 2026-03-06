@@ -1,16 +1,23 @@
-"use client";
+'use client';
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Separator } from "@/components/ui/separator";
-import { FcGoogle } from "react-icons/fc";
-import Link from "next/link";
-import { toast } from "sonner";
+import { useState } from 'react';
+import { useRouter } from 'next/navigation';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Separator } from '@/components/ui/separator';
+import { FcGoogle } from 'react-icons/fc';
+import Link from 'next/link';
+import { toast } from 'sonner';
 
 interface AuthCardProps {
-  mode: "login" | "register";
+  mode: 'login' | 'register';
   children: React.ReactNode;
 }
 
@@ -25,22 +32,27 @@ export default function AuthCard({ mode, children }: AuthCardProps) {
       window.location.href = `${process.env.NEXT_PUBLIC_API_URL}/auth/google`;
       // Hoặc dùng NextAuth: signIn("google", { callbackUrl: "/onboarding" });
     } catch (err) {
-      toast.error("Không thể kết nối với Google");
+      toast.error('Không thể kết nối với Google');
       setLoading(false);
     }
   };
 
-  const switchModeText = mode === "login" ? "Chưa có tài khoản? Đăng ký" : "Đã có tài khoản? Đăng nhập";
-  const switchModeLink = mode === "login" ? "/auth/register" : "/auth/login";
+  const switchModeText =
+    mode === 'login'
+      ? 'Chưa có tài khoản? Đăng ký'
+      : 'Đã có tài khoản? Đăng nhập';
+  const switchModeLink = mode === 'login' ? '/auth/register' : '/auth/login';
 
   return (
     <Card className="w-full max-w-md mx-auto">
       <CardHeader className="space-y-1">
         <CardTitle className="text-2xl font-bold">
-          {mode === "login" ? "Đăng nhập" : "Đăng ký"}
+          {mode === 'login' ? 'Đăng nhập' : 'Đăng ký'}
         </CardTitle>
         <CardDescription>
-          {mode === "login" ? "Chào mừng quay lại!" : "Tạo tài khoản mới để bắt đầu."}
+          {mode === 'login'
+            ? 'Chào mừng quay lại!'
+            : 'Tạo tài khoản mới để bắt đầu.'}
         </CardDescription>
       </CardHeader>
 
@@ -58,11 +70,14 @@ export default function AuthCard({ mode, children }: AuthCardProps) {
           disabled={loading}
         >
           <FcGoogle className="mr-2 h-4 w-4" />
-          {mode === "login" ? "Đăng nhập với Google" : "Đăng ký với Google"}
+          {mode === 'login' ? 'Đăng nhập với Google' : 'Đăng ký với Google'}
         </Button>
         <div className="text-center text-sm text-muted-foreground">
           {switchModeText}
-          <Link href={switchModeLink} className="ml-1 font-medium text-primary hover:underline">
+          <Link
+            href={switchModeLink}
+            className="ml-1 font-medium text-primary hover:underline"
+          >
             tại đây
           </Link>
         </div>

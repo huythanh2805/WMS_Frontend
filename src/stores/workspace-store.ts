@@ -1,10 +1,10 @@
-import { create } from "zustand"
+import { create } from 'zustand';
 
 type WorkspaceStore = {
-  workspaceId: string | null
-  setWorkspaceId: (id: string) => void
-  clearWorkspaceId: () => void
-}
+  workspaceId: string | null;
+  setWorkspaceId: (id: string) => void;
+  clearWorkspaceId: () => void;
+};
 
 export const useWorkspaceStore = create<WorkspaceStore>((set) => ({
   workspaceId: null,
@@ -18,4 +18,4 @@ export const useWorkspaceStore = create<WorkspaceStore>((set) => ({
     set({
       workspaceId: null,
     }),
-}))
+}));

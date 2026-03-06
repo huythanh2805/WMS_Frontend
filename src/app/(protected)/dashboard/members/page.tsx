@@ -1,14 +1,14 @@
-import WorkspaceMembersPage from '@/components/members-page'
-import React from 'react'
+import WorkspaceMembersPage from '@/components/members-page';
+import React from 'react';
 
-type Props = {}
+type Props = {};
 
 function MembersPage({}: Props) {
   return (
     <div>
       <WorkspaceMembersPage />
     </div>
-  )
+  );
 }
 
-export default MembersPage
+export default MembersPage;

@@ -1,6 +1,6 @@
-"use client"
+'use client';
 
-import * as React from "react"
+import * as React from 'react';
 import {
   IconDatabase,
   IconHelp,
@@ -9,11 +9,11 @@ import {
   IconSearch,
   IconSettings,
   IconUsers,
-} from "@tabler/icons-react"
+} from '@tabler/icons-react';
 
-import { NavDocuments } from "@/components/nav-documents"
-import { NavSecondary } from "@/components/nav-secondary"
-import { NavUser } from "@/components/nav-user"
+import { NavDocuments } from '@/components/nav-documents';
+import { NavSecondary } from '@/components/nav-secondary';
+import { NavUser } from '@/components/nav-user';
 import {
   Sidebar,
   SidebarContent,
@@ -22,65 +22,64 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
-} from "@/components/ui/sidebar"
-import { WorkspaceSwitcher } from "./workspace-switcher"
-import { ProjectSwitcher } from "./project-switcher"
-import axiosAuth from "@/axios/instant"
-import { useRouter } from "next/navigation"
-import { CreateProjectDialog } from "./project-dashboard/create-project"
-import { CreateWorkSpaceDialog } from "./create-workspace-dialog"
-import { useApi } from "@/hooks/use-api"
-import { Project, Workspace } from "@/types"
-import { useUserStore } from "@/stores/user-store"
-import { Skeleton } from "./ui/skeleton"
-import { useWorkspaceStore } from "@/stores/workspace-store"
+} from '@/components/ui/sidebar';
+import { WorkspaceSwitcher } from './workspace-switcher';
+import { ProjectSwitcher } from './project-switcher';
+import { useRouter } from 'next/navigation';
+import { CreateProjectDialog } from './project-dashboard/create-project';
+import { CreateWorkSpaceDialog } from './create-workspace-dialog';
+import { useApi } from '@/hooks/use-api';
+import { Project, Workspace } from '@/types';
+import { useUserStore } from '@/stores/user-store';
+import { Skeleton } from './ui/skeleton';
+import { useWorkspaceStore } from '@/stores/workspace-store';
 
 const data = {
   user: {
-    name: "shadcn",
-    email: "m@example.com",
-    avatar: "/avatars/shadcn.jpg",
+    name: 'shadcn',
+    email: 'm@example.com',
+    avatar: '/avatars/shadcn.jpg',
   },
   navSecondary: [
     {
-      title: "Settings",
-      url: "#",
+      title: 'Settings',
+      url: '#',
       icon: IconSettings,
     },
     {
-      title: "Get Help",
-      url: "#",
+      title: 'Get Help',
+      url: '#',
       icon: IconHelp,
     },
     {
-      title: "Search",
-      url: "#",
+      title: 'Search',
+      url: '#',
       icon: IconSearch,
     },
   ],
   documents: [
     {
-      name: "Home",
-      url: "/dashboard",
+      name: 'Home',
+      url: '/dashboard',
       icon: IconDatabase,
     },
     {
-      name: "My tasks",
-      url: "/dashboard/tasks",
+      name: 'My tasks',
+      url: '/dashboard/tasks',
       icon: IconReport,
     },
     {
-      name: "Members",
-      url: "/dashboard/members",
+      name: 'Members',
+      url: '/dashboard/members',
       icon: IconUsers,
     },
     {
-      name: "Settings",
-      url: "/dashboard/settings",
+      name: 'Settings',
+      url: '/dashboard/settings',
       icon: IconSettings,
     },
   ],
-}
+};
 // const mockWorkspaces = [
 //   { id: "personal-1", name: "My Workspace", isPersonal: true },
 //   { id: "team-1", name: "Công ty ABC", logo: "https://example.com/logo-abc.png" },
@@ -92,55 +91,63 @@ const data = {
 //   { id: "proj-3", name: "Mobile App v2", color: "green" },
 // ];
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
-  const router = useRouter()
-  const { user } = useUserStore()
-  const {setWorkspaceId} = useWorkspaceStore()
-  const { loading: isWorkSpaceLoading, request: workspaceRequest } = useApi()
-  const { loading: isProjectLoading, request: projectRequest } = useApi()
-  const [workspaces, setWorkspaces] = React.useState<Workspace[]>([])
-  const [activeWorkspaceID, setActiveWorkspaceID] = React.useState<string | null>(null)
-  const [projects, setProjects] = React.useState<Project[]>([])
-  const [activeProjectID, setActiveProjectID] = React.useState<string | null>(null);
-  const [isCreateProjectModelOpen, setIsCreateProjectModalOpen] = React.useState(false);
-  const [isCreateWorkspaceModelOpen, setIsCreateWorkspaceModalOpen] = React.useState(false);
+  const router = useRouter();
+  const { user } = useUserStore();
+  const { setWorkspaceId } = useWorkspaceStore();
+  const { loading: isWorkSpaceLoading, request: workspaceRequest } = useApi();
+  const { loading: isProjectLoading, request: projectRequest } = useApi();
+  const [workspaces, setWorkspaces] = React.useState<Workspace[]>([]);
+  const [activeWorkspaceID, setActiveWorkspaceID] = React.useState<
+    string | null
+  >(null);
+  const [projects, setProjects] = React.useState<Project[]>([]);
+  const [activeProjectID, setActiveProjectID] = React.useState<string | null>(
+    null
+  );
+  const [isCreateProjectModelOpen, setIsCreateProjectModalOpen] =
+    React.useState(false);
+  const [isCreateWorkspaceModelOpen, setIsCreateWorkspaceModalOpen] =
+    React.useState(false);
   // Fetching workspaces
   const fetchWorkSpaces = async () => {
     const res = await workspaceRequest({
-      url: "/workspace",
-      method: "get"
+      url: '/workspace',
+      method: 'get',
     });
-    const result: Workspace[] = res?.data?.items
+    const result: Workspace[] = res?.data?.items;
     // Set active-workspace and add isPersonal field
-    setActiveWorkspaceID(result[0]?.id)
-    setWorkspaces(result.map(item =>
-      item.ownerId == user?.id ? { ...item, isPersonal: true } : item
-    ))
-  }
+    setActiveWorkspaceID(result[0]?.id);
+    setWorkspaces(
+      result.map((item) =>
+        item.ownerId == user?.id ? { ...item, isPersonal: true } : item
+      )
+    );
+  };
   // Fetching projects
   const fetchProjects = async () => {
     const res = await projectRequest({
       url: `/project/${activeWorkspaceID}`,
-      method: "get"
+      method: 'get',
     });
-    const result = res?.data?.items
-    setActiveProjectID(result[0]?.id)
-    setProjects(result)
-  }
+    const result = res?.data?.items;
+    setActiveProjectID(result[0]?.id);
+    setProjects(result);
+  };
   React.useEffect(() => {
-    fetchWorkSpaces()
-  }, [])
+    fetchWorkSpaces();
+  }, []);
   React.useEffect(() => {
     if (activeWorkspaceID) {
-      fetchProjects()
-      setWorkspaceId(activeWorkspaceID)
+      fetchProjects();
+      setWorkspaceId(activeWorkspaceID);
     }
-  }, [activeWorkspaceID])
+  }, [activeWorkspaceID]);
   const handleOnProjectModelOpen = (isOpen: boolean) => {
     setIsCreateProjectModalOpen(isOpen);
-  }
+  };
   const handleOnWorkspaceModelOpen = (isOpen: boolean) => {
     setIsCreateWorkspaceModalOpen(isOpen);
-  }
+  };
   return (
     <Sidebar collapsible="offcanvas" {...props}>
       <SidebarHeader>
@@ -159,47 +166,47 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         </SidebarMenu>
       </SidebarHeader>
       <SidebarContent>
-        {
-          isWorkSpaceLoading ?
-            <Skeleton className="h-8 w-full bg-gray-200" />
-            :
-            <WorkspaceSwitcher
-              currentWorkspaceId={activeWorkspaceID}
-              workspaces={workspaces}
-              onWorkspaceChange={(id) => {
-                setActiveWorkspaceID(id);
-                console.log("Chuyển sang workspace:", id);
-              }}
-              onCreateNew={() => handleOnWorkspaceModelOpen(true)}
-            />
-        }
+        {isWorkSpaceLoading ? (
+          <Skeleton className="h-8 w-full bg-gray-200" />
+        ) : (
+          <WorkspaceSwitcher
+            currentWorkspaceId={activeWorkspaceID}
+            workspaces={workspaces}
+            onWorkspaceChange={(id) => {
+              setActiveWorkspaceID(id);
+              console.log('Chuyển sang workspace:', id);
+            }}
+            onCreateNew={() => handleOnWorkspaceModelOpen(true)}
+          />
+        )}
         {/* Create Workspace dialog */}
         <CreateWorkSpaceDialog
           fetchWorkSpace={fetchWorkSpaces}
           open={isCreateWorkspaceModelOpen}
-          onOpenChange={handleOnWorkspaceModelOpen} />
+          onOpenChange={handleOnWorkspaceModelOpen}
+        />
 
         <NavDocuments items={data.documents} />
-        {
-          isWorkSpaceLoading || isProjectLoading ?
-            <Skeleton className="h-16 w-full bg-gray-200" />
-            :
-            <ProjectSwitcher
-              currentProjectId={activeProjectID}
-              projects={projects}
-              onProjectChange={(id) => {
-                setActiveProjectID(id);
-                router.push(`/dashboard/${id}`);
-              }}
-              onCreateNew={() => handleOnProjectModelOpen(true)}
-            />
-        }
+        {isWorkSpaceLoading || isProjectLoading ? (
+          <Skeleton className="h-16 w-full bg-gray-200" />
+        ) : (
+          <ProjectSwitcher
+            currentProjectId={activeProjectID}
+            projects={projects}
+            onProjectChange={(id) => {
+              setActiveProjectID(id);
+              router.push(`/dashboard/${id}`);
+            }}
+            onCreateNew={() => handleOnProjectModelOpen(true)}
+          />
+        )}
         {/* Create Project dialog */}
         <CreateProjectDialog
           activeWorkSpaceId={activeWorkspaceID}
           fetchProjects={fetchProjects}
           open={isCreateProjectModelOpen}
-          onOpenChange={handleOnProjectModelOpen} />
+          onOpenChange={handleOnProjectModelOpen}
+        />
 
         <NavSecondary items={data.navSecondary} className="mt-auto" />
       </SidebarContent>
@@ -207,5 +214,5 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         <NavUser user={data.user} />
       </SidebarFooter>
     </Sidebar>
-  )
+  );
 }

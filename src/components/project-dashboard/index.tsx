@@ -1,13 +1,12 @@
-"use client";
+'use client';
 
-import * as React from "react";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import ProjectDashboardUI from "./project-dashboard-ui";
-import TaskKanban from "./task-kanban";
-import TaskCalender from "./task-calender";
-import TaskTimeline from "./task-timeline";
-import TaskTable from "./task/table";
-
+import * as React from 'react';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import ProjectDashboardUI from './project-dashboard-ui';
+import TaskKanban from './task-kanban';
+import TaskCalender from './task-calender';
+import TaskTimeline from './task-timeline';
+import TaskTable from './task/table';
 
 interface ProjectDashboardProps {
   projectId: string;

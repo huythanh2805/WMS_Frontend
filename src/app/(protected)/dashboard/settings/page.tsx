@@ -1,14 +1,14 @@
-import { WorkspaceSettings } from '@/components/setting-page'
-import React from 'react'
+import { WorkspaceSettings } from '@/components/setting-page';
+import React from 'react';
 
-type Props = {}
+type Props = {};
 
 function Settings({}: Props) {
   return (
     <div>
-        <WorkspaceSettings/>
+      <WorkspaceSettings />
     </div>
-  )
+  );
 }
 
-export default Settings
+export default Settings;

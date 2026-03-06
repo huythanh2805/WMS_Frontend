@@ -1,10 +1,10 @@
-"use client";
+'use client';
 
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
-import * as z from "zod";
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useForm } from 'react-hook-form';
+import * as z from 'zod';
 
-import { Button } from "@/components/ui/button";
+import { Button } from '@/components/ui/button';
 import {
   Dialog,
   DialogContent,
@@ -12,7 +12,7 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from "@/components/ui/dialog";
+} from '@/components/ui/dialog';
 import {
   Form,
   FormControl,
@@ -20,13 +20,13 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import { useApi } from "@/hooks/use-api";
+} from '@/components/ui/form';
+import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
+import { useApi } from '@/hooks/use-api';
 
 const formSchema = z.object({
-  name: z.string().min(1, "Project name is required"),
+  name: z.string().min(1, 'Project name is required'),
   description: z.string().optional(),
 });
 
@@ -35,16 +35,20 @@ type FormValues = z.infer<typeof formSchema>;
 interface CreateProjectDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  fetchWorkSpace: () => void
+  fetchWorkSpace: () => void;
 }
 
-export function CreateWorkSpaceDialog({ open, onOpenChange, fetchWorkSpace }: CreateProjectDialogProps) {
-  const { loading, request } = useApi()
+export function CreateWorkSpaceDialog({
+  open,
+  onOpenChange,
+  fetchWorkSpace,
+}: CreateProjectDialogProps) {
+  const { loading, request } = useApi();
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      name: "My Workspace",
-      description: "",
+      name: 'My Workspace',
+      description: '',
     },
   });
 
@@ -52,17 +56,17 @@ export function CreateWorkSpaceDialog({ open, onOpenChange, fetchWorkSpace }: Cr
     if (!loading) {
       request(
         {
-        url: "/workspace",
-        method: "post",
-        data: { ...values, inviteCode: crypto.randomUUID().split("-")[0] }
-      },
-      {
-       onSuccess: (data) => {
-        console.log("Create Success", data)
-        fetchWorkSpace()
-       }
-      }
-    )
+          url: '/workspace',
+          method: 'post',
+          data: { ...values, inviteCode: crypto.randomUUID().split('-')[0] },
+        },
+        {
+          onSuccess: (data) => {
+            console.log('Create Success', data);
+            fetchWorkSpace();
+          },
+        }
+      );
     }
     onOpenChange(false);
     form.reset();
@@ -70,7 +74,10 @@ export function CreateWorkSpaceDialog({ open, onOpenChange, fetchWorkSpace }: Cr
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[425px]" onOpenAutoFocus={(e) => e.preventDefault()}>
+      <DialogContent
+        className="sm:max-w-[425px]"
+        onOpenAutoFocus={(e) => e.preventDefault()}
+      >
         <DialogHeader>
           <DialogTitle>Create New Workspace</DialogTitle>
           <DialogDescription>
@@ -79,7 +86,10 @@ export function CreateWorkSpaceDialog({ open, onOpenChange, fetchWorkSpace }: Cr
         </DialogHeader>
 
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6 py-4">
+          <form
+            onSubmit={form.handleSubmit(onSubmit)}
+            className="space-y-6 py-4"
+          >
             {/* Project Name */}
             <FormField
               control={form.control}
@@ -121,7 +131,9 @@ export function CreateWorkSpaceDialog({ open, onOpenChange, fetchWorkSpace }: Cr
               >
                 Cancel
               </Button>
-              <Button type="submit" className="cursor-pointer">Create Workspace</Button>
+              <Button type="submit" className="cursor-pointer">
+                Create Workspace
+              </Button>
             </DialogFooter>
           </form>
         </Form>

@@ -1,11 +1,10 @@
-"use client";
+'use client';
 
-import { useState } from "react";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
-import * as z from "zod";
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useForm } from 'react-hook-form';
+import * as z from 'zod';
 
-import { Button } from "@/components/ui/button";
+import { Button } from '@/components/ui/button';
 import {
   Dialog,
   DialogContent,
@@ -13,7 +12,7 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from "@/components/ui/dialog";
+} from '@/components/ui/dialog';
 import {
   Form,
   FormControl,
@@ -21,18 +20,17 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import { Checkbox } from "@/components/ui/checkbox";
-import { toast } from "sonner";
-import { useApi } from "@/hooks/use-api";
+} from '@/components/ui/form';
+import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
+import { Checkbox } from '@/components/ui/checkbox';
+import { useApi } from '@/hooks/use-api';
 
 const formSchema = z.object({
-  name: z.string().min(1, "Project name is required"),
+  name: z.string().min(1, 'Project name is required'),
   description: z.string().optional(),
   members: z.array(z.string()).refine((value) => value.length > 0, {
-    message: "At least one member must have access",
+    message: 'At least one member must have access',
   }),
 });
 
@@ -41,18 +39,23 @@ type FormValues = z.infer<typeof formSchema>;
 interface CreateProjectDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  activeWorkSpaceId: string | null,
-  fetchProjects: () => void
+  activeWorkSpaceId: string | null;
+  fetchProjects: () => void;
 }
 
-export function CreateProjectDialog({ open, onOpenChange, activeWorkSpaceId, fetchProjects }: CreateProjectDialogProps) {
-  const { loading, request } = useApi()
+export function CreateProjectDialog({
+  open,
+  onOpenChange,
+  activeWorkSpaceId,
+  fetchProjects,
+}: CreateProjectDialogProps) {
+  const { loading, request } = useApi();
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      name: "First PROJECT",
-      description: "",
-      members: ["codwave"],
+      name: 'First PROJECT',
+      description: '',
+      members: ['codwave'],
     },
   });
 
@@ -60,17 +63,17 @@ export function CreateProjectDialog({ open, onOpenChange, activeWorkSpaceId, fet
     if (!loading && activeWorkSpaceId) {
       request(
         {
-          url: "/project",
-          method: "post",
-          data: { ...values, workspaceId: activeWorkSpaceId }
+          url: '/project',
+          method: 'post',
+          data: { ...values, workspaceId: activeWorkSpaceId },
         },
         {
           onSuccess: (data) => {
-            console.log("Create Success", data)
-            fetchProjects()
-          }
+            console.log('Create Success', data);
+            fetchProjects();
+          },
         }
-      )
+      );
     }
     onOpenChange(false);
     form.reset();
@@ -78,7 +81,10 @@ export function CreateProjectDialog({ open, onOpenChange, activeWorkSpaceId, fet
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[425px]" onOpenAutoFocus={(e) => e.preventDefault()}>
+      <DialogContent
+        className="sm:max-w-[425px]"
+        onOpenAutoFocus={(e) => e.preventDefault()}
+      >
         <DialogHeader>
           <DialogTitle>Create New Project</DialogTitle>
           <DialogDescription>
@@ -87,7 +93,10 @@ export function CreateProjectDialog({ open, onOpenChange, activeWorkSpaceId, fet
         </DialogHeader>
 
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6 py-4">
+          <form
+            onSubmit={form.handleSubmit(onSubmit)}
+            className="space-y-6 py-4"
+          >
             {/* Project Name */}
             <FormField
               control={form.control}
@@ -126,7 +135,8 @@ export function CreateProjectDialog({ open, onOpenChange, activeWorkSpaceId, fet
             <div className="space-y-3">
               <FormLabel>Project Access</FormLabel>
               <p className="text-sm text-muted-foreground">
-                Select which workspace members should have access to this project.
+                Select which workspace members should have access to this
+                project.
               </p>
 
               <div className="space-y-3 pt-2">
@@ -137,15 +147,15 @@ export function CreateProjectDialog({ open, onOpenChange, activeWorkSpaceId, fet
                     <FormItem className="flex flex-row items-start space-x-3 space-y-0">
                       <FormControl>
                         <Checkbox
-                          checked={form.watch("members").includes("codwave")}
+                          checked={form.watch('members').includes('codwave')}
                           onCheckedChange={(checked) => {
-                            const current = form.getValues("members") || [];
+                            const current = form.getValues('members') || [];
                             if (checked) {
-                              form.setValue("members", [...current, "codwave"]);
+                              form.setValue('members', [...current, 'codwave']);
                             } else {
                               form.setValue(
-                                "members",
-                                current.filter((m) => m !== "codwave")
+                                'members',
+                                current.filter((m) => m !== 'codwave')
                               );
                             }
                           }}

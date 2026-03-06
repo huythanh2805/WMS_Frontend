@@ -1,9 +1,17 @@
-import { useFormContext } from "react-hook-form";
-import { Input } from "@/components/ui/input";
-import { FormItem, FormLabel, FormControl, FormMessage } from "@/components/ui/form";
+import { useFormContext } from 'react-hook-form';
+import { Input } from '@/components/ui/input';
+import {
+  FormItem,
+  FormLabel,
+  FormControl,
+  FormMessage,
+} from '@/components/ui/form';
 
 export default function Step3() {
-  const { register, formState: { errors } } = useFormContext();
+  const {
+    register,
+    formState: { errors },
+  } = useFormContext();
 
   return (
     <div className="space-y-6">
@@ -12,7 +20,7 @@ export default function Step3() {
       <FormItem>
         <FormLabel>Plan</FormLabel>
         <FormControl>
-          <Input placeholder="0123456789" {...register("plan")} />
+          <Input placeholder="0123456789" {...register('plan')} />
         </FormControl>
         <FormMessage>{errors.plan?.message as string}</FormMessage>
       </FormItem>

@@ -1,6 +1,6 @@
 // stores/userStore.ts
 import { create } from 'zustand';
-import { User, UserState } from '@/types/user';
+import { UserState } from '@/types/user';
 
 export const useUserStore = create<UserState>((set) => ({
   user: null,
@@ -30,8 +30,6 @@ export const useUserStore = create<UserState>((set) => ({
 
   updateUserField: (field, value) =>
     set((state) => ({
-      user: state.user
-        ? { ...state.user, [field]: value }
-        : null,
+      user: state.user ? { ...state.user, [field]: value } : null,
     })),
 }));

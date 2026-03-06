@@ -1,20 +1,18 @@
-"use client";
+'use client';
 
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
-import * as z from "zod";
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useForm } from 'react-hook-form';
+import * as z from 'zod';
 import {
   Dialog,
   DialogContent,
   DialogDescription,
   DialogHeader,
   DialogTitle,
-} from "@/components/ui/dialog";
-import { toast } from "sonner";
-import { taskSchame } from "@/libs/task-schame";
-import TaskForm from "./task-form";
-
-
+} from '@/components/ui/dialog';
+import { toast } from 'sonner';
+import { taskSchame } from '@/libs/task-schame';
+import TaskForm from './task-form';
 
 type FormValues = z.infer<typeof taskSchame>;
 
@@ -28,19 +26,19 @@ export function EditTaskDialog({ open, onOpenChange }: EditTaskDialogProps) {
   const form = useForm<FormValues>({
     resolver: zodResolver(taskSchame),
     defaultValues: {
-      title: "TEST TASK",
-      assigneeId: "Codewave",
-      priority: "Medium",
-      startDate: new Date("2025-02-19"),
-      dueDate: new Date("2025-02-22"),
-      status: "IN PROGRESS",
-      description: "Description",
+      title: 'TEST TASK',
+      assigneeId: 'Codewave',
+      priority: 'Medium',
+      startDate: new Date('2025-02-19'),
+      dueDate: new Date('2025-02-22'),
+      status: 'IN PROGRESS',
+      description: 'Description',
     },
   });
 
   function onSubmit(values: FormValues) {
-    console.log("Form submitted:", values);
-    toast.success("Task updated", {
+    console.log('Form submitted:', values);
+    toast.success('Task updated', {
       description: `Task "${values.title}" has been updated.`,
     });
     onOpenChange(false);
@@ -48,7 +46,10 @@ export function EditTaskDialog({ open, onOpenChange }: EditTaskDialogProps) {
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[425px] max-h-[92vh] overflow-y-auto" onOpenAutoFocus={(e) => e.preventDefault()}>
+      <DialogContent
+        className="sm:max-w-[425px] max-h-[92vh] overflow-y-auto"
+        onOpenAutoFocus={(e) => e.preventDefault()}
+      >
         <DialogHeader>
           <DialogTitle>Edit Task</DialogTitle>
           <DialogDescription>
@@ -56,7 +57,12 @@ export function EditTaskDialog({ open, onOpenChange }: EditTaskDialogProps) {
           </DialogDescription>
         </DialogHeader>
 
-        <TaskForm form={form} onSubmit={onSubmit} onOpenChange={onOpenChange} type="edit" />
+        <TaskForm
+          form={form}
+          onSubmit={onSubmit}
+          onOpenChange={onOpenChange}
+          type="edit"
+        />
       </DialogContent>
     </Dialog>
   );

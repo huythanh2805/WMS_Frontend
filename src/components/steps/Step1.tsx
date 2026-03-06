@@ -1,28 +1,27 @@
-import { useFormContext, Controller } from "react-hook-form"
-import { Input } from "@/components/ui/input"
-import { Textarea } from "@/components/ui/textarea"
+import { useFormContext, Controller } from 'react-hook-form';
+import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
 import {
   FormItem,
   FormLabel,
   FormControl,
   FormMessage,
-} from "@/components/ui/form"
+} from '@/components/ui/form';
 import {
   Select,
   SelectTrigger,
   SelectValue,
   SelectContent,
   SelectItem,
-} from "@/components/ui/select"
-import { countries, industryTypes, roleTypes } from "@/data"
-
+} from '@/components/ui/select';
+import { countries, industryTypes, roleTypes } from '@/data';
 
 export default function Step1() {
   const {
     register,
     control,
     formState: { errors },
-  } = useFormContext()
+  } = useFormContext();
 
   return (
     <div className="space-y-6">
@@ -32,7 +31,7 @@ export default function Step1() {
       <FormItem>
         <FormLabel>Tên</FormLabel>
         <FormControl>
-          <Input placeholder="Nhập tên của bạn" {...register("name")} />
+          <Input placeholder="Nhập tên của bạn" {...register('name')} />
         </FormControl>
         <FormMessage>{errors.name?.message as string}</FormMessage>
       </FormItem>
@@ -43,7 +42,7 @@ export default function Step1() {
         <FormControl>
           <Textarea
             placeholder="Giới thiệu ngắn về bạn"
-            {...register("about")}
+            {...register('about')}
           />
         </FormControl>
         <FormMessage>{errors.about?.message as string}</FormMessage>
@@ -134,5 +133,5 @@ export default function Step1() {
         <FormMessage>{errors.country?.message as string}</FormMessage>
       </FormItem>
     </div>
-  )
+  );
 }

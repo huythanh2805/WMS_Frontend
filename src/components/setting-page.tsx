@@ -1,18 +1,18 @@
-"use client";
+'use client';
 
-import * as React from "react";
-import { Save, Copy, RotateCcw, Trash2, UserPlus, Globe } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import { Label } from "@/components/ui/label";
-import { Separator } from "@/components/ui/separator";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { cn } from "@/libs/utils";
+import * as React from 'react';
+import { Save, Copy, RotateCcw, Trash2, UserPlus, Globe } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
+import { Label } from '@/components/ui/label';
+import { Separator } from '@/components/ui/separator';
+import { Card, CardContent } from '@/components/ui/card';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 
 export function WorkspaceSettings() {
-  const inviteLink = "https://daily-tm.vercel.app/workspace-invite/e1e122a-fcc0-4704-a655-7a783de70c57/join/xxihUn";
+  const inviteLink =
+    'https://daily-tm.vercel.app/workspace-invite/e1e122a-fcc0-4704-a655-7a783de70c57/join/xxihUn';
 
   const handleCopy = () => {
     navigator.clipboard.writeText(inviteLink);
@@ -129,8 +129,13 @@ export function WorkspaceSettings() {
           </p>
         </div>
 
-        <Alert variant="destructive" className="border-destructive/30 bg-destructive/5">
-          <AlertTitle className="text-base font-medium">Delete Workspace</AlertTitle>
+        <Alert
+          variant="destructive"
+          className="border-destructive/30 bg-destructive/5"
+        >
+          <AlertTitle className="text-base font-medium">
+            Delete Workspace
+          </AlertTitle>
           <AlertDescription className="text-sm mt-1">
             This action cannot be undone. All data will be permanently deleted.
           </AlertDescription>

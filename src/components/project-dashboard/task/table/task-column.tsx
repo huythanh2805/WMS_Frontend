@@ -1,33 +1,8 @@
-"use client"
+'use client';
 
-import { ChartAreaInteractive, description } from "@/components/chart-area-interactive"
-import { DataTable, DragHandle } from "@/components/data-table"
-import { SectionCards } from "@/components/section-cards"
-import axiosAuth from "@/axios/instant"
-import { setAccessToken } from "@/libs/tokenStorage"
-import { useUserStore } from "@/stores/user-store"
-import { useRouter } from "next/navigation"
-import { useEffect } from "react"
-import { fetchUserInfomation } from "@/utils/auth"
-import * as React from "react"
-import {
-  closestCenter,
-  DndContext,
-  KeyboardSensor,
-  MouseSensor,
-  TouchSensor,
-  useSensor,
-  useSensors,
-  type DragEndEvent,
-  type UniqueIdentifier,
-} from "@dnd-kit/core"
-import { restrictToVerticalAxis } from "@dnd-kit/modifiers"
-import {
-  arrayMove,
-  SortableContext,
-  useSortable,
-  verticalListSortingStrategy,
-} from "@dnd-kit/sortable"
+import { DragHandle } from '@/components/data-table';
+import * as React from 'react';
+
 import {
   IconAlertCircle,
   IconAlertTriangleFilled,
@@ -37,81 +12,26 @@ import {
   IconDotsVertical,
   IconEyeCheck,
   IconLoader2,
-} from "@tabler/icons-react"
-import {
-  flexRender,
-  getCoreRowModel,
-  getFacetedRowModel,
-  getFacetedUniqueValues,
-  getFilteredRowModel,
-  getPaginationRowModel,
-  getSortedRowModel,
-  useReactTable,
-  type ColumnDef,
-  type ColumnFiltersState,
-  type Row,
-  type SortingState,
-  type VisibilityState,
-} from "@tanstack/react-table"
-import { Area, AreaChart, CartesianGrid, XAxis } from "recharts"
-import { toast } from "sonner"
-import { z } from "zod"
+} from '@tabler/icons-react';
+import { type ColumnDef } from '@tanstack/react-table';
+import { z } from 'zod';
 
-import { useIsMobile } from "@/hooks/use-mobile"
-import { Badge } from "@/components/ui/badge"
-import { Button } from "@/components/ui/button"
-import {
-  ChartContainer,
-  ChartTooltip,
-  ChartTooltipContent,
-  type ChartConfig,
-} from "@/components/ui/chart"
-import { Checkbox } from "@/components/ui/checkbox"
-import {
-  Drawer,
-  DrawerClose,
-  DrawerContent,
-  DrawerDescription,
-  DrawerFooter,
-  DrawerHeader,
-  DrawerTitle,
-  DrawerTrigger,
-} from "@/components/ui/drawer"
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+
+import { Checkbox } from '@/components/ui/checkbox';
+
 import {
   DropdownMenu,
-  DropdownMenuCheckboxItem,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select"
-import { Separator } from "@/components/ui/separator"
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table"
-import {
-  Tabs,
-  TabsContent,
-  TabsList,
-  TabsTrigger,
-} from "@/components/ui/tabs"
-import { userSchema } from "@/libs/user-schame"
-import { TaskPriority, TaskStatus } from "@/instants"
-import { formatLocalDate } from "@/utils/format-date"
+} from '@/components/ui/dropdown-menu';
+
+import { userSchema } from '@/libs/user-schame';
+import { TaskPriority, TaskStatus } from '@/instants';
+import { formatLocalDate } from '@/utils/format-date';
 
 export const taskSchemaColumns = z.object({
   id: z.string(),
@@ -124,22 +44,22 @@ export const taskSchemaColumns = z.object({
   startDate: z.date(),
   dueDate: z.date(),
   assignedTo: userSchema,
-})
-export type TaskColumn = z.infer<typeof taskSchemaColumns>
+});
+export type TaskColumn = z.infer<typeof taskSchemaColumns>;
 export const taskColumns: ColumnDef<TaskColumn>[] = [
   {
-    id: "drag",
+    id: 'drag',
     header: () => null,
     cell: ({ row }) => <DragHandle id={row.original.id} />,
   },
   {
-    id: "select",
+    id: 'select',
     header: ({ table }) => (
       <div className="flex items-center justify-center">
         <Checkbox
           checked={
             table.getIsAllPageRowsSelected() ||
-            (table.getIsSomePageRowsSelected() && "indeterminate")
+            (table.getIsSomePageRowsSelected() && 'indeterminate')
           }
           onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
           aria-label="Select all"
@@ -167,8 +87,8 @@ export const taskColumns: ColumnDef<TaskColumn>[] = [
   //   enableHiding: false,
   // },
   {
-    accessorKey: "title",
-    header: "Header",
+    accessorKey: 'title',
+    header: 'Header',
     cell: ({ row }) => (
       <div className="w-32">
         <Badge variant="outline" className="text-muted-foreground px-1.5">
@@ -178,102 +98,121 @@ export const taskColumns: ColumnDef<TaskColumn>[] = [
     ),
   },
   {
-  accessorKey: "status",
-  header: "Status",
-  cell: ({ row }) => {
-    const status = row.original.status as TaskStatus;
+    accessorKey: 'status',
+    header: 'Status',
+    cell: ({ row }) => {
+      const status = row.original.status as TaskStatus;
 
-    let icon: React.ReactNode = null;
-    let badgeVariant: "outline" | "default" | "secondary" | "destructive" = "outline";
-    let textColor = "text-muted-foreground";
-    let bgColor = ""; // chỉ dùng khi cần nền nhẹ
+      let icon: React.ReactNode = null;
+      let badgeVariant: 'outline' | 'default' | 'secondary' | 'destructive' =
+        'outline';
+      let textColor = 'text-muted-foreground';
+      let bgColor = ''; // chỉ dùng khi cần nền nhẹ
 
-    switch (status) {
-      case TaskStatus.BACKLOG:
-        icon = <IconClock className="size-3.5 fill-slate-400 dark:fill-slate-500" />;
-        textColor = "text-slate-700 dark:text-slate-300";
-        badgeVariant = "secondary";
-        break;
+      switch (status) {
+        case TaskStatus.BACKLOG:
+          icon = (
+            <IconClock className="size-3.5 fill-slate-400 dark:fill-slate-500" />
+          );
+          textColor = 'text-slate-700 dark:text-slate-300';
+          badgeVariant = 'secondary';
+          break;
 
-      case TaskStatus.TODO:
-        icon = <IconCircleDashed className="size-3.5 fill-blue-400 dark:fill-blue-500" />;
-        textColor = "text-blue-700 dark:text-blue-300";
-        break;
+        case TaskStatus.TODO:
+          icon = (
+            <IconCircleDashed className="size-3.5 fill-blue-400 dark:fill-blue-500" />
+          );
+          textColor = 'text-blue-700 dark:text-blue-300';
+          break;
 
-      case TaskStatus.IN_PROGRESS:
-        icon = <IconLoader2 className="size-3.5 animate-spin fill-yellow-500 dark:fill-yellow-400" />;
-        textColor = "text-yellow-800 dark:text-yellow-300";
-        badgeVariant = "secondary";
-        break;
+        case TaskStatus.IN_PROGRESS:
+          icon = (
+            <IconLoader2 className="size-3.5 animate-spin fill-yellow-500 dark:fill-yellow-400" />
+          );
+          textColor = 'text-yellow-800 dark:text-yellow-300';
+          badgeVariant = 'secondary';
+          break;
 
-      case TaskStatus.IN_REVIEW:
-        icon = <IconEyeCheck  className="size-3.5" />;
-        textColor = "text-purple-700 dark:text-purple-300";
-        badgeVariant = "secondary";
-        break;
+        case TaskStatus.IN_REVIEW:
+          icon = <IconEyeCheck className="size-3.5" />;
+          textColor = 'text-purple-700 dark:text-purple-300';
+          badgeVariant = 'secondary';
+          break;
 
-      case TaskStatus.COMPLETED:
-        icon = <IconCircleCheckFilled className="size-3.5 fill-green-500 dark:fill-green-400" />;
-        textColor = "text-green-700 dark:text-green-300";
-        badgeVariant = "default";
-        bgColor = "bg-green-50/80 dark:bg-green-950/30 border-green-200 dark:border-green-800";
-        break;
+        case TaskStatus.COMPLETED:
+          icon = (
+            <IconCircleCheckFilled className="size-3.5 fill-green-500 dark:fill-green-400" />
+          );
+          textColor = 'text-green-700 dark:text-green-300';
+          badgeVariant = 'default';
+          bgColor =
+            'bg-green-50/80 dark:bg-green-950/30 border-green-200 dark:border-green-800';
+          break;
 
-      default:
-        icon = <IconAlertCircle className="size-3.5 fill-gray-400" />;
-    }
+        default:
+          icon = <IconAlertCircle className="size-3.5 fill-gray-400" />;
+      }
 
-    return (
-      <Badge
-        variant={badgeVariant}
-        className={`
+      return (
+        <Badge
+          variant={badgeVariant}
+          className={`
           inline-flex items-center gap-1.5 
           px-2.5 py-0.5 text-xs font-medium
           capitalize
           ${textColor}
           ${bgColor}
         `}
-      >
-        {icon}
-        {status.replace(/_/g, " ")} {/* chuyển IN_PROGRESS → IN PROGRESS */}
-      </Badge>
-    );
+        >
+          {icon}
+          {status.replace(/_/g, ' ')} {/* chuyển IN_PROGRESS → IN PROGRESS */}
+        </Badge>
+      );
+    },
   },
-},
   {
-    accessorKey: "priority",
-    header: "Priority",
+    accessorKey: 'priority',
+    header: 'Priority',
     cell: ({ row }) => {
       const priority = row.original.priority as TaskPriority;
 
-      let badgeVariant: "outline" | "default" | "secondary" | "destructive" = "outline";
+      let badgeVariant: 'outline' | 'default' | 'secondary' | 'destructive' =
+        'outline';
       let icon: React.ReactNode = null;
-      let textColor = "text-muted-foreground";
+      let textColor = 'text-muted-foreground';
 
       switch (priority) {
         case TaskPriority.LOW:
-          icon = <IconCircleDashed className="fill-slate-400 dark:fill-slate-500 size-3.5" />;
-          textColor = "text-slate-700 dark:text-slate-300";
-          badgeVariant = "secondary";
+          icon = (
+            <IconCircleDashed className="fill-slate-400 dark:fill-slate-500 size-3.5" />
+          );
+          textColor = 'text-slate-700 dark:text-slate-300';
+          badgeVariant = 'secondary';
           break;
 
         case TaskPriority.MEDIUM:
-          icon = <IconCircleCheckFilled className="fill-sky-500 dark:fill-sky-400 size-3.5" />;
-          textColor = "text-sky-700 dark:text-sky-300";
-          badgeVariant = "secondary";
+          icon = (
+            <IconCircleCheckFilled className="fill-sky-500 dark:fill-sky-400 size-3.5" />
+          );
+          textColor = 'text-sky-700 dark:text-sky-300';
+          badgeVariant = 'secondary';
           break;
 
         case TaskPriority.HIGH:
-          icon = <IconAlertTriangleFilled className="fill-amber-500 dark:fill-amber-400 size-3.5" />;
-          textColor = "text-amber-800 dark:text-amber-300";
-          badgeVariant = "secondary";
+          icon = (
+            <IconAlertTriangleFilled className="fill-amber-500 dark:fill-amber-400 size-3.5" />
+          );
+          textColor = 'text-amber-800 dark:text-amber-300';
+          badgeVariant = 'secondary';
           break;
 
         case TaskPriority.CRITICAL:
-          icon = <IconAlertTriangleFilled className="fill-rose-600 dark:fill-rose-500 size-3.5" />;
+          icon = (
+            <IconAlertTriangleFilled className="fill-rose-600 dark:fill-rose-500 size-3.5" />
+          );
           // hoặc IconXCircleFilled, IconFlameFilled nếu muốn mạnh hơn
-          textColor = "text-rose-700 dark:text-rose-300";
-          badgeVariant = "secondary";
+          textColor = 'text-rose-700 dark:text-rose-300';
+          badgeVariant = 'secondary';
           break;
 
         default:
@@ -292,28 +231,22 @@ export const taskColumns: ColumnDef<TaskColumn>[] = [
     },
   },
   {
-    accessorKey: "startDate",
-    header: "StartDate",
-    cell: ({ row }) => (
-      formatLocalDate(row.original.startDate)
-    ),
+    accessorKey: 'startDate',
+    header: 'StartDate',
+    cell: ({ row }) => formatLocalDate(row.original.startDate),
   },
   {
-    accessorKey: "dueDate",
-    header: "dueDate",
-    cell: ({ row }) => (
-      formatLocalDate(row.original.dueDate)
-    ),
+    accessorKey: 'dueDate',
+    header: 'dueDate',
+    cell: ({ row }) => formatLocalDate(row.original.dueDate),
   },
   {
-    accessorKey: "assignedTo",
-    header: "assignedTo",
-    cell: ({ row }) => (
-      row.original.assignedTo?.name ?? "-"
-    ),
+    accessorKey: 'assignedTo',
+    header: 'assignedTo',
+    cell: ({ row }) => row.original.assignedTo?.name ?? '-',
   },
   {
-    id: "actions",
+    id: 'actions',
     cell: () => (
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
@@ -336,7 +269,7 @@ export const taskColumns: ColumnDef<TaskColumn>[] = [
       </DropdownMenu>
     ),
   },
-]
+];
 
 // export function TableCellViewer({ item }: {item: z.infer<typeof schema>}) {
 //   const isMobile = useIsMobile()

@@ -3,10 +3,19 @@
 import { useState } from 'react';
 import { useEditor, EditorContent } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
-import Link from '@tiptap/extension-link';
 import {
-  Bold, Italic, Strikethrough, Code, Heading1, Heading2, Heading3,
-  List, ListOrdered, Link as LinkIcon, Undo, Redo
+  Bold,
+  Italic,
+  Strikethrough,
+  Code,
+  Heading1,
+  Heading2,
+  Heading3,
+  List,
+  ListOrdered,
+  Link as LinkIcon,
+  Undo,
+  Redo,
 } from 'lucide-react';
 import { EditTaskDialog } from './edit-task-dialog';
 
@@ -28,7 +37,7 @@ export default function EditTaskPage() {
   const [comments, setComments] = useState<Comment[]>([]);
   const [newComment, setNewComment] = useState('');
   const [isTaskEditOpen, setIsTaskEditOpen] = useState(false);
-  
+
   const editor = useEditor({
     extensions: [
       StarterKit,
@@ -51,7 +60,10 @@ export default function EditTaskPage() {
         id: Date.now(),
         user: 'You',
         text: newComment,
-        time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+        time: new Date().toLocaleTimeString([], {
+          hour: '2-digit',
+          minute: '2-digit',
+        }),
       },
     ]);
     setNewComment('');
@@ -75,10 +87,18 @@ export default function EditTaskPage() {
   };
 
   // Status & Priority colors
-  const statusColor = status === 'IN_PROGRESS' ? 'bg-amber-500' :
-    status === 'DONE' ? 'bg-emerald-500' : 'bg-zinc-500';
-  const priorityColor = priority === 'HIGH' ? 'bg-red-500' :
-    priority === 'MEDIUM' ? 'bg-amber-500' : 'bg-emerald-500';
+  const statusColor =
+    status === 'IN_PROGRESS'
+      ? 'bg-amber-500'
+      : status === 'DONE'
+        ? 'bg-emerald-500'
+        : 'bg-zinc-500';
+  const priorityColor =
+    priority === 'HIGH'
+      ? 'bg-red-500'
+      : priority === 'MEDIUM'
+        ? 'bg-amber-500'
+        : 'bg-emerald-500';
   const handleOnTaskEditOpen = (open: boolean) => {
     setIsTaskEditOpen(open);
   };
@@ -118,11 +138,17 @@ export default function EditTaskPage() {
               </select>
             </div>
 
-            <button onClick={() => handleOnTaskEditOpen(true)} className="flex items-center gap-2 bg-white text-zinc-700 px-5 py-2.5 rounded-2xl border hover:bg-zinc-100 transition">
+            <button
+              onClick={() => handleOnTaskEditOpen(true)}
+              className="flex items-center gap-2 bg-white text-zinc-700 px-5 py-2.5 rounded-2xl border hover:bg-zinc-100 transition"
+            >
               <span className="text-xl">✏️</span>
               Edit Task
             </button>
-            <EditTaskDialog open={isTaskEditOpen} onOpenChange={handleOnTaskEditOpen} />
+            <EditTaskDialog
+              open={isTaskEditOpen}
+              onOpenChange={handleOnTaskEditOpen}
+            />
           </div>
         </div>
 
@@ -146,7 +172,9 @@ export default function EditTaskPage() {
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
                 {/* Status */}
                 <div>
-                  <label className="text-xs text-zinc-500 block mb-1">Status</label>
+                  <label className="text-xs text-zinc-500 block mb-1">
+                    Status
+                  </label>
                   <select
                     value={status}
                     onChange={(e) => setStatus(e.target.value)}
@@ -160,7 +188,9 @@ export default function EditTaskPage() {
 
                 {/* Priority */}
                 <div>
-                  <label className="text-xs text-zinc-500 block mb-1">Priority</label>
+                  <label className="text-xs text-zinc-500 block mb-1">
+                    Priority
+                  </label>
                   <select
                     value={priority}
                     onChange={(e) => setPriority(e.target.value)}
@@ -174,7 +204,9 @@ export default function EditTaskPage() {
 
                 {/* Due Date */}
                 <div>
-                  <label className="text-xs text-zinc-500 block mb-1">Due Date</label>
+                  <label className="text-xs text-zinc-500 block mb-1">
+                    Due Date
+                  </label>
                   <input
                     type="date"
                     value={dueDate}
@@ -191,53 +223,100 @@ export default function EditTaskPage() {
 
               {/* Toolbar */}
               <div className="flex flex-wrap gap-1 border-b pb-3 mb-3">
-                <button onClick={() => editor?.chain().focus().toggleBold().run()} className={`p-2 rounded-xl hover:bg-zinc-100 ${editor?.isActive('bold') ? 'bg-zinc-200' : ''}`}>
+                <button
+                  onClick={() => editor?.chain().focus().toggleBold().run()}
+                  className={`p-2 rounded-xl hover:bg-zinc-100 ${editor?.isActive('bold') ? 'bg-zinc-200' : ''}`}
+                >
                   <Bold size={20} />
                 </button>
-                <button onClick={() => editor?.chain().focus().toggleItalic().run()} className={`p-2 rounded-xl hover:bg-zinc-100 ${editor?.isActive('italic') ? 'bg-zinc-200' : ''}`}>
+                <button
+                  onClick={() => editor?.chain().focus().toggleItalic().run()}
+                  className={`p-2 rounded-xl hover:bg-zinc-100 ${editor?.isActive('italic') ? 'bg-zinc-200' : ''}`}
+                >
                   <Italic size={20} />
                 </button>
-                <button onClick={() => editor?.chain().focus().toggleStrike().run()} className={`p-2 rounded-xl hover:bg-zinc-100 ${editor?.isActive('strike') ? 'bg-zinc-200' : ''}`}>
+                <button
+                  onClick={() => editor?.chain().focus().toggleStrike().run()}
+                  className={`p-2 rounded-xl hover:bg-zinc-100 ${editor?.isActive('strike') ? 'bg-zinc-200' : ''}`}
+                >
                   <Strikethrough size={20} />
                 </button>
-                <button onClick={() => editor?.chain().focus().toggleCode().run()} className={`p-2 rounded-xl hover:bg-zinc-100 ${editor?.isActive('code') ? 'bg-zinc-200' : ''}`}>
+                <button
+                  onClick={() => editor?.chain().focus().toggleCode().run()}
+                  className={`p-2 rounded-xl hover:bg-zinc-100 ${editor?.isActive('code') ? 'bg-zinc-200' : ''}`}
+                >
                   <Code size={20} />
                 </button>
 
                 <div className="w-px h-6 bg-zinc-200 mx-2 my-auto" />
 
-                <button onClick={() => editor?.chain().focus().toggleHeading({ level: 1 }).run()} className={`p-2 rounded-xl hover:bg-zinc-100 ${editor?.isActive('heading', { level: 1 }) ? 'bg-zinc-200' : ''}`}>
+                <button
+                  onClick={() =>
+                    editor?.chain().focus().toggleHeading({ level: 1 }).run()
+                  }
+                  className={`p-2 rounded-xl hover:bg-zinc-100 ${editor?.isActive('heading', { level: 1 }) ? 'bg-zinc-200' : ''}`}
+                >
                   <Heading1 size={20} />
                 </button>
-                <button onClick={() => editor?.chain().focus().toggleHeading({ level: 2 }).run()} className={`p-2 rounded-xl hover:bg-zinc-100 ${editor?.isActive('heading', { level: 2 }) ? 'bg-zinc-200' : ''}`}>
+                <button
+                  onClick={() =>
+                    editor?.chain().focus().toggleHeading({ level: 2 }).run()
+                  }
+                  className={`p-2 rounded-xl hover:bg-zinc-100 ${editor?.isActive('heading', { level: 2 }) ? 'bg-zinc-200' : ''}`}
+                >
                   <Heading2 size={20} />
                 </button>
-                <button onClick={() => editor?.chain().focus().toggleHeading({ level: 3 }).run()} className={`p-2 rounded-xl hover:bg-zinc-100 ${editor?.isActive('heading', { level: 3 }) ? 'bg-zinc-200' : ''}`}>
+                <button
+                  onClick={() =>
+                    editor?.chain().focus().toggleHeading({ level: 3 }).run()
+                  }
+                  className={`p-2 rounded-xl hover:bg-zinc-100 ${editor?.isActive('heading', { level: 3 }) ? 'bg-zinc-200' : ''}`}
+                >
                   <Heading3 size={20} />
                 </button>
 
                 <div className="w-px h-6 bg-zinc-200 mx-2 my-auto" />
 
-                <button onClick={() => editor?.chain().focus().toggleBulletList().run()} className={`p-2 rounded-xl hover:bg-zinc-100 ${editor?.isActive('bulletList') ? 'bg-zinc-200' : ''}`}>
+                <button
+                  onClick={() =>
+                    editor?.chain().focus().toggleBulletList().run()
+                  }
+                  className={`p-2 rounded-xl hover:bg-zinc-100 ${editor?.isActive('bulletList') ? 'bg-zinc-200' : ''}`}
+                >
                   <List size={20} />
                 </button>
-                <button onClick={() => editor?.chain().focus().toggleOrderedList().run()} className={`p-2 rounded-xl hover:bg-zinc-100 ${editor?.isActive('orderedList') ? 'bg-zinc-200' : ''}`}>
+                <button
+                  onClick={() =>
+                    editor?.chain().focus().toggleOrderedList().run()
+                  }
+                  className={`p-2 rounded-xl hover:bg-zinc-100 ${editor?.isActive('orderedList') ? 'bg-zinc-200' : ''}`}
+                >
                   <ListOrdered size={20} />
                 </button>
 
-                <button onClick={() => {
-                  const url = prompt('Enter URL');
-                  if (url) editor?.chain().focus().toggleLink({ href: url }).run();
-                }} className={`p-2 rounded-xl hover:bg-zinc-100 ${editor?.isActive('link') ? 'bg-zinc-200' : ''}`}>
+                <button
+                  onClick={() => {
+                    const url = prompt('Enter URL');
+                    if (url)
+                      editor?.chain().focus().toggleLink({ href: url }).run();
+                  }}
+                  className={`p-2 rounded-xl hover:bg-zinc-100 ${editor?.isActive('link') ? 'bg-zinc-200' : ''}`}
+                >
                   <LinkIcon size={20} />
                 </button>
 
                 <div className="flex-1" />
 
-                <button onClick={() => editor?.chain().focus().undo().run()} className="p-2 rounded-xl hover:bg-zinc-100">
+                <button
+                  onClick={() => editor?.chain().focus().undo().run()}
+                  className="p-2 rounded-xl hover:bg-zinc-100"
+                >
                   <Undo size={20} />
                 </button>
-                <button onClick={() => editor?.chain().focus().redo().run()} className="p-2 rounded-xl hover:bg-zinc-100">
+                <button
+                  onClick={() => editor?.chain().focus().redo().run()}
+                  className="p-2 rounded-xl hover:bg-zinc-100"
+                >
                   <Redo size={20} />
                 </button>
               </div>
@@ -258,12 +337,16 @@ export default function EditTaskPage() {
               <h2 className="font-semibold text-lg mb-4">Comments</h2>
               <div className="space-y-4 max-h-[400px] overflow-y-auto mb-4">
                 {comments.length === 0 && (
-                  <p className="text-zinc-400 text-sm italic">No comments yet</p>
+                  <p className="text-zinc-400 text-sm italic">
+                    No comments yet
+                  </p>
                 )}
                 {comments.map((c) => (
                   <div key={c.id} className="bg-zinc-50 rounded-2xl p-4">
                     <div className="flex justify-between text-xs text-zinc-500 mb-1">
-                      <span className="font-medium text-zinc-700">{c.user}</span>
+                      <span className="font-medium text-zinc-700">
+                        {c.user}
+                      </span>
                       <span>{c.time}</span>
                     </div>
                     <p className="text-sm">{c.text}</p>

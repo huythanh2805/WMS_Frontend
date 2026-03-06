@@ -1,43 +1,43 @@
-"use client";
-import * as React from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+'use client';
+import * as React from 'react';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import {
   ChartConfig,
   ChartContainer,
   ChartTooltip,
   ChartTooltipContent,
-} from "@/components/ui/chart";
-import { Pie, PieChart, Cell, ResponsiveContainer, Legend } from "recharts";
+} from '@/components/ui/chart';
+import { Pie, PieChart, Cell, ResponsiveContainer, Legend } from 'recharts';
 
 // ... (giữ nguyên các import và mock data cũ)
 
 const projectData = {
   // ... giữ nguyên
   taskDistribution: [
-    { name: "Completed", value: 45, fill: "hsl(var(--chart-1))" }, // xanh lá
-    { name: "In Progress", value: 30, fill: "hsl(var(--chart-2))" }, // xanh dương
-    { name: "Overdue", value: 15, fill: "hsl(var(--chart-3))" }, // đỏ
-    { name: "Not Started", value: 10, fill: "hsl(var(--chart-4))" }, // xám
+    { name: 'Completed', value: 45, fill: 'hsl(var(--chart-1))' }, // xanh lá
+    { name: 'In Progress', value: 30, fill: 'hsl(var(--chart-2))' }, // xanh dương
+    { name: 'Overdue', value: 15, fill: 'hsl(var(--chart-3))' }, // đỏ
+    { name: 'Not Started', value: 10, fill: 'hsl(var(--chart-4))' }, // xám
   ],
 };
 
 // Chart config (dùng theme variables của shadcn để màu đẹp theo light/dark mode)
 const chartConfig = {
   Completed: {
-    label: "Completed",
-    color: "hsl(var(--chart-1))",
+    label: 'Completed',
+    color: 'hsl(var(--chart-1))',
   },
-  "In Progress": {
-    label: "In Progress",
-    color: "hsl(var(--chart-2))",
+  'In Progress': {
+    label: 'In Progress',
+    color: 'hsl(var(--chart-2))',
   },
   Overdue: {
-    label: "Overdue",
-    color: "hsl(var(--chart-3))",
+    label: 'Overdue',
+    color: 'hsl(var(--chart-3))',
   },
-  "Not Started": {
-    label: "Not Started",
-    color: "hsl(var(--chart-4))",
+  'Not Started': {
+    label: 'Not Started',
+    color: 'hsl(var(--chart-4))',
   },
 } satisfies ChartConfig;
 interface ProjectDashboardProps {
@@ -83,7 +83,10 @@ export function TaskContributeChart({ projectId }: ProjectDashboardProps) {
                   content={({ payload }) => (
                     <div className="flex flex-wrap justify-center gap-4 pt-4">
                       {payload?.map((entry, index) => (
-                        <div key={`legend-${index}`} className="flex items-center gap-2">
+                        <div
+                          key={`legend-${index}`}
+                          className="flex items-center gap-2"
+                        >
                           <div
                             className="h-3 w-3 rounded-full"
                             style={{ backgroundColor: entry.color }}

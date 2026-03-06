@@ -1,22 +1,22 @@
-import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
-import "./globals.css";
-import { TooltipProvider } from "@/components/ui/tooltip";
-import { Toaster } from "sonner";
+import type { Metadata } from 'next';
+import { Geist, Geist_Mono } from 'next/font/google';
+import './globals.css';
+import { TooltipProvider } from '@/components/ui/tooltip';
+import { Toaster } from 'sonner';
 
 const geistSans = Geist({
-  variable: "--font-sans",
-  subsets: ["latin"],
+  variable: '--font-sans',
+  subsets: ['latin'],
 });
 
 const geistMono = Geist_Mono({
-  variable: "--font-mono",
-  subsets: ["latin"],
+  variable: '--font-mono',
+  subsets: ['latin'],
 });
 
 export const metadata: Metadata = {
-  title: "Task Manager",
-  description: "Task management system",
+  title: 'Task Manager',
+  description: 'Task management system',
 };
 
 export default function RootLayout({
@@ -25,13 +25,13 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-      <html lang="vi">
-        <body
-          className={`${geistSans.variable} ${geistMono.variable} font-sans antialiased`}
-        >
-           <TooltipProvider>{children}</TooltipProvider>
-           <Toaster />
-        </body>
-      </html>
+    <html lang="vi">
+      <body
+        className={`${geistSans.variable} ${geistMono.variable} font-sans antialiased`}
+      >
+        <TooltipProvider>{children}</TooltipProvider>
+        <Toaster />
+      </body>
+    </html>
   );
 }

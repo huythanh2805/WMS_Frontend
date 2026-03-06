@@ -1,46 +1,56 @@
-"use client";
+'use client';
 
-import { useState } from "react";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Separator } from "@/components/ui/separator";
-import { ScrollArea } from "@/components/ui/scroll-area";
-import { Trash2, User, Mail, Eye, Save } from "lucide-react";
-import { cn } from "@/libs/utils";
+import { useState } from 'react';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card';
+import { Separator } from '@/components/ui/separator';
+import { ScrollArea } from '@/components/ui/scroll-area';
+import { Trash2, Mail, Eye, Save } from 'lucide-react';
+import { cn } from '@/libs/utils';
 
 // Fake data - sau này fetch từ API
 const members = [
   {
-    id: "akwasi",
-    name: "Akwasi Asante",
-    email: "akwasi@example.com",
-    role: "OWNER",
+    id: 'akwasi',
+    name: 'Akwasi Asante',
+    email: 'akwasi@example.com',
+    role: 'OWNER',
     projects: 0,
-    avatar: "/avatars/akwasi.jpg", // thay bằng URL thật hoặc placeholder
-    fallback: "AA",
+    avatar: '/avatars/akwasi.jpg', // thay bằng URL thật hoặc placeholder
+    fallback: 'AA',
   },
   {
-    id: "codewave",
-    name: "Codwave",
-    email: "codewavewithasante@gmail.com",
-    role: "VIEWER",
+    id: 'codewave',
+    name: 'Codwave',
+    email: 'codewavewithasante@gmail.com',
+    role: 'VIEWER',
     projects: 0,
-    avatar: "/avatars/codewave.jpg",
-    fallback: "C",
+    avatar: '/avatars/codewave.jpg',
+    fallback: 'C',
   },
 ];
 
 type Member = (typeof members)[number];
 
 export default function WorkspaceMembersPage() {
-  const [selectedMember, setSelectedMember] = useState<Member | null>(members[1]); // mặc định chọn Codwave
+  const [selectedMember, setSelectedMember] = useState<Member | null>(
+    members[1]
+  ); // mặc định chọn Codwave
 
   return (
     <div className="min-h-screen bg-background p-4 md:p-6 lg:p-8">
       <div className="mx-auto max-w-7xl">
-        <h1 className="text-3xl font-bold tracking-tight mb-6">Workspace Members</h1>
+        <h1 className="text-3xl font-bold tracking-tight mb-6">
+          Workspace Members
+        </h1>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Left - Workspace Members List */}
@@ -59,8 +69,9 @@ export default function WorkspaceMembersPage() {
                       key={member.id}
                       onClick={() => setSelectedMember(member)}
                       className={cn(
-                        "flex items-center gap-4 p-4 rounded-lg border cursor-pointer transition-colors hover:bg-accent",
-                        selectedMember?.id === member.id && "border-primary bg-accent/50"
+                        'flex items-center gap-4 p-4 rounded-lg border cursor-pointer transition-colors hover:bg-accent',
+                        selectedMember?.id === member.id &&
+                          'border-primary bg-accent/50'
                       )}
                     >
                       <Avatar className="h-12 w-12">
@@ -70,16 +81,23 @@ export default function WorkspaceMembersPage() {
 
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-2">
-                          <p className="text-sm font-medium truncate">{member.name}</p>
+                          <p className="text-sm font-medium truncate">
+                            {member.name}
+                          </p>
                           <Badge
-                            variant={member.role === "OWNER" ? "destructive" : "secondary"}
+                            variant={
+                              member.role === 'OWNER'
+                                ? 'destructive'
+                                : 'secondary'
+                            }
                             className="text-xs"
                           >
                             {member.role}
                           </Badge>
                         </div>
                         <p className="text-xs text-muted-foreground">
-                          {member.projects} project{member.projects !== 1 ? "s" : ""}
+                          {member.projects} project
+                          {member.projects !== 1 ? 's' : ''}
                         </p>
                       </div>
                     </div>
@@ -97,13 +115,23 @@ export default function WorkspaceMembersPage() {
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-4">
                       <Avatar className="h-16 w-16">
-                        <AvatarImage src={selectedMember.avatar} alt={selectedMember.name} />
-                        <AvatarFallback className="text-xl">{selectedMember.fallback}</AvatarFallback>
+                        <AvatarImage
+                          src={selectedMember.avatar}
+                          alt={selectedMember.name}
+                        />
+                        <AvatarFallback className="text-xl">
+                          {selectedMember.fallback}
+                        </AvatarFallback>
                       </Avatar>
                       <div>
-                        <CardTitle className="text-2xl">{selectedMember.name}</CardTitle>
+                        <CardTitle className="text-2xl">
+                          {selectedMember.name}
+                        </CardTitle>
                         <div className="flex items-center gap-2 mt-1">
-                          <Badge variant="outline" className="flex items-center gap-1">
+                          <Badge
+                            variant="outline"
+                            className="flex items-center gap-1"
+                          >
                             <Eye className="h-3 w-3" />
                             {selectedMember.role}
                           </Badge>
@@ -126,7 +154,9 @@ export default function WorkspaceMembersPage() {
 
                 <CardContent className="pt-6 space-y-6">
                   <div>
-                    <h3 className="text-lg font-medium mb-4">Assigned Projects</h3>
+                    <h3 className="text-lg font-medium mb-4">
+                      Assigned Projects
+                    </h3>
                     <div className="border rounded-lg overflow-hidden">
                       <div className="bg-muted px-4 py-3 font-medium grid grid-cols-[3fr_1fr] text-sm">
                         <div>Project</div>

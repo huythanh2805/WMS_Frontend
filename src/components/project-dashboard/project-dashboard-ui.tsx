@@ -1,25 +1,28 @@
 // components/project-dashboard.tsx
-"use client";
+'use client';
 
-import * as React from "react";
-import { Plus, Settings, Users, Clock, CheckCircle, AlertCircle } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Progress } from "@/components/ui/progress";
-import { cn } from "@/libs/utils";
-import { TaskContributeChart } from "./pie-chart";
-import { CreateTaskDialog } from "./task/create-task-dialog";
-import { useApi } from "@/hooks/use-api";
-import { useWorkspaceStore } from "@/stores/workspace-store";
+import * as React from 'react';
+import {
+  Plus,
+  Settings,
+  Users,
+  Clock,
+  CheckCircle,
+  AlertCircle,
+} from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { cn } from '@/libs/utils';
+import { TaskContributeChart } from './pie-chart';
+import { CreateTaskDialog } from './task/create-task-dialog';
 
 // Mock data (thay bằng fetch từ API sau)
 const projectData = {
-  id: "proj-1",
-  name: "First PROJECT",
-  avatar: "/avatar-f.png", // hoặc generate từ initials
+  id: 'proj-1',
+  name: 'First PROJECT',
+  avatar: '/avatar-f.png', // hoặc generate từ initials
   stats: {
     completed: { percent: 0, total: 0, done: 0 },
     inProgress: { percent: 0, count: 0 },
@@ -27,7 +30,11 @@ const projectData = {
     members: { percent: 100, count: 1 },
   },
   recentActivity: [
-    { icon: "codwave", text: 'Codwave created project "First PROJECT"', time: "less than a minute ago" },
+    {
+      icon: 'codwave',
+      text: 'Codwave created project "First PROJECT"',
+      time: 'less than a minute ago',
+    },
   ],
 };
 
@@ -36,8 +43,8 @@ interface ProjectDashboardProps {
 }
 
 function ProjectDashboardUI({ projectId }: ProjectDashboardProps) {
-
-  const [isCreateTaskModelOpen, setIsCreateTaskModelOpen] = React.useState(false);
+  const [isCreateTaskModelOpen, setIsCreateTaskModelOpen] =
+    React.useState(false);
   const data = projectData;
   const handleOnTaskModelOpen = (open: boolean) => {
     setIsCreateTaskModelOpen(open);
@@ -56,7 +63,9 @@ function ProjectDashboardUI({ projectId }: ProjectDashboardProps) {
           </Avatar>
           <div>
             <h1 className="text-2xl font-bold">{data.name}</h1>
-            <p className="text-sm text-muted-foreground">Manage project tasks and activities</p>
+            <p className="text-sm text-muted-foreground">
+              Manage project tasks and activities
+            </p>
           </div>
         </div>
 
@@ -65,11 +74,18 @@ function ProjectDashboardUI({ projectId }: ProjectDashboardProps) {
             <Settings className="mr-2 h-4 w-4" />
             Settings
           </Button>
-          <Button className="bg-primary hover:bg-primary/90" onClick={() => handleOnTaskModelOpen(true)}>
+          <Button
+            className="bg-primary hover:bg-primary/90"
+            onClick={() => handleOnTaskModelOpen(true)}
+          >
             <Plus className="mr-2 h-4 w-4" />
             New Task
           </Button>
-          <CreateTaskDialog projectId={projectId} open={isCreateTaskModelOpen} onOpenChange={handleOnTaskModelOpen} />
+          <CreateTaskDialog
+            projectId={projectId}
+            open={isCreateTaskModelOpen}
+            onOpenChange={handleOnTaskModelOpen}
+          />
         </div>
       </div>
 
@@ -132,11 +148,15 @@ function ProjectDashboardUI({ projectId }: ProjectDashboardProps) {
                 {data.recentActivity.map((item, i) => (
                   <div key={i} className="flex items-start gap-3">
                     <Avatar className="h-8 w-8">
-                      <AvatarFallback className="bg-primary/10 text-primary text-xs">CW</AvatarFallback>
+                      <AvatarFallback className="bg-primary/10 text-primary text-xs">
+                        CW
+                      </AvatarFallback>
                     </Avatar>
                     <div>
                       <p className="text-sm">{item.text}</p>
-                      <p className="text-xs text-muted-foreground">{item.time}</p>
+                      <p className="text-xs text-muted-foreground">
+                        {item.time}
+                      </p>
                     </div>
                   </div>
                 ))}
@@ -157,10 +177,12 @@ function ProjectDashboardUI({ projectId }: ProjectDashboardProps) {
 
         {/* Timeline & Activity content - thêm sau nếu cần */}
         <TabsContent value="timeline">Timeline view placeholder</TabsContent>
-        <TabsContent value="activity">Full activity log placeholder</TabsContent>
+        <TabsContent value="activity">
+          Full activity log placeholder
+        </TabsContent>
       </Tabs>
     </div>
-  )
+  );
 }
 
 export default ProjectDashboardUI;
@@ -189,7 +211,7 @@ function StatCard({
           {/* Circular progress background */}
           <div
             className={cn(
-              "absolute inset-0 rounded-full border-8",
+              'absolute inset-0 rounded-full border-8',
               `border-${color}-500/20`
             )}
           />
@@ -198,16 +220,19 @@ function StatCard({
             className="absolute inset-0 rounded-full"
             style={{
               background: `conic-gradient(hsl(var(--${color}-foreground)) ${percent}%, transparent 0)`,
-              mask: "radial-gradient(farthest-side, transparent calc(100% - 8px), black calc(100% - 8px))",
-              WebkitMask: "radial-gradient(farthest-side, transparent calc(100% - 8px), black calc(100% - 8px))",
+              mask: 'radial-gradient(farthest-side, transparent calc(100% - 8px), black calc(100% - 8px))',
+              WebkitMask:
+                'radial-gradient(farthest-side, transparent calc(100% - 8px), black calc(100% - 8px))',
             }}
           />
           {/* Icon or count ở giữa */}
           <div className="absolute inset-0 flex items-center justify-center">
             {isMember ? (
               <Avatar className="h-8 w-8">
-                <AvatarFallback className={`bg-${color}-500/20 text-${color}-700`}>
-                  {value.replace("%", "")}
+                <AvatarFallback
+                  className={`bg-${color}-500/20 text-${color}-700`}
+                >
+                  {value.replace('%', '')}
                 </AvatarFallback>
               </Avatar>
             ) : (
@@ -219,7 +244,9 @@ function StatCard({
         <div>
           <p className="text-xl font-bold">{value}</p>
           <p className="text-sm font-medium text-muted-foreground">{title}</p>
-          {subValue && <p className="text-xs text-muted-foreground mt-1">{subValue}</p>}
+          {subValue && (
+            <p className="text-xs text-muted-foreground mt-1">{subValue}</p>
+          )}
         </div>
       </CardContent>
     </Card>

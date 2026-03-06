@@ -1,7 +1,7 @@
-import { useState } from "react";
-import { AxiosRequestConfig } from "axios";
-import axiosAuth from "@/axios/instant";
-import { toast } from "sonner";
+import { useState } from 'react';
+import { AxiosRequestConfig } from 'axios';
+import axiosAuth from '@/axios/instant';
+import { toast } from 'sonner';
 
 type ApiOptions<T> = {
   successMessage?: string;
@@ -39,7 +39,7 @@ export function useApi<T = any>() {
 
       const res = await axiosAuth(config);
 
-      if (config.method != "get") {
+      if (config.method != 'get') {
         if (options?.successMessage) {
           toast.success(options.successMessage);
         } else {
@@ -54,7 +54,7 @@ export function useApi<T = any>() {
       const message =
         error?.response?.data?.message ||
         options?.errorMessage ||
-        "Something went wrong";
+        'Something went wrong';
 
       toast.error(message);
 
