@@ -12,6 +12,8 @@ import { Progress } from "@/components/ui/progress";
 import { cn } from "@/libs/utils";
 import { TaskContributeChart } from "./pie-chart";
 import { CreateTaskDialog } from "./task/create-task-dialog";
+import { useApi } from "@/hooks/use-api";
+import { useWorkspaceStore } from "@/stores/workspace-store";
 
 // Mock data (thay bằng fetch từ API sau)
 const projectData = {
@@ -34,9 +36,9 @@ interface ProjectDashboardProps {
 }
 
 function ProjectDashboardUI({ projectId }: ProjectDashboardProps) {
-  const [isCreateTaskModelOpen, setIsCreateTaskModelOpen] = React.useState(false);
-  const data = projectData; // Thay bằng useQuery hoặc props real data
 
+  const [isCreateTaskModelOpen, setIsCreateTaskModelOpen] = React.useState(false);
+  const data = projectData;
   const handleOnTaskModelOpen = (open: boolean) => {
     setIsCreateTaskModelOpen(open);
   };
@@ -63,11 +65,11 @@ function ProjectDashboardUI({ projectId }: ProjectDashboardProps) {
             <Settings className="mr-2 h-4 w-4" />
             Settings
           </Button>
-          <Button  className="bg-primary hover:bg-primary/90" onClick={() => handleOnTaskModelOpen(true)}>
+          <Button className="bg-primary hover:bg-primary/90" onClick={() => handleOnTaskModelOpen(true)}>
             <Plus className="mr-2 h-4 w-4" />
             New Task
           </Button>
-          <CreateTaskDialog open={isCreateTaskModelOpen} onOpenChange={handleOnTaskModelOpen} />
+          <CreateTaskDialog projectId={projectId} open={isCreateTaskModelOpen} onOpenChange={handleOnTaskModelOpen} />
         </div>
       </div>
 

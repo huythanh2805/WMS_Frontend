@@ -31,8 +31,9 @@ import { CreateProjectDialog } from "./project-dashboard/create-project"
 import { CreateWorkSpaceDialog } from "./create-workspace-dialog"
 import { useApi } from "@/hooks/use-api"
 import { Project, Workspace } from "@/types"
-import { useUserStore } from "@/stores/userStore"
+import { useUserStore } from "@/stores/user-store"
 import { Skeleton } from "./ui/skeleton"
+import { useWorkspaceStore } from "@/stores/workspace-store"
 
 const data = {
   user: {
@@ -92,13 +93,14 @@ const data = {
 // ];
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const router = useRouter()
+  const { user } = useUserStore()
+  const {setWorkspaceId} = useWorkspaceStore()
   const { loading: isWorkSpaceLoading, request: workspaceRequest } = useApi()
   const { loading: isProjectLoading, request: projectRequest } = useApi()
-  const { user } = useUserStore()
   const [workspaces, setWorkspaces] = React.useState<Workspace[]>([])
   const [activeWorkspaceID, setActiveWorkspaceID] = React.useState<string | null>(null)
   const [projects, setProjects] = React.useState<Project[]>([])
-  const [activeProject, setActiveProject] = React.useState("proj-1");
+  const [activeProjectID, setActiveProjectID] = React.useState<string | null>(null);
   const [isCreateProjectModelOpen, setIsCreateProjectModalOpen] = React.useState(false);
   const [isCreateWorkspaceModelOpen, setIsCreateWorkspaceModalOpen] = React.useState(false);
   // Fetching workspaces
@@ -107,9 +109,9 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       url: "/workspace",
       method: "get"
     });
-    const result: Workspace[] = res.data.items
+    const result: Workspace[] = res?.data?.items
     // Set active-workspace and add isPersonal field
-    setActiveWorkspaceID(result[0].id)
+    setActiveWorkspaceID(result[0]?.id)
     setWorkspaces(result.map(item =>
       item.ownerId == user?.id ? { ...item, isPersonal: true } : item
     ))
@@ -120,7 +122,8 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       url: `/project/${activeWorkspaceID}`,
       method: "get"
     });
-    const result = res.data.items
+    const result = res?.data?.items
+    setActiveProjectID(result[0]?.id)
     setProjects(result)
   }
   React.useEffect(() => {
@@ -129,6 +132,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   React.useEffect(() => {
     if (activeWorkspaceID) {
       fetchProjects()
+      setWorkspaceId(activeWorkspaceID)
     }
   }, [activeWorkspaceID])
   const handleOnProjectModelOpen = (isOpen: boolean) => {
@@ -181,10 +185,10 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
             <Skeleton className="h-16 w-full bg-gray-200" />
             :
             <ProjectSwitcher
-              currentProjectId={activeProject}
+              currentProjectId={activeProjectID}
               projects={projects}
               onProjectChange={(id) => {
-                setActiveProject(id);
+                setActiveProjectID(id);
                 router.push(`/dashboard/${id}`);
               }}
               onCreateNew={() => handleOnProjectModelOpen(true)}

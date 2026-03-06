@@ -20,7 +20,7 @@ import Step2 from "@/components/steps/Step2";
 import Step3 from "@/components/steps/Step3";
 import { toast } from "sonner";
 import axiosAuth from "@/axios/instant";
-import { useUserStore } from "@/stores/userStore";
+import { useUserStore } from "@/stores/user-store";
 import { fetchUserInfomation } from "@/utils/auth";
 
 const steps = [
@@ -42,14 +42,14 @@ function getFieldsForStep(step: number): (keyof FullFormData)[] {
 }
 export default function MultiStepForm() {
     const router = useRouter();
-    const { user, setUser} = useUserStore();
+    const { user, setUser } = useUserStore();
     console.log("🚀 ~ file: page.tsx:34 ~ MultiStepForm ~ user:", user)
     const [currentStep, setCurrentStep] = useState(1);
     const [completedSteps, setCompletedSteps] = useState<number[]>([]);
     // when user login success with google, we will get user infomation in first loading
     useEffect(() => {
         if (!user) {
-            fetchUserInfomation({setUser});
+            fetchUserInfomation({ setUser });
         }
     }, [user]);
     // Mutil-step form

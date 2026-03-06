@@ -12,7 +12,7 @@ import {
 import data from "./data.json"
 import axiosAuth from "@/axios/instant"
 import { setAccessToken } from "@/libs/tokenStorage"
-import { useUserStore } from "@/stores/userStore"
+import { useUserStore } from "@/stores/user-store"
 import { useRouter } from "next/navigation"
 import { useEffect } from "react"
 import { fetchUserInfomation } from "@/utils/auth"

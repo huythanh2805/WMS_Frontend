@@ -9,39 +9,42 @@ import { cn } from "@/libs/utils";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
 import {
-  DialogFooter,
+    DialogFooter,
 } from "@/components/ui/dialog";
 import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
+    Form,
+    FormControl,
+    FormField,
+    FormItem,
+    FormLabel,
+    FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
+    Popover,
+    PopoverContent,
+    PopoverTrigger,
 } from "@/components/ui/popover";
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { taskSchame } from "@/libs/task-schame";
+import { WorkspaceMember } from "@/types";
+import { TaskPriority, TaskStatus } from "@/instants";
 type FormValues = z.infer<typeof taskSchame>;
 interface TaskDialogProps {
-  type: "create" | "edit"
-  form: UseFormReturn<FormValues>
-  onSubmit: (values: FormValues) => void
-  onOpenChange: (open: boolean) => void
+    type: "create" | "edit"
+    form: UseFormReturn<FormValues>
+    onSubmit: (values: FormValues) => void
+    onOpenChange: (open: boolean) => void
+    workspaceMembers?: WorkspaceMember[] | null
 }
-function TaskForm({ form, onSubmit, onOpenChange, type }: TaskDialogProps) {
+function TaskForm({ form, onSubmit, onOpenChange, type, workspaceMembers}: TaskDialogProps) {
     return (
         <div>
             <Form {...form}>
@@ -49,7 +52,7 @@ function TaskForm({ form, onSubmit, onOpenChange, type }: TaskDialogProps) {
                     {/* Task Name */}
                     <FormField
                         control={form.control}
-                        name="taskName"
+                        name="title"
                         render={({ field }) => (
                             <FormItem>
                                 <FormLabel>Task Name</FormLabel>
@@ -76,9 +79,13 @@ function TaskForm({ form, onSubmit, onOpenChange, type }: TaskDialogProps) {
                                             </SelectTrigger>
                                         </FormControl>
                                         <SelectContent>
-                                            <SelectItem value="Codewave">Codewave</SelectItem>
-                                            <SelectItem value="Lê">Lê</SelectItem>
-                                            <SelectItem value="Dev Team">Dev Team</SelectItem>
+                                            {
+                                                workspaceMembers && (
+                                                    workspaceMembers.map(member =>
+                                                        <SelectItem key={member.id} value={member.id}>{member?.user?.name}</SelectItem>
+                                                    )
+                                                )
+                                            }
                                         </SelectContent>
                                     </Select>
                                     <FormMessage />
@@ -99,9 +106,10 @@ function TaskForm({ form, onSubmit, onOpenChange, type }: TaskDialogProps) {
                                             </SelectTrigger>
                                         </FormControl>
                                         <SelectContent>
-                                            <SelectItem value="Low">Low</SelectItem>
-                                            <SelectItem value="Medium">Medium</SelectItem>
-                                            <SelectItem value="High">High</SelectItem>
+                                            <SelectItem value={TaskPriority.LOW}>Low</SelectItem>
+                                            <SelectItem value={TaskPriority.MEDIUM}>Medium</SelectItem>
+                                            <SelectItem value={TaskPriority.HIGH}>High</SelectItem>
+                                            <SelectItem value={TaskPriority.CRITICAL}>Critical</SelectItem>
                                         </SelectContent>
                                     </Select>
                                     <FormMessage />
@@ -197,10 +205,11 @@ function TaskForm({ form, onSubmit, onOpenChange, type }: TaskDialogProps) {
                                         </SelectTrigger>
                                     </FormControl>
                                     <SelectContent>
-                                        <SelectItem value="TODO">To Do</SelectItem>
-                                        <SelectItem value="IN PROGRESS">In Progress</SelectItem>
-                                        <SelectItem value="DONE">Done</SelectItem>
-                                        <SelectItem value="BLOCKED">Blocked</SelectItem>
+                                        <SelectItem value={TaskStatus.TODO}>To Do</SelectItem>
+                                        <SelectItem value={TaskStatus.IN_PROGRESS}>In Progress</SelectItem>
+                                        <SelectItem value={TaskStatus.IN_REVIEW}>In Review</SelectItem>
+                                        <SelectItem value={TaskStatus.BACKLOG}>Back Log</SelectItem>
+                                        <SelectItem value={TaskStatus.COMPLETED}>Done</SelectItem>
                                     </SelectContent>
                                 </Select>
                                 <FormMessage />

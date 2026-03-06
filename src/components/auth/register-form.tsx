@@ -10,7 +10,7 @@ import { toast } from "sonner";
 import axiosAuth from "@/axios/instant";
 import axios from "axios";
 import { User } from "@/types/user";
-import { useUserStore } from "@/stores/userStore";
+import { useUserStore } from "@/stores/user-store";
 
 interface RegisterFormProps {
   onSubmit?: (data: RegisterData) => Promise<void>;

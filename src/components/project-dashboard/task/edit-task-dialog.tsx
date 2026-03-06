@@ -28,7 +28,7 @@ export function EditTaskDialog({ open, onOpenChange }: EditTaskDialogProps) {
   const form = useForm<FormValues>({
     resolver: zodResolver(taskSchame),
     defaultValues: {
-      taskName: "TEST TASK",
+      title: "TEST TASK",
       assignee: "Codewave",
       priority: "Medium",
       startDate: new Date("2025-02-19"),
@@ -41,7 +41,7 @@ export function EditTaskDialog({ open, onOpenChange }: EditTaskDialogProps) {
   function onSubmit(values: FormValues) {
     console.log("Form submitted:", values);
     toast.success("Task updated", {
-      description: `Task "${values.taskName}" has been updated.`,
+      description: `Task "${values.title}" has been updated.`,
     });
     onOpenChange(false);
   }

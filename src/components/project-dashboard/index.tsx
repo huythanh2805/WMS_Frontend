@@ -1,15 +1,7 @@
-// components/project-dashboard.tsx
 "use client";
 
 import * as React from "react";
-import { Plus, Settings, Users, Clock, CheckCircle, AlertCircle } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Progress } from "@/components/ui/progress";
-import { cn } from "@/libs/utils";
 import ProjectDashboardUI from "./project-dashboard-ui";
 import TaskKanban from "./task-kanban";
 import TaskCalender from "./task-calender";
@@ -18,11 +10,9 @@ import TaskTimeline from "./task-timeline";
 
 interface ProjectDashboardProps {
   projectId: string;
-  // Có thể pass thêm data từ parent hoặc fetch ở đây
 }
 
 export function ProjectDashboard({ projectId }: ProjectDashboardProps) {
-
   return (
     <div className="flex flex-col h-full space-y-6 p-6 bg-background">
       {/* Tabs: Dashboard | Table | Kanban | Calender | Timeline */}

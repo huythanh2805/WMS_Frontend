@@ -1,3 +1,6 @@
+import { AccessLevel } from "@/instants"
+import { User } from "./user"
+
 export type Workspace = {
   id: string
   name: string
@@ -15,4 +18,13 @@ export type Project = {
   workspaceId: string
   createdAt: string
   updatedAt: string
+}
+export interface WorkspaceMember {
+  id: string;
+  userId: string;
+  user: User;
+  workspaceId: string;
+  accessLevel: AccessLevel;
+  createdAt: string;
+  updatedAt: string;
 }

@@ -13,6 +13,10 @@ import {
 import { toast } from "sonner";
 import { taskSchame } from "@/libs/task-schame";
 import TaskForm from "./task-form";
+import { useApi } from "@/hooks/use-api";
+import { useWorkspaceStore } from "@/stores/workspace-store";
+import React, { useState } from "react";
+import { WorkspaceMember } from "@/types";
 
 
 
@@ -21,20 +25,56 @@ type FormValues = z.infer<typeof taskSchame>;
 interface EditTaskDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  projectId: string
 }
 
-export function CreateTaskDialog({ open, onOpenChange }: EditTaskDialogProps) {
+export function CreateTaskDialog({ open, onOpenChange, projectId }: EditTaskDialogProps) {
+  const { workspaceId } = useWorkspaceStore()
+  const { loading, request } = useApi()
+  const [workspaceMembers, setWorkSpaceMembers] = useState<WorkspaceMember[] | null>(null)
   const form = useForm<FormValues>({
     resolver: zodResolver(taskSchame),
+    defaultValues: {
+      title: "",
+      assignee: "",
+      priority: "MEDIUM",
+      startDate: new Date(),
+      dueDate: new Date(),
+      status: "TODO",
+      description: "",
+    },
   });
 
-  function onSubmit(values: FormValues) {
-    console.log("Form submitted:", values);
-    toast.success("Task created", {
-      description: `Task "${values.taskName}" has been created.`,
-    });
+  async function onSubmit(values: FormValues) {
+    console.log("Form submitted:", { projectId, ...values });
+    if (!loading) {
+      await request({
+        url: `/task`,
+        method: 'post',
+        data: { projectId, ...values }
+      },
+        {
+          onSuccess: () => form.reset()
+        }
+      )
+    }
     onOpenChange(false);
   }
+
+  const fetchWorkspaceMembers = async () => {
+    if (!loading && workspaceId) {
+      const res = await request({
+        url: `/workspace-member/${workspaceId}`,
+        method: 'get'
+      })
+      const result: WorkspaceMember[] = res?.data?.items
+      setWorkSpaceMembers(result)
+    }
+  }
+  React.useEffect(() => {
+    fetchWorkspaceMembers()
+  }, [workspaceId])
+
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -46,7 +86,13 @@ export function CreateTaskDialog({ open, onOpenChange }: EditTaskDialogProps) {
           </DialogDescription>
         </DialogHeader>
 
-        <TaskForm form={form} onSubmit={onSubmit} onOpenChange={onOpenChange} type="create" />
+        <TaskForm
+          type="create"
+          form={form}
+          onSubmit={onSubmit}
+          onOpenChange={onOpenChange}
+          workspaceMembers={workspaceMembers}
+        />
       </DialogContent>
     </Dialog>
   );

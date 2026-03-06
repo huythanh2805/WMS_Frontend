@@ -23,7 +23,7 @@ type Project = {
 };
 
 interface ProjectSwitcherProps {
-  currentProjectId?: string;
+  currentProjectId?: string | null;
   projects: Project[];
   onProjectChange?: (projectId: string) => void;
   onCreateNew?: () => void;
