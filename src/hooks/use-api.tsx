@@ -2,11 +2,15 @@ import { useState } from 'react';
 import { AxiosRequestConfig } from 'axios';
 import axiosAuth from '@/axios/instant';
 import { toast } from 'sonner';
-
+export type ApiResponse<T> = {
+  success: boolean
+  message: string
+  data: T
+}
 type ApiOptions<T> = {
   successMessage?: string;
   errorMessage?: string;
-  onSuccess?: (data: T) => void;
+  onSuccess?: (data: ApiResponse<T>) => void;
 };
 /**
  * Call API request using axios
@@ -33,7 +37,7 @@ export function useApi<T = any>() {
   const request = async (
     config: AxiosRequestConfig,
     options?: ApiOptions<T>
-  ): Promise<T | null> => {
+  ): Promise<ApiResponse<T> | null> => {
     try {
       setLoading(true);
 

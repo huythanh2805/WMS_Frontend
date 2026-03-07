@@ -13,36 +13,92 @@ import {
 import { toast } from 'sonner';
 import { taskSchame } from '@/libs/task-schame';
 import TaskForm from './task-form';
+import { useEffect, useState } from 'react';
+import { useApi } from '@/hooks/use-api';
+import { Task, WorkspaceMember } from '@/types';
+import { useWorkspaceStore } from '@/stores/workspace-store';
+import { Skeleton } from '@/components/ui/skeleton';
 
 type FormValues = z.infer<typeof taskSchame>;
 
 interface EditTaskDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  // initialData?: Partial<FormValues>; // nếu muốn edit từ data có sẵn
+  taskId: string | null;
+  callBack?: (value: Task) => void
 }
 
-export function EditTaskDialog({ open, onOpenChange }: EditTaskDialogProps) {
+export function EditTaskDialog({ open, onOpenChange, taskId, callBack }: EditTaskDialogProps) {
+  const { workspaceId } = useWorkspaceStore();
+  const [workspaceMembers, setWorkSpaceMembers] = useState<
+    WorkspaceMember[] | null
+  >(null);
+  const { loading, request } = useApi()
+  const { loading: isFetchTaskLoading, request: isFetchTaskRequest } = useApi()
   const form = useForm<FormValues>({
     resolver: zodResolver(taskSchame),
     defaultValues: {
-      title: 'TEST TASK',
-      assigneeId: 'Codewave',
-      priority: 'Medium',
-      startDate: new Date('2025-02-19'),
-      dueDate: new Date('2025-02-22'),
-      status: 'IN PROGRESS',
-      description: 'Description',
+      title: '',
+      assigneeId: '',
+      priority: '',
+      startDate: new Date(),
+      dueDate: new Date(),
+      status: '',
+      description: '',
     },
   });
 
-  function onSubmit(values: FormValues) {
-    console.log('Form submitted:', values);
-    toast.success('Task updated', {
-      description: `Task "${values.title}" has been updated.`,
+  async function onSubmit(values: FormValues) {
+    await request({
+      url: `/task/${taskId}`,
+      method: 'patch',
+      data: { ...values }
+    }, {
+      onSuccess: (data) => {
+        if (callBack) callBack(data.data)
+      }
     });
     onOpenChange(false);
   }
+
+  // Fetching task to edit
+  const fetchTaskById = async () => {
+    await isFetchTaskRequest({
+      url: `/task/${taskId}`,
+      method: 'get',
+    }, {
+      onSuccess: (data) => {
+        const result = data?.data
+        form.reset({
+          title: result.title,
+          assigneeId: result.assigneeId,
+          priority: result.priority,
+          startDate: new Date(result.startDate),
+          dueDate: new Date(result.dueDate),
+          status: result.status,
+          description: result.description,
+        })
+      }
+    });
+  };
+  useEffect(() => {
+    if (!taskId) return;
+    fetchTaskById();
+  }, [taskId]);
+  // Fetch workspace member
+  const fetchWorkspaceMembers = async () => {
+    if (!loading && workspaceId) {
+      const res = await request({
+        url: `/workspace-member/${workspaceId}`,
+        method: 'get',
+      });
+      const result: WorkspaceMember[] = res?.data?.items;
+      setWorkSpaceMembers(result);
+    }
+  };
+  useEffect(() => {
+    fetchWorkspaceMembers();
+  }, [workspaceId]);
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -56,13 +112,18 @@ export function EditTaskDialog({ open, onOpenChange }: EditTaskDialogProps) {
             Make changes to the task here. Click Update Task when you're done.
           </DialogDescription>
         </DialogHeader>
-
-        <TaskForm
-          form={form}
-          onSubmit={onSubmit}
-          onOpenChange={onOpenChange}
-          type="edit"
-        />
+        {
+          !isFetchTaskLoading ? (
+            <TaskForm
+              form={form}
+              onSubmit={onSubmit}
+              onOpenChange={onOpenChange}
+              type="edit"
+              workspaceMembers={workspaceMembers}
+            />
+          ) :
+          <Skeleton className='w-full h-[85vh]' />
+        }
       </DialogContent>
     </Dialog>
   );

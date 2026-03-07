@@ -121,13 +121,18 @@ function DraggableRow<T extends { id: UniqueIdentifier }>({
     </TableRow>
   );
 }
-
+type TaskMetaType = {
+  onOpenUpdateDialogChange: (open: boolean, taskId: string) => void,
+  onOpenDeleteDialogChange: (open: boolean, taskId: string) => void,
+}
 export function DataTable<TData extends { id: UniqueIdentifier }>({
   data: initialData,
   columns,
+  meta
 }: {
   data: TData[];
   columns: ColumnDef<TData>[];
+  meta?: TaskMetaType;
 }) {
   const [data, setData] = React.useState(() => initialData);
   const [rowSelection, setRowSelection] = React.useState({});
@@ -156,6 +161,7 @@ export function DataTable<TData extends { id: UniqueIdentifier }>({
   const table = useReactTable({
     data,
     columns,
+    meta,
     state: {
       sorting,
       columnVisibility,
@@ -188,6 +194,10 @@ export function DataTable<TData extends { id: UniqueIdentifier }>({
       });
     }
   }
+  // Detect when data props changed
+  React.useEffect(() => {
+    setData(initialData);
+  }, [initialData]);
 
   return (
     <Tabs
@@ -285,9 +295,9 @@ export function DataTable<TData extends { id: UniqueIdentifier }>({
                           {header.isPlaceholder
                             ? null
                             : flexRender(
-                                header.column.columnDef.header,
-                                header.getContext()
-                              )}
+                              header.column.columnDef.header,
+                              header.getContext()
+                            )}
                         </TableHead>
                       );
                     })}

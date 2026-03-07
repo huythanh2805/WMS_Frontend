@@ -148,6 +148,7 @@ export default function EditTaskPage() {
             <EditTaskDialog
               open={isTaskEditOpen}
               onOpenChange={handleOnTaskEditOpen}
+              taskId={null}
             />
           </div>
         </div>

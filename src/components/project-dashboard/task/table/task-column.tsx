@@ -247,30 +247,41 @@ export const taskColumns: ColumnDef<TaskColumn>[] = [
   },
   {
     id: 'actions',
-    cell: () => (
-      <DropdownMenu>
-        <DropdownMenuTrigger asChild>
-          <Button
-            variant="ghost"
-            className="data-[state=open]:bg-muted text-muted-foreground flex size-8"
-            size="icon"
-          >
-            <IconDotsVertical />
-            <span className="sr-only">Open menu</span>
-          </Button>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent align="end" className="w-32">
-          <DropdownMenuItem>Edit</DropdownMenuItem>
-          <DropdownMenuItem>Make a copy</DropdownMenuItem>
-          <DropdownMenuItem>Favorite</DropdownMenuItem>
-          <DropdownMenuSeparator />
-          <DropdownMenuItem variant="destructive">Delete</DropdownMenuItem>
-        </DropdownMenuContent>
-      </DropdownMenu>
-    ),
+    cell: ({ row, table }) => {
+      const { onOpenUpdateDialogChange, onOpenDeleteDialogChange } = table.options.meta as {
+        onOpenUpdateDialogChange: (open: boolean, taskId?: string) => void;
+        onOpenDeleteDialogChange: (open: boolean, taskId?: string) => void;
+      };
+      return (
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button
+              variant="ghost"
+              className="data-[state=open]:bg-muted text-muted-foreground flex size-8"
+              size="icon"
+            >
+              <IconDotsVertical />
+              <span className="sr-only">Open menu</span>
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end" className="w-32">
+            <DropdownMenuItem
+              onClick={() => onOpenUpdateDialogChange?.(true, row.original.id)}
+            >
+              Edit
+            </DropdownMenuItem>
+            <DropdownMenuItem>Make a copy</DropdownMenuItem>
+            <DropdownMenuItem>Favorite</DropdownMenuItem>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem variant="destructive"
+              onClick={() => onOpenDeleteDialogChange?.(true, row.original.id)}
+            >Delete</DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      );
+    },
   },
 ];
-
 // export function TableCellViewer({ item }: {item: z.infer<typeof schema>}) {
 //   const isMobile = useIsMobile()
 
