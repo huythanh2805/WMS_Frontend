@@ -77,7 +77,7 @@ export default function Dasboard() {
         <div className="px-4 lg:px-6">
           <ChartAreaInteractive />
         </div>
-        <DataTable columns={columns} data={data} />
+        {/* <DataTable columns={columns} data={data} /> */}
       </div>
     </div>
   );

@@ -1,5 +1,4 @@
 'use client';
-
 import { useEffect, useState } from 'react';
 import { useEditor, EditorContent } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
@@ -34,6 +33,9 @@ import { useApi } from '@/hooks/use-api';
 import { Comment, Task } from '@/types';
 import { formatLocalDate } from '@/utils/format-date';
 import { useUserStore } from '@/stores/user-store';
+import { TaskFileUploader } from '@/components/task-file-uploader';
+import { UploadDropzone } from '@uploadthing/react';
+import { OurFileRouter } from '@/app/api/uploadthing/core';
 
 type TaskDetailProps = {
   taskId: string,
@@ -76,26 +78,26 @@ export default function TaskDetail({ taskId, projectId }: TaskDetailProps) {
   const addComment = async () => {
     if (!newComment.trim()) return;
     if (!user?.id || !projectId || !taskId) return;
-      await request({
-        url: "/comment",
-        method: "post",
-        data: {
-          content: newComment,
-          taskId,
-          projectId,
-          userId: user?.id
+    await request({
+      url: "/comment",
+      method: "post",
+      data: {
+        content: newComment,
+        taskId,
+        projectId,
+        userId: user?.id
+      }
+    }, {
+      onSuccess: (data) => {
+        if (data?.data) {
+          setComments([
+            ...comments,
+            data.data
+          ]);
         }
-      }, {
-        onSuccess: (data) => {
-          if (data?.data) {
-            setComments([
-              ...comments,
-              data.data
-            ]);
-          }
-          setNewComment('');
-        }
-      })
+        setNewComment('');
+      }
+    })
   };
 
   const handleSave = () => {
@@ -355,19 +357,7 @@ export default function TaskDetail({ taskId, projectId }: TaskDetailProps) {
             </Card>
 
             {/* Attachments */}
-            <Card>
-              <CardHeader>
-                <CardTitle>Attachments</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="h-40 border-2 border-dashed rounded-xl flex flex-col items-center justify-center text-muted-foreground">
-                  <p className="text-sm">No attachments found</p>
-                  <Button variant="link" className="mt-3 text-primary">
-                    + Add files
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
+            <TaskFileUploader taskId={taskId} />
           </div>
         </div>
 
