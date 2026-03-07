@@ -95,8 +95,10 @@ export function DragHandle({ id }: { id: number | string }) {
 
 function DraggableRow<T extends { id: UniqueIdentifier }>({
   row,
+  onClickDetail
 }: {
   row: Row<T>;
+  onClickDetail: (taskId: string) => void
 }) {
   const { transform, transition, setNodeRef, isDragging } = useSortable({
     id: row.original.id,
@@ -104,10 +106,11 @@ function DraggableRow<T extends { id: UniqueIdentifier }>({
 
   return (
     <TableRow
+      onClick={() => onClickDetail(row.original.id as string)}
       data-state={row.getIsSelected() && 'selected'}
       data-dragging={isDragging}
       ref={setNodeRef}
-      className="relative z-0 data-[dragging=true]:z-10 data-[dragging=true]:opacity-80"
+      className="relative z-0 data-[dragging=true]:z-10 data-[dragging=true]:opacity-80 cursor-pointer"
       style={{
         transform: CSS.Transform.toString(transform),
         transition: transition,
@@ -128,11 +131,13 @@ type TaskMetaType = {
 export function DataTable<TData extends { id: UniqueIdentifier }>({
   data: initialData,
   columns,
-  meta
+  onClickDetail,
+  meta,
 }: {
   data: TData[];
   columns: ColumnDef<TData>[];
   meta?: TaskMetaType;
+  onClickDetail: (taskId: string) => void
 }) {
   const [data, setData] = React.useState(() => initialData);
   const [rowSelection, setRowSelection] = React.useState({});
@@ -311,7 +316,7 @@ export function DataTable<TData extends { id: UniqueIdentifier }>({
                     strategy={verticalListSortingStrategy}
                   >
                     {table.getRowModel().rows.map((row) => (
-                      <DraggableRow key={row.id} row={row} />
+                      <DraggableRow key={row.id} row={row} onClickDetail={onClickDetail} />
                     ))}
                   </SortableContext>
                 ) : (

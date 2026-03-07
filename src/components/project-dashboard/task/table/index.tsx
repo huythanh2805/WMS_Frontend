@@ -6,12 +6,14 @@ import { TaskColumn, taskColumns } from './task-column';
 import { EditTaskDialog } from '../edit-task-dialog';
 import { Task } from '@/types';
 import { DeleteTaskDialog } from '../delete-task-dialog';
+import { useRouter } from 'next/navigation';
 
 type Props = {
   projectId: string;
 };
 
 function TaskTable({ projectId }: Props) {
+  const router = useRouter()
   const { loading, request } = useApi();
   const [isUpdateDialogOpen, setIsUpdateDialogOpen] = useState<boolean>(false);
   const [isDeleteDialogOpen, setisDeleteDialogOpen] = useState<boolean>(false);
@@ -63,10 +65,18 @@ function TaskTable({ projectId }: Props) {
       )
     })
   }
+  const handleClickDetail = (taskId: string) => {
+    router.push(`/dashboard/${projectId}/task/${taskId}`)
+  };
   return (
     <div>
       {!loading && tasks !== null && (
-        <DataTable<TaskColumn> key={tasks.length} columns={taskColumns} data={tasks} meta={{ onOpenUpdateDialogChange, onOpenDeleteDialogChange }} />
+        <DataTable<TaskColumn>
+          key={tasks.length}
+          columns={taskColumns} data={tasks}
+          meta={{ onOpenUpdateDialogChange, onOpenDeleteDialogChange }}
+          onClickDetail={handleClickDetail}
+        />
       )}
       <EditTaskDialog
         onOpenChange={onOpenUpdateDialogChange}
@@ -79,7 +89,7 @@ function TaskTable({ projectId }: Props) {
         onOpenChange={onOpenDeleteDialogChange}
         taskId={taskId}
         callBack={onDeleteTaskSuccess}
-        // taskTitle={}
+      // taskTitle={}
       />
     </div>
   );

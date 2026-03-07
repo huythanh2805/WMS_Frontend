@@ -55,6 +55,7 @@ export function useApi<T = any>() {
 
       return res.data;
     } catch (error: any) {
+      console.log({error})
       const message =
         error?.response?.data?.message ||
         options?.errorMessage ||
