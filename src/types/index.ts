@@ -49,7 +49,8 @@ export type Task = {
 };
 export type File = {
   id: string
-  name: string
+  name: string,
+  size: number,
   url: string
   taskId?: string | null
   projectId?: string | null

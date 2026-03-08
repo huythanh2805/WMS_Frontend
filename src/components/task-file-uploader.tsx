@@ -1,20 +1,28 @@
 "use client";
 
-import { useState, useCallback } from "react";
-import { useDropzone } from "@uploadthing/react"; // hoặc từ "react-dropzone" nếu muốn
+import { useState, useCallback, useEffect, useMemo } from "react";
+import { useDropzone } from "@uploadthing/react";
 import { generateClientDropzoneAccept } from "uploadthing/client";
-import { useUploadThing } from "@/utils/uploadthing"; // path của mày
+import { useUploadThing } from "@/utils/uploadthing";
 import { Button } from "./ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
-import { Trash2, Upload, FileIcon, ImageIcon, FileVideo, FileText } from "lucide-react"; // icons từ lucide-react (shadcn thường có)
+import { Trash2, FileIcon, FileVideo, FileText } from "lucide-react";
+import { getFileType } from "@/app/api/uploadthing/core";
+import { toast } from "sonner";
+import { FindAllResponse, useApi } from "@/hooks/use-api";
+import type { File as FileType } from "@/types"
+import Image from "next/image";
 
 type FileWithPreview = File & { preview: string; typeCategory: "image" | "pdf" | "video" | "doc" | "other" };
 
-export function TaskFileUploader({ taskId }: { taskId: string }) {
-  const [files, setFiles] = useState<FileWithPreview[]>([]);
+export function TaskFileUploader({ taskId, projectId }: { taskId: string, projectId: string }) {
+  const { loading, request } = useApi<FileType>()
+  const { loading: isFilesLoading, request: isFileRequest } = useApi<FindAllResponse<FileType[]>>()
+  const [filesPreview, setFilesPreview] = useState<FileWithPreview[]>([]);
+  const [files, setFiles] = useState<FileType[]>([])
   const [isUploading, setIsUploading] = useState(false);
 
-  const { startUpload, routeConfig } = useUploadThing("taskAttachment", {
+  const { startUpload } = useUploadThing("taskAttachment", {
     onBeforeUploadBegin: (files) => {
       console.log("Preparing to upload:", files);
       return files;
@@ -35,64 +43,101 @@ export function TaskFileUploader({ taskId }: { taskId: string }) {
 
       return Object.assign(file, { preview, typeCategory });
     });
-    setFiles((prev) => [...prev, ...newFiles]);
+    setFilesPreview((prev) => [...prev, ...newFiles]);
   }, []);
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop,
-    // accept: generateClientDropzoneAccept(routeConfig), // tự động từ router config
     accept: {
       "image/*": [],
       "application/pdf": [],
       "video/*": [],
-      // thêm tùy theo router config
     },
     disabled: isUploading,
   });
 
   const handleUpload = async () => {
-    if (files.length === 0) return;
+    if (filesPreview.length === 0) return;
 
     setIsUploading(true);
     try {
-      const res = await startUpload(files); // upload thật lên UploadThing
-
-      console.log("Uploaded:", res);
+      const res = await startUpload(filesPreview); // upload thật lên UploadThing
 
       // Gọi NestJS để lưu từng file vào Prisma
       for (const file of res || []) {
-        await fetch("/api/files", { // hoặc endpoint NestJS của mày
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            name: file.name,
-            url: file.url,
-            type: getFileType(file.type), // hàm map mimetype → enum FileType
+        await request({
+          url: "/file",
+          method: "post",
+          data: {
+            name: file?.name,
+            size: file?.size,
+            url: file?.url,
+            type: getFileType(file?.type), // hàm map mimetype → enum FileType
             taskId,
-          }),
+            projectId
+          }
+        }, {
+          onSuccess: (data) => {
+            setFiles([data.data, ...files])
+            setFilesPreview([])
+            toast.success("Upload và lưu thành công!");
+          }
         });
       }
-
-      // Clear sau upload thành công
-      setFiles([]);
-      alert("Upload và lưu thành công!");
     } catch (err) {
       console.error("Upload error:", err);
-      alert("Lỗi upload: " + (err as Error).message);
+      toast.error("Upload error: " + (err as Error).message);
     } finally {
       setIsUploading(false);
     }
   };
 
   const removeFile = (index: number) => {
-    setFiles((prev) => {
+    setFilesPreview((prev) => {
       const newFiles = [...prev];
-      URL.revokeObjectURL(newFiles[index].preview); // cleanup preview
+      URL.revokeObjectURL(newFiles[index].preview); 
       newFiles.splice(index, 1);
       return newFiles;
     });
   };
+  // Fetching files by taskId
+  const fetchFilesByTaskId = async () => {
+    await isFileRequest({
+      url: `/file/task/${taskId}`,
+      method: "get",
+    }, {
+      onSuccess: (data) => {
+        setFiles(data.data.items)
+      }
+    })
+  }
+  useEffect(() => {
+    if (taskId) fetchFilesByTaskId()
+  }, [taskId])
+  // Combine files in database and preview files into one array to rander UI
+  const allFiles = useMemo(() => {
+    const previewFiles = filesPreview.map((f) => ({
+      name: f.name,
+      size: f.size,
+      preview: f.preview,
+      typeCategory: f.typeCategory,
+      isUploaded: false,
+      isFilePreView: true
+    }))
+    const uploadedFiles = files.map((f) => ({
+      id: f.id,
+      name: f.name,
+      url: f.url,
+      preview: f.url,
+      typeCategory: f.type?.toLowerCase() || "file",
+      isUploaded: true,
+      size: f?.size || 0,
+      isFilePreView: false
 
+    }))
+
+    return [...previewFiles, ...uploadedFiles]
+  }, [filesPreview, files])
   return (
     <Card>
       <CardHeader>
@@ -113,13 +158,13 @@ export function TaskFileUploader({ taskId }: { taskId: string }) {
         </div>
 
         {/* Preview list */}
-        {files.length > 0 && (
+        {allFiles.length > 0 && (
           <div className="space-y-3">
-            {files.map((file, idx) => (
+            {allFiles.map((file, idx) => (
               <div key={idx} className="flex items-center justify-between p-3 border rounded-lg bg-muted/30">
                 <div className="flex items-center gap-3">
                   {file.typeCategory === "image" && file.preview ? (
-                    <img src={file.preview} alt={file.name} className="h-12 w-12 object-cover rounded" />
+                    <Image src={file?.preview} alt={file?.name} width={48} height={48} className="h-12 w-12 object-cover rounded" />
                   ) : file.typeCategory === "pdf" ? (
                     <FileText className="h-8 w-8 text-red-500" />
                   ) : file.typeCategory === "video" ? (
@@ -129,22 +174,26 @@ export function TaskFileUploader({ taskId }: { taskId: string }) {
                   )}
                   <div>
                     <p className="text-sm font-medium truncate max-w-[200px]">{file.name}</p>
-                    <p className="text-xs text-muted-foreground">{(file.size / 1024 / 1024).toFixed(2)} MB</p>
+                    <p className="text-xs text-muted-foreground">{((file?.size || 0) / 1024 / 1024).toFixed(2)} MB</p>
                   </div>
                 </div>
-                <Button variant="ghost" size="icon" onClick={() => removeFile(idx)} disabled={isUploading}>
-                  <Trash2 className="h-4 w-4" />
-                </Button>
+                {
+                  file.isFilePreView && (
+                    <Button variant="ghost" size="icon" onClick={() => removeFile(idx)} disabled={isUploading}>
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
+                  )
+                }
               </div>
             ))}
           </div>
         )}
 
         {/* Upload button (chỉ hiện khi có file) */}
-        {files.length > 0 && (
+        {filesPreview.length > 0 && (
           <div className="flex justify-end">
             <Button onClick={handleUpload} disabled={isUploading}>
-              {isUploading ? "Uploading..." : `Upload ${files.length} file${files.length > 1 ? "s" : ""}`}
+              {isUploading ? "Uploading..." : `Upload ${filesPreview.length} file${filesPreview.length > 1 ? "s" : ""}`}
             </Button>
           </div>
         )}
@@ -153,11 +202,3 @@ export function TaskFileUploader({ taskId }: { taskId: string }) {
   );
 }
 
-// Helper map mimetype → enum (dùng ở NestJS callback hoặc đây)
-function getFileType(mime: string): "PDF" | "IMAGE" | "DOCUMENT" | "VIDEO" | "OTHER" {
-  if (mime.startsWith("image/")) return "IMAGE";
-  if (mime === "application/pdf") return "PDF";
-  if (mime.startsWith("video/")) return "VIDEO";
-  if (mime.includes("word") || mime.includes("excel") || mime.includes("text")) return "DOCUMENT";
-  return "OTHER";
-}

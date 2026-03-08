@@ -357,7 +357,7 @@ export default function TaskDetail({ taskId, projectId }: TaskDetailProps) {
             </Card>
 
             {/* Attachments */}
-            <TaskFileUploader taskId={taskId} />
+            <TaskFileUploader taskId={taskId} projectId={projectId} />
           </div>
         </div>
 

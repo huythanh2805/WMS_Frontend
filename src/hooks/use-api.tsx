@@ -7,6 +7,10 @@ export type ApiResponse<T> = {
   message: string
   data: T
 }
+export type FindAllResponse<T> = {
+  count: number,
+  items: T
+}
 type ApiOptions<T> = {
   successMessage?: string;
   errorMessage?: string;
