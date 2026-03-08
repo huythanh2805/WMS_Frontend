@@ -10,7 +10,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
-import { taskSchame } from '@/libs/task-schame';
+import { taskSchame } from '@/lib/task-schame';
 import TaskForm from './task-form';
 import { useEffect, useState } from 'react';
 import { useApi } from '@/hooks/use-api';
@@ -28,10 +28,6 @@ interface EditTaskDialogProps {
 }
 
 export function EditTaskDialog({ open, onOpenChange, taskId, callBack }: EditTaskDialogProps) {
-  const { workspaceId } = useWorkspaceStore();
-  const [workspaceMembers, setWorkSpaceMembers] = useState<
-    WorkspaceMember[] | null
-  >(null);
   const { loading, request } = useApi()
   const { loading: isFetchTaskLoading, request: isFetchTaskRequest } = useApi()
   const form = useForm<FormValues>({
@@ -84,21 +80,6 @@ export function EditTaskDialog({ open, onOpenChange, taskId, callBack }: EditTas
     if (!taskId) return;
     fetchTaskById();
   }, [taskId]);
-  // Fetch workspace member
-  const fetchWorkspaceMembers = async () => {
-    if (!loading && workspaceId) {
-      const res = await request({
-        url: `/workspace-member/${workspaceId}`,
-        method: 'get',
-      });
-      const result: WorkspaceMember[] = res?.data?.items;
-      setWorkSpaceMembers(result);
-    }
-  };
-  useEffect(() => {
-    fetchWorkspaceMembers();
-  }, [workspaceId]);
-
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent
@@ -118,10 +99,9 @@ export function EditTaskDialog({ open, onOpenChange, taskId, callBack }: EditTas
               onSubmit={onSubmit}
               onOpenChange={onOpenChange}
               type="edit"
-              workspaceMembers={workspaceMembers}
             />
           ) :
-          <Skeleton className='w-full h-[85vh]' />
+            <Skeleton className='w-full h-[85vh]' />
         }
       </DialogContent>
     </Dialog>

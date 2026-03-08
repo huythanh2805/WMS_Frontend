@@ -6,7 +6,7 @@ import { useForm, FormProvider, SubmitHandler } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
-import { cn } from '@/libs/utils';
+import { cn } from '@/lib/utils';
 import { User, FolderPlus, MapPin, CheckCircle2 } from 'lucide-react';
 import {
   FullFormData,
@@ -14,7 +14,7 @@ import {
   step1Schema,
   step2Schema,
   step3Schema,
-} from '@/libs/onboarding-schema';
+} from '@/lib/onboarding-schema';
 import Step1 from '@/components/steps/Step1';
 import Step2 from '@/components/steps/Step2';
 import Step3 from '@/components/steps/Step3';

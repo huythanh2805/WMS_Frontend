@@ -4,7 +4,7 @@ import { DataTable, DragHandle } from '@/components/data-table';
 import { SectionCards } from '@/components/section-cards';
 import data from './data.json';
 import axiosAuth from '@/axios/instant';
-import { setAccessToken } from '@/libs/tokenStorage';
+import { setAccessToken } from '@/lib/tokenStorage';
 import { useUserStore } from '@/stores/user-store';
 import { useRouter } from 'next/navigation';
 import { useEffect } from 'react';

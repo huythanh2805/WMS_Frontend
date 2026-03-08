@@ -17,7 +17,7 @@ import {
   Redo,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { cn } from '@/libs/utils';
+import { cn } from '@/lib/utils';
 
 interface RichTextToolbarProps {
   editor: Editor | null;

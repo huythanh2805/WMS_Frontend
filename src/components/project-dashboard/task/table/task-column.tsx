@@ -29,7 +29,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 
-import { userSchema } from '@/libs/user-schame';
+import { userSchema } from '@/lib/user-schame';
 import { TaskPriority, TaskStatus } from '@/instants';
 import { formatLocalDate } from '@/utils/format-date';
 
@@ -266,7 +266,10 @@ export const taskColumns: ColumnDef<TaskColumn>[] = [
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end" className="w-32">
             <DropdownMenuItem
-              onClick={() => onOpenUpdateDialogChange?.(true, row.original.id)}
+              onClick={(e) => {
+                e.stopPropagation()
+                onOpenUpdateDialogChange?.(true, row.original.id)
+              }}
             >
               Edit
             </DropdownMenuItem>

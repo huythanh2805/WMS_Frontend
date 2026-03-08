@@ -3,7 +3,7 @@
 import * as React from 'react';
 import { ChevronsUpDown, Plus } from 'lucide-react';
 
-import { cn } from '@/libs/utils';
+import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
@@ -37,9 +37,7 @@ export function ProjectSwitcher({
   onCreateNew,
   className,
 }: ProjectSwitcherProps) {
-  const currentProject =
-    projects.find((p) => p.id === currentProjectId) || projects[0];
-
+  const currentProject = projects.find((p) => p.id === currentProjectId) || projects[0]
   return (
     <div className={cn('space-y-1', className)}>
       {/* Header giống như ảnh: PROJECTS + nút + */}

@@ -71,8 +71,19 @@ export type Documentation = {
   id: string
   content: string
   projectId: string
-  taskId: string
-  updatedBy?: string | null
+  taskId: string,
+  updatedById: string,
+  updatedBy?: User,
   createdAt: Date
   updatedAt: Date
+}
+export type Activity = {
+  id: string;
+  type: string;
+  description: string;
+  projectId: string;
+  userId: string;
+  project: Project,
+  createdAt: Date;
+  user: User,
 }

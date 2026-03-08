@@ -8,44 +8,57 @@ import {
   ChartTooltipContent,
 } from '@/components/ui/chart';
 import { Pie, PieChart, Cell, ResponsiveContainer, Legend } from 'recharts';
-
-// ... (giữ nguyên các import và mock data cũ)
-
-const projectData = {
-  // ... giữ nguyên
-  taskDistribution: [
-    { name: 'Completed', value: 45, fill: 'hsl(var(--chart-1))' }, // xanh lá
-    { name: 'In Progress', value: 30, fill: 'hsl(var(--chart-2))' }, // xanh dương
-    { name: 'Overdue', value: 15, fill: 'hsl(var(--chart-3))' }, // đỏ
-    { name: 'Not Started', value: 10, fill: 'hsl(var(--chart-4))' }, // xám
-  ],
-};
+import { ProjectOverview } from '@/types/custome-type';
 
 // Chart config (dùng theme variables của shadcn để màu đẹp theo light/dark mode)
 const chartConfig = {
   Completed: {
     label: 'Completed',
-    color: 'hsl(var(--chart-1))',
+    color: 'var(--chart-1)',
   },
   'In Progress': {
     label: 'In Progress',
-    color: 'hsl(var(--chart-2))',
+    color: 'var(--chart-2)',
   },
   Overdue: {
     label: 'Overdue',
-    color: 'hsl(var(--chart-3))',
+    color: 'var(--chart-3)',
   },
   'Not Started': {
     label: 'Not Started',
-    color: 'hsl(var(--chart-4))',
+    color: 'var(--chart-4)',
   },
 } satisfies ChartConfig;
 interface ProjectDashboardProps {
-  projectId: string;
+  projectOverview: ProjectOverview | null;
 }
-export function TaskContributeChart({ projectId }: ProjectDashboardProps) {
-  const data = projectData;
-
+export function TaskContributeChart({ projectOverview }: ProjectDashboardProps) {
+  const data = React.useMemo(() => {
+    return {
+      taskDistribution: [
+        {
+          name: 'Completed',
+          value: projectOverview?.taskCompleted?.count ?? 0,
+          fill: 'var(--chart-1)',
+        },
+        {
+          name: 'In Progress',
+          value: projectOverview?.taskInProgress?.count ?? 0,
+          fill: 'var(--chart-4)',
+        },
+        {
+          name: 'Overdue',
+          value: projectOverview?.taskOverdue?.count ?? 0,
+          fill: 'var(--chart-3)',
+        },
+        {
+          name: 'Not Started',
+          value: projectOverview?.taskNotStarted?.count ?? 0,
+          fill: 'var(--chart-2)',
+        },
+      ],
+    };
+  }, [projectOverview]);
   return (
     <div>
       {/* Task Distribution - Pie Chart thật */}
@@ -88,7 +101,7 @@ export function TaskContributeChart({ projectId }: ProjectDashboardProps) {
                           className="flex items-center gap-2"
                         >
                           <div
-                            className="h-3 w-3 rounded-full"
+                            className={`h-3 w-3 rounded-full ${entry.color}`}
                             style={{ backgroundColor: entry.color }}
                           />
                           <span className="text-sm">{entry.value}</span>

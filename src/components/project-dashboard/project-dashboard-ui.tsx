@@ -1,7 +1,6 @@
 // components/project-dashboard.tsx
 'use client';
 
-import * as React from 'react';
 import {
   Plus,
   Settings,
@@ -14,55 +13,115 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { cn } from '@/libs/utils';
+import { cn } from '@/lib/utils';
 import { TaskContributeChart } from './pie-chart';
 import { CreateTaskDialog } from './task/create-task-dialog';
-
-// Mock data (thay bằng fetch từ API sau)
-const projectData = {
-  id: 'proj-1',
-  name: 'First PROJECT',
-  avatar: '/avatar-f.png', // hoặc generate từ initials
-  stats: {
-    completed: { percent: 0, total: 0, done: 0 },
-    inProgress: { percent: 0, count: 0 },
-    overdue: { percent: 0, count: 0 },
-    members: { percent: 100, count: 1 },
-  },
-  recentActivity: [
-    {
-      icon: 'codwave',
-      text: 'Codwave created project "First PROJECT"',
-      time: 'less than a minute ago',
-    },
-  ],
-};
+import RecentActivities from './recent-activities';
+import { useApi } from '@/hooks/use-api';
+import { useEffect, useState } from 'react';
+import { useWorkspaceStore } from '@/stores/workspace-store';
+import { ProjectOverview } from '@/types/custome-type';
+import { RecentComments } from './recent-comments';
+import { AvatarWithFallback } from '../avatar-with-fallback';
+import { Task } from '@/types';
+import { TaskStatus } from '@/instants';
 
 interface ProjectDashboardProps {
   projectId: string;
 }
 
 function ProjectDashboardUI({ projectId }: ProjectDashboardProps) {
-  const [isCreateTaskModelOpen, setIsCreateTaskModelOpen] =
-    React.useState(false);
-  const data = projectData;
+  const [isCreateTaskModelOpen, setIsCreateTaskModelOpen] = useState(false);
+  const { workspaceId } = useWorkspaceStore()
+  const { loading, request } = useApi<ProjectOverview>()
+  const [projectOverview, setProjectOverview] = useState<ProjectOverview | null>(null)
+  // Fetching project overview
+  const fetchProjectOverview = async () => {
+    await request({
+      url: `/project/overview/${workspaceId}/${projectId}`,
+      method: 'get',
+    }, {
+      onSuccess: (data) => {
+        setProjectOverview(data.data)
+      }
+    });
+  };
+  useEffect(() => {
+    if (!projectId || !workspaceId) return;
+    fetchProjectOverview();
+  }, [projectId, workspaceId]);
+
   const handleOnTaskModelOpen = (open: boolean) => {
     setIsCreateTaskModelOpen(open);
   };
+  // After create new task => update UI
+  const onCreateTaskSuccess = (task: Task) => {
+    setProjectOverview((prev) => {
+      if (!prev) return prev;
+      const newOverview = { ...prev };
+      const now = new Date();
+      // If task overdue
+      if (
+        task.dueDate &&
+        new Date(task.dueDate) < now &&
+        task.status !== TaskStatus.COMPLETED
+      ) {
+        newOverview.taskOverdue.count += 1;
+      } else {
+        // if task is not overdue => check status
+        switch (task.status) {
+          case TaskStatus.COMPLETED:
+            newOverview.taskCompleted.count += 1;
+            break;
 
+          case TaskStatus.IN_PROGRESS:
+          case TaskStatus.IN_REVIEW:
+            newOverview.taskInProgress.count += 1;
+            break;
+
+          case TaskStatus.TODO:
+          case TaskStatus.BACKLOG:
+            newOverview.taskNotStarted.count += 1;
+            break;
+        }
+      }
+
+      const total =
+        newOverview.taskCompleted.count +
+        newOverview.taskInProgress.count +
+        newOverview.taskOverdue.count +
+        newOverview.taskNotStarted.count;
+
+      const calcPercent = (count: number) =>
+        total === 0 ? 0 : Math.round((count / total) * 100);
+
+      newOverview.taskCompleted.total = total;
+      newOverview.taskInProgress.total = total;
+      newOverview.taskOverdue.total = total;
+      newOverview.taskNotStarted.total = total;
+
+      newOverview.taskCompleted.percent = calcPercent(newOverview.taskCompleted.count);
+      newOverview.taskInProgress.percent = calcPercent(newOverview.taskInProgress.count);
+      newOverview.taskOverdue.percent = calcPercent(newOverview.taskOverdue.count);
+      newOverview.taskNotStarted.percent = calcPercent(newOverview.taskNotStarted.count);
+
+      return newOverview;
+    });
+
+
+  }
   return (
     <div className="flex flex-col h-full space-y-6 p-6 pt-0 bg-background">
       {/* Header: Project name + New Task + Settings */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <Avatar className="h-10 w-10 rounded-md border">
-            <AvatarImage src={data.avatar} alt={data.name} />
-            <AvatarFallback className="rounded-md bg-primary text-primary-foreground text-xl font-bold">
-              {data.name.charAt(0).toUpperCase()}
-            </AvatarFallback>
-          </Avatar>
+          <AvatarWithFallback
+            name={projectOverview?.project.name}
+            className='h-12 w-12 '
+            fallbackClassName='text-lg'
+          />
           <div>
-            <h1 className="text-2xl font-bold">{data.name}</h1>
+            <h1 className="text-2xl font-bold">{projectOverview?.project?.name}</h1>
             <p className="text-sm text-muted-foreground">
               Manage project tasks and activities
             </p>
@@ -85,6 +144,7 @@ function ProjectDashboardUI({ projectId }: ProjectDashboardProps) {
             projectId={projectId}
             open={isCreateTaskModelOpen}
             onOpenChange={handleOnTaskModelOpen}
+            callback={onCreateTaskSuccess}
           />
         </div>
       </div>
@@ -93,35 +153,35 @@ function ProjectDashboardUI({ projectId }: ProjectDashboardProps) {
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
         <StatCard
           title="Tasks Completed"
-          value={`${data.stats.completed.percent}%`}
-          subValue={`${data.stats.completed.done}/${data.stats.completed.total} tasks`}
+          value={`${projectOverview?.taskCompleted.percent ?? 0}%`}
+          subValue={`${projectOverview?.taskCompleted.count ?? 0}/${projectOverview?.taskCompleted.total ?? 0} tasks`}
           icon={<CheckCircle className="h-5 w-5 text-green-500" />}
           color="green"
-          percent={data.stats.completed.percent}
+          percent={projectOverview?.taskCompleted?.percent ?? 0}
         />
         <StatCard
           title="In Progress"
-          value={`${data.stats.inProgress.percent}%`}
-          subValue={`${data.stats.inProgress.count} tasks ongoing`}
+          value={`${projectOverview?.taskInProgress?.percent ?? 0}%`}
+          subValue={`${projectOverview?.taskInProgress.count ?? 0} tasks ongoing`}
           icon={<Clock className="h-5 w-5 text-blue-500" />}
           color="blue"
-          percent={data.stats.inProgress.percent}
+          percent={projectOverview?.taskInProgress?.percent ?? 0}
         />
         <StatCard
           title="Overdue"
-          value={`${data.stats.overdue.percent}%`}
-          subValue={`${data.stats.overdue.count} tasks overdue`}
+          value={`${projectOverview?.taskOverdue?.percent ?? 0}%`}
+          subValue={`${projectOverview?.taskOverdue?.count ?? 0} tasks overdue`}
           icon={<AlertCircle className="h-5 w-5 text-red-500" />}
           color="red"
-          percent={data.stats.overdue.percent}
+          percent={projectOverview?.taskOverdue?.percent ?? 0}
         />
         <StatCard
           title="Team Members"
-          value={`${data.stats.members.count} members`}
+          value={`${projectOverview?.members?.count ?? 0} members`}
           subValue=""
           icon={<Users className="h-5 w-5 text-purple-500" />}
           color="purple"
-          percent={data.stats.members.percent}
+          percent={projectOverview?.members?.percent ?? 0}
           isMember
         />
       </div>
@@ -137,41 +197,13 @@ function ProjectDashboardUI({ projectId }: ProjectDashboardProps) {
         <TabsContent value="overview" className="space-y-6">
           <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
             {/* Task Distribution - Placeholder cho chart (dùng Recharts hoặc shadcn chart sau) */}
-            <TaskContributeChart projectId={projectId} />
+            <TaskContributeChart projectOverview={projectOverview} />
 
             {/* Recent Activity */}
-            <Card>
-              <CardHeader>
-                <CardTitle>Recent Activity</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                {data.recentActivity.map((item, i) => (
-                  <div key={i} className="flex items-start gap-3">
-                    <Avatar className="h-8 w-8">
-                      <AvatarFallback className="bg-primary/10 text-primary text-xs">
-                        CW
-                      </AvatarFallback>
-                    </Avatar>
-                    <div>
-                      <p className="text-sm">{item.text}</p>
-                      <p className="text-xs text-muted-foreground">
-                        {item.time}
-                      </p>
-                    </div>
-                  </div>
-                ))}
-              </CardContent>
-            </Card>
+            <RecentActivities projectId={projectId} />
 
             {/* Recent Comments - Placeholder */}
-            <Card>
-              <CardHeader>
-                <CardTitle>Recent Comments</CardTitle>
-              </CardHeader>
-              <CardContent className="h-64 flex items-center justify-center bg-muted/30 rounded-md">
-                <p className="text-muted-foreground">No comments yet</p>
-              </CardContent>
-            </Card>
+            <RecentComments projectId={projectId} />
           </div>
         </TabsContent>
 
@@ -193,7 +225,7 @@ function StatCard({
   subValue,
   icon,
   color,
-  percent,
+  percent = 0,
   isMember = false,
 }: {
   title: string;
@@ -201,7 +233,7 @@ function StatCard({
   subValue: string;
   icon: React.ReactNode;
   color: string;
-  percent: number;
+  percent: number | null;
   isMember?: boolean;
 }) {
   return (

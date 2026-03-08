@@ -17,7 +17,7 @@ type FileWithPreview = File & { preview: string; typeCategory: "image" | "pdf" |
 
 export function TaskFileUploader({ taskId, projectId }: { taskId: string, projectId: string }) {
   const { loading, request } = useApi<FileType>()
-  const { loading: isFilesLoading, request: isFileRequest } = useApi<FindAllResponse<FileType[]>>()
+  const { loading: isFilesLoading, request: isFileRequest } = useApi<FindAllResponse<FileType>>()
   const [filesPreview, setFilesPreview] = useState<FileWithPreview[]>([]);
   const [files, setFiles] = useState<FileType[]>([])
   const [isUploading, setIsUploading] = useState(false);

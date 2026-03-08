@@ -14,7 +14,7 @@ import {
 import { Separator } from '@/components/ui/separator';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Trash2, Mail, Eye, Save } from 'lucide-react';
-import { cn } from '@/libs/utils';
+import { cn } from '@/lib/utils';
 
 // Fake data - sau này fetch từ API
 const members = [
@@ -71,7 +71,7 @@ export default function WorkspaceMembersPage() {
                       className={cn(
                         'flex items-center gap-4 p-4 rounded-lg border cursor-pointer transition-colors hover:bg-accent',
                         selectedMember?.id === member.id &&
-                          'border-primary bg-accent/50'
+                        'border-primary bg-accent/50'
                       )}
                     >
                       <Avatar className="h-12 w-12">

@@ -5,7 +5,7 @@ import { Calendar as CalendarIcon } from 'lucide-react';
 import { UseFormReturn } from 'react-hook-form';
 import * as z from 'zod';
 
-import { cn } from '@/libs/utils';
+import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { Calendar } from '@/components/ui/calendar';
 import { DialogFooter } from '@/components/ui/dialog';
@@ -31,23 +31,22 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
-import { taskSchame } from '@/libs/task-schame';
+import { taskSchame } from '@/lib/task-schame';
 import { WorkspaceMember } from '@/types';
 import { TaskPriority, TaskStatus } from '@/instants';
+import WorkspaceMemberSelect from '../workspace-member-select';
 type FormValues = z.infer<typeof taskSchame>;
 interface TaskDialogProps {
   type: 'create' | 'edit';
   form: UseFormReturn<FormValues>;
   onSubmit: (values: FormValues) => void;
   onOpenChange: (open: boolean) => void;
-  workspaceMembers?: WorkspaceMember[] | null;
 }
 function TaskForm({
   form,
   onSubmit,
   onOpenChange,
   type,
-  workspaceMembers,
 }: TaskDialogProps) {
   return (
     <div>
@@ -76,24 +75,7 @@ function TaskForm({
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>assignee</FormLabel>
-                  <Select
-                    onValueChange={field.onChange}
-                    defaultValue={field.value}
-                  >
-                    <FormControl>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select assignee" />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      {workspaceMembers &&
-                        workspaceMembers.map((member) => (
-                          <SelectItem key={member.id} value={member.userId}>
-                            {member?.user?.name}
-                          </SelectItem>
-                        ))}
-                    </SelectContent>
-                  </Select>
+                  <WorkspaceMemberSelect defaultValue={field.value} onValueChange={field.onChange} />
                   <FormMessage />
                 </FormItem>
               )}

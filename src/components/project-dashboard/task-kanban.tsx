@@ -17,7 +17,7 @@ import { CSS } from '@dnd-kit/utilities';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
-import { cn } from '@/libs/utils';
+import { cn } from '@/lib/utils';
 import KanbanColumn from './task-kanban-column';
 
 // Types

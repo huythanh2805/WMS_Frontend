@@ -13,7 +13,7 @@ import {
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { useRouter } from 'next/navigation';
-import { LoginData, loginSchema } from '@/libs/auth-schema';
+import { LoginData, loginSchema } from '@/lib/auth-schema';
 import { toast } from 'sonner';
 
 interface LoginFormProps {

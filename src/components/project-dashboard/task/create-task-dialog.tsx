@@ -10,12 +10,11 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
-import { taskSchame } from '@/libs/task-schame';
+import { taskSchame } from '@/lib/task-schame';
 import TaskForm from './task-form';
 import { useApi } from '@/hooks/use-api';
-import { useWorkspaceStore } from '@/stores/workspace-store';
 import React, { useState } from 'react';
-import { WorkspaceMember } from '@/types';
+import { Task } from '@/types';
 
 type FormValues = z.infer<typeof taskSchame>;
 
@@ -23,18 +22,16 @@ interface EditTaskDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   projectId: string;
+  callback?: (value: Task) => void
 }
 
 export function CreateTaskDialog({
   open,
   onOpenChange,
   projectId,
+  callback
 }: EditTaskDialogProps) {
-  const { workspaceId } = useWorkspaceStore();
-  const { loading, request } = useApi();
-  const [workspaceMembers, setWorkSpaceMembers] = useState<
-    WorkspaceMember[] | null
-  >(null);
+  const { loading, request } = useApi<Task>();
   const form = useForm<FormValues>({
     resolver: zodResolver(taskSchame),
     defaultValues: {
@@ -58,26 +55,15 @@ export function CreateTaskDialog({
           data: { projectId, ...values },
         },
         {
-          onSuccess: () => form.reset(),
+          onSuccess: (data) => {
+            if(callback) callback(data.data)
+            form.reset()
+          },
         }
       );
     }
     onOpenChange(false);
   }
-
-  const fetchWorkspaceMembers = async () => {
-    if (!loading && workspaceId) {
-      const res = await request({
-        url: `/workspace-member/${workspaceId}`,
-        method: 'get',
-      });
-      const result: WorkspaceMember[] = res?.data?.items;
-      setWorkSpaceMembers(result);
-    }
-  };
-  React.useEffect(() => {
-    fetchWorkspaceMembers();
-  }, [workspaceId]);
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -97,7 +83,6 @@ export function CreateTaskDialog({
           form={form}
           onSubmit={onSubmit}
           onOpenChange={onOpenChange}
-          workspaceMembers={workspaceMembers}
         />
       </DialogContent>
     </Dialog>

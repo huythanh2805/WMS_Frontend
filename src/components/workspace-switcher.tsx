@@ -3,7 +3,7 @@
 import * as React from 'react';
 import { ChevronsUpDown, Plus, Building2 } from 'lucide-react';
 
-import { cn } from '@/libs/utils';
+import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,

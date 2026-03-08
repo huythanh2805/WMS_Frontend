@@ -9,7 +9,7 @@ export type ApiResponse<T> = {
 }
 export type FindAllResponse<T> = {
   count: number,
-  items: T
+  items: T[]
 }
 type ApiOptions<T> = {
   successMessage?: string;
@@ -55,7 +55,7 @@ export function useApi<T = any>() {
         }
       }
 
-      options?.onSuccess?.(res.data);
+       options?.onSuccess?.(res.data);
 
       return res.data;
     } catch (error: any) {
