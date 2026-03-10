@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import {
   DndContext,
   closestCorners,
@@ -11,63 +11,25 @@ import {
   DragEndEvent,
   DragStartEvent,
   DragOverlay,
+  DragOverEvent,
 } from '@dnd-kit/core';
-import { useSortable } from '@dnd-kit/sortable';
+import { arrayMove, useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { cn } from '@/lib/utils';
 import KanbanColumn from './task-kanban-column';
+import { Task } from '@/types'; // Assume Task now includes position: number
+import useTask from '@/hooks/use-task';
+import { TaskStatus } from '@/instants';
 
-// Types
-type Status =
-  | 'TODO'
-  | 'IN_PROGRESS'
-  | 'COMPLETED'
-  | 'BLOCKED'
-  | 'BACKLOG'
-  | 'IN_REVIEW';
-
-export interface Task {
-  id: string;
-  title: string;
-  description: string;
-  project: string;
-  priority: 'LOW' | 'MEDIUM' | 'HIGH';
-  assigneeId: string;
-  status: Status;
-}
-
-const initialTasks: Task[] = [
-  {
-    id: 'task-1',
-    title: 'TEST TASK',
-    description: 'Description',
-    project: 'First PROJECT',
-    priority: 'MEDIUM',
-    assigneeId: 'Codwave',
-    status: 'TODO',
-  },
-  {
-    id: 'task-2',
-    title: 'TEST TASK 2',
-    description: 'Description',
-    project: 'First PROJECT',
-    priority: 'MEDIUM',
-    assigneeId: 'Codwave',
-    status: 'TODO',
-  },
-  // Thêm task khác để test: { id: "task-2", title: "Task 2", ..., status: "TODO" },
-];
-
-const columns: { id: Status; title: string; color: string }[] = [
-  { id: 'TODO', title: 'To Do', color: 'bg-blue-500' },
-  { id: 'IN_PROGRESS', title: 'In Progress', color: 'bg-amber-500' },
-  { id: 'COMPLETED', title: 'Completed', color: 'bg-emerald-500' },
-  { id: 'BLOCKED', title: 'Blocked', color: 'bg-red-500' },
-  { id: 'BACKLOG', title: 'Backlog', color: 'bg-purple-500' },
-  { id: 'IN_REVIEW', title: 'In Review', color: 'bg-pink-500' },
+const columns: { id: TaskStatus; title: string; color: string }[] = [
+  { id: TaskStatus.TODO, title: 'To Do', color: 'bg-blue-500' },
+  { id: TaskStatus.IN_PROGRESS, title: 'In Progress', color: 'bg-amber-500' },
+  { id: TaskStatus.COMPLETED, title: 'Completed', color: 'bg-emerald-500' },
+  { id: TaskStatus.BACKLOG, title: 'Backlog', color: 'bg-purple-500' },
+  { id: TaskStatus.IN_REVIEW, title: 'In Review', color: 'bg-pink-500' },
 ];
 
 export function TaskCard({ task }: { task: Task }) {
@@ -78,7 +40,13 @@ export function TaskCard({ task }: { task: Task }) {
     transform,
     transition,
     isDragging,
-  } = useSortable({ id: task.id });
+  } = useSortable({
+    id: task.id,
+    data: {
+      type: 'TASK',
+      task,
+    },
+  });
 
   const style = {
     transform: CSS.Transform.toString(transform),
@@ -109,7 +77,7 @@ export function TaskCard({ task }: { task: Task }) {
             variant="outline"
             className="bg-blue-50 text-blue-800 border-blue-200"
           >
-            {task.project}
+            {task?.project?.name}
           </Badge>
           <Badge
             variant="outline"
@@ -140,8 +108,12 @@ export function TaskCard({ task }: { task: Task }) {
   );
 }
 
-export default function KanbanPage() {
-  const [tasks, setTasks] = useState<Task[]>(initialTasks);
+type Props = {
+  projectId: string
+}
+
+export default function TaskKanban({ projectId }: Props) {
+  const { tasks, setTasks } = useTask({ projectId })
   const [activeTask, setActiveTask] = useState<Task | null>(null);
 
   const sensors = useSensors(
@@ -149,75 +121,87 @@ export default function KanbanPage() {
     useSensor(KeyboardSensor)
   );
 
+  const tasksByStatus = useMemo(() => {
+    return columns.reduce(
+      (acc, col) => {
+        acc[col.id] = tasks
+          .filter((t) => t.status === col.id)
+        // .sort((a, b) => a.position - b.position);
+        return acc;
+      },
+      {} as Record<TaskStatus, Task[]>
+    );
+  }, [tasks])
   const handleDragStart = (event: DragStartEvent) => {
-    const task = tasks.find((t) => t.id === event.active.id);
-    setActiveTask(task || null);
+    const { active } = event;
+
+    if (!active.data.current) return;
+
+    if (active.data.current.type === "TASK") {
+      setActiveTask(active.data.current.task);
+    }
   };
 
-  const handleDragEnd = (event: DragEndEvent) => {
+  const handleDragOver = (event: DragOverEvent) => {
     const { active, over } = event;
-    setActiveTask(null);
 
-    if (!over || active.id === over.id) {
-      // Drop tại chỗ hoặc over chính nó → không làm gì
-      return;
-    }
+    if (!over) return;
 
     const activeId = active.id as string;
     const overId = over.id as string;
 
-    setTasks((prevTasks) => {
-      const activeIndex = prevTasks.findIndex((t) => t.id === activeId);
-      if (activeIndex === -1) return prevTasks;
+    if (activeId === overId) return;
 
-      const newTasks = [...prevTasks];
-      const [movedTask] = newTasks.splice(activeIndex, 1);
+    const isActiveTask = active.data.current?.type === "TASK";
+    const isOverTask = over.data.current?.type === "TASK";
+    if (!isActiveTask) return;
+    // Dropping a task over another task
+    if (isActiveTask && isOverTask) {
+      setTasks((tasks) => {
+        const activeIndex = tasks.findIndex((t) => t.id === activeId);
+        const overIndex = tasks.findIndex((t) => t.id === overId);
 
-      let targetStatus = movedTask.status;
-      let insertAt = newTasks.length; // mặc định cuối list
+        const updatedTasks = [...tasks];
 
-      // 1. Nếu over là COLUMN ID → update status + append cuối column mới
-      const overColumn = columns.find((c) => c.id === overId);
-      if (overColumn) {
-        targetStatus = overColumn.id;
-      } else {
-        // 2. Nếu over là TASK ID → lấy status của task đó + insert trước nó
-        const overTaskIndex = newTasks.findIndex((t) => t.id === overId);
-        if (overTaskIndex !== -1) {
-          targetStatus = newTasks[overTaskIndex].status;
-          insertAt = overTaskIndex; // insert trước task over
-        }
-      }
+        // move task to the column of the target task
+        updatedTasks[activeIndex] = {
+          ...updatedTasks[activeIndex],
+          status: updatedTasks[overIndex].status,
+        };
+        return arrayMove(updatedTasks, activeIndex, overIndex);
+      });
+    }
 
-      // Update status nếu khác
-      if (movedTask.status !== targetStatus) {
-        movedTask.status = targetStatus;
-      }
+    const isOverColumn = over.data.current?.type === "COLUMN";
 
-      // Chèn vào vị trí mới
-      newTasks.splice(insertAt, 0, movedTask);
+    // Dropping a task over a column
+    if (isActiveTask && isOverColumn) {
+      setTasks((tasks) => {
+        const activeIndex = tasks.findIndex((t) => t.id === activeId);
 
-      return newTasks;
-    });
+        const updatedTasks = [...tasks];
+        updatedTasks[activeIndex] = {
+          ...updatedTasks[activeIndex],
+          status: over.data.current?.columnId,
+        };
+
+        return arrayMove(updatedTasks, activeIndex, activeIndex);
+      });
+    }
   };
-
-  const tasksByStatus = columns.reduce(
-    (acc, col) => {
-      acc[col.id] = tasks.filter((t) => t.status === col.id);
-      return acc;
-    },
-    {} as Record<Status, Task[]>
-  );
-
+  const handleDragEnd = (event: DragEndEvent) => {
+    setActiveTask(null);
+  };
   return (
     <div className="h-full bg-background p-4 md:p-6">
       <DndContext
         sensors={sensors}
         collisionDetection={closestCorners}
         onDragStart={handleDragStart}
+        onDragOver={handleDragOver}
         onDragEnd={handleDragEnd}
       >
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-6 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-6">
           {columns.map((column) => (
             <KanbanColumn
               key={column.id}

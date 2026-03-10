@@ -3,50 +3,53 @@
 import { useEffect, useRef } from 'react';
 import Gantt from 'frappe-gantt';
 import 'frappe-gantt/dist/frappe-gantt.css';
-interface Task {
+import useTask from '@/hooks/use-task';
+import { Task } from '@/types';
+interface GanttTask extends Task {
   id: string;
   name: string;
   start: string;
   end: string;
+  progress: number;
+  dependencies?: string;
+  custom_class?: string;
 }
-export default function TaskTimeline() {
+type Props = {
+  projectId: string
+}
+const toISOStringWithoutShift = (date: Date) => {
+  const offset = date.getTimezoneOffset()
+  const local = new Date(date.getTime() - offset * 60000)
+  const newDate = local.toISOString()
+  return new Date(newDate)
+}
+export default function TaskTimeline({ projectId }: Props) {
   const ganttRef = useRef<HTMLDivElement | null>(null);
-
+  const { tasks, updateTask } = useTask({ projectId })
   useEffect(() => {
+    if (!tasks || tasks.length == 0) return
     if (!ganttRef.current) return;
-
-    const tasks = [
-      {
-        id: '1',
-        name: 'TEST TASK',
-        start: '2026-02-19',
-        end: '2026-02-21',
-        progress: 20,
-      },
-      {
-        id: '2',
-        name: 'TEST TASK',
-        start: '2026-03-20',
-        end: '2026-03-22',
-        progress: 20,
-      },
-    ];
-
-    const gantt = new Gantt(ganttRef.current, tasks, {
+    const grantTasks = tasks.map(item => {
+      return { ...item, name: item.title, start: item.startDate, end: item.dueDate, progress: Math.floor(Math.random() * 100) + 1 }
+    })
+    const gantt = new Gantt(ganttRef.current, grantTasks, {
       view_mode: 'Day',
       date_format: 'YYYY-MM-DD',
-      on_date_change: (task: Task, start: any, end: any) => {
-        console.log('New start:', start);
-        console.log('New end:', end);
-
+      on_date_change: (task: GanttTask, start: any, end: any) => {
         // CALL API update DB here
+        console.log({ start: start.toLocaleDateString('sv-SE') })
+        updateTask({
+          ...task,
+          startDate: toISOStringWithoutShift(start),
+          dueDate: toISOStringWithoutShift(end),
+        })
       },
     });
 
     return () => {
       gantt?.clear();
     };
-  }, []);
+  }, [tasks]);
 
   return (
     <div className="p-6 overflow-hidden">

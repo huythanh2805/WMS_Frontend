@@ -5,35 +5,14 @@ import FullCalendar from '@fullcalendar/react';
 import dayGridPlugin from '@fullcalendar/daygrid';
 import interactionPlugin from '@fullcalendar/interaction';
 import { EventDropArg, EventInput } from '@fullcalendar/core';
+import useTask from '@/hooks/use-task';
+import { Task } from '@/types';
 
-interface Task {
-  id: string;
-  title: string;
-  description: string;
-  assigneeId: string;
-  priority: 'LOW' | 'MEDIUM' | 'HIGH';
-  dueDate: string; // yyyy-mm-dd
+type Props = {
+  projectId: string
 }
-
-export default function TaskCalender() {
-  const [tasks, setTasks] = useState<Task[]>([
-    {
-      id: '1',
-      title: 'TEST TASK',
-      description: 'Description',
-      assigneeId: 'Codewave',
-      priority: 'MEDIUM',
-      dueDate: '2026-03-21',
-    },
-    {
-      id: '2',
-      title: 'TEST TASK',
-      description: 'Description',
-      assigneeId: 'Codewave',
-      priority: 'MEDIUM',
-      dueDate: '2026-03-21',
-    },
-  ]);
+export default function TaskCalender({projectId} : Props) {
+  const {updateTask, tasks, setTasks} = useTask({projectId})
 
   const handleEventDrop = (info: EventDropArg) => {
     const date = info.event.start;
@@ -45,11 +24,13 @@ export default function TaskCalender() {
       date.getDate()
     );
 
-    const formatted = localDate.toLocaleDateString('sv-SE');
+    // const formatted = localDate.toLocaleDateString('sv-SE');
+    const formatted = new Date(localDate.toLocaleDateString('sv-SE'));
     // sv-SE => format yyyy-mm-dd chuẩn
-
+    const updatedTask = tasks.find(item => item.id === info.event.id)
+    updateTask({...updatedTask, dueDate: formatted })
     setTasks((prev) =>
-      prev.map((task) =>
+      prev.map((task) => 
         task.id === info.event.id ? { ...task, dueDate: formatted } : task
       )
     );
@@ -82,7 +63,7 @@ export default function TaskCalender() {
                 <div className="font-semibold">{eventInfo.event.title}</div>
                 {task && (
                   <div className="opacity-80">
-                    {task.assigneeId} • {task.priority}
+                    {task.assignedTo.name} • {task.priority}
                   </div>
                 )}
               </div>

@@ -5,7 +5,8 @@ import {
   verticalListSortingStrategy,
 } from '@dnd-kit/sortable';
 import { Badge } from '../ui/badge';
-import { Task, TaskCard } from './task-kanban';
+import { TaskCard } from './task-kanban';
+import { Task } from '@/types';
 
 export default function KanbanColumn({
   column,
@@ -16,6 +17,10 @@ export default function KanbanColumn({
 }) {
   const { setNodeRef, isOver } = useDroppable({
     id: column.id,
+    data: {
+    type: 'COLUMN',
+    columnId: column.id,
+  },
   });
 
   return (

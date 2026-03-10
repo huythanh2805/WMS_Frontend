@@ -29,13 +29,13 @@ export function ProjectDashboard({ projectId }: ProjectDashboardProps) {
           <ProjectDashboardUI projectId={projectId} />
         </TabsContent>
         <TabsContent value="kanban" className="space-y-6">
-          <TaskKanban />
+          <TaskKanban projectId={projectId} />
         </TabsContent>
         <TabsContent value="calendar">
-          <TaskCalender />
+          <TaskCalender projectId={projectId} />
         </TabsContent>
         <TabsContent value="timeline">
-          <TaskTimeline />
+          <TaskTimeline projectId={projectId} />
         </TabsContent>
         <TabsContent value="table">
           <TaskTable projectId={projectId} />
