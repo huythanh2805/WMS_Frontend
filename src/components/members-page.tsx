@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -15,6 +15,10 @@ import { Separator } from '@/components/ui/separator';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Trash2, Mail, Eye, Save } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import useWorkspaceMember from '@/hooks/use-workspace-member';
+import { AvatarWithFallback } from './avatar-with-fallback';
+import { WorkspaceMember } from '@/types';
+import { AccessLevel } from '@/enums';
 
 // Fake data - sau này fetch từ API
 const members = [
@@ -41,10 +45,11 @@ const members = [
 type Member = (typeof members)[number];
 
 export default function WorkspaceMembersPage() {
-  const [selectedMember, setSelectedMember] = useState<Member | null>(
-    members[1]
-  ); // mặc định chọn Codwave
-
+  const { workspaceMembers, setWorkSpaceMembers, loading } = useWorkspaceMember()
+  const [selectedMember, setSelectedMember] = useState<WorkspaceMember>();
+  useEffect(() => {
+    if (workspaceMembers) setSelectedMember(workspaceMembers[0])
+  }, [workspaceMembers])
   return (
     <div className="min-h-screen bg-background p-4 md:p-6 lg:p-8">
       <div className="mx-auto max-w-7xl">
@@ -64,7 +69,7 @@ export default function WorkspaceMembersPage() {
             <CardContent>
               <ScrollArea className="h-fit pr-4">
                 <div className="space-y-3">
-                  {members.map((member) => (
+                  {workspaceMembers && workspaceMembers.map((member) => (
                     <div
                       key={member.id}
                       onClick={() => setSelectedMember(member)}
@@ -74,30 +79,28 @@ export default function WorkspaceMembersPage() {
                         'border-primary bg-accent/50'
                       )}
                     >
-                      <Avatar className="h-12 w-12">
-                        <AvatarImage src={member.avatar} alt={member.name} />
-                        <AvatarFallback>{member.fallback}</AvatarFallback>
-                      </Avatar>
+                      <AvatarWithFallback avatar={member?.user?.image} />
 
-                      <div className="flex-1 min-w-0">
+                      <div className="flex-1 min-w?-0">
                         <div className="flex items-center gap-2">
                           <p className="text-sm font-medium truncate">
-                            {member.name}
+                            {member?.user?.name}
                           </p>
                           <Badge
                             variant={
-                              member.role === 'OWNER'
+                              member.accessLevel === AccessLevel.OWNER
                                 ? 'destructive'
                                 : 'secondary'
                             }
                             className="text-xs"
                           >
-                            {member.role}
+                            {member?.accessLevel}
                           </Badge>
                         </div>
                         <p className="text-xs text-muted-foreground">
-                          {member.projects} project
-                          {member.projects !== 1 ? 's' : ''}
+                          {/* {member.} project
+                          {member.projects !== 1 ? 's' : ''} */}
+                          0 project
                         </p>
                       </div>
                     </div>
@@ -114,18 +117,10 @@ export default function WorkspaceMembersPage() {
                 <CardHeader className="pb-4">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-4">
-                      <Avatar className="h-16 w-16">
-                        <AvatarImage
-                          src={selectedMember.avatar}
-                          alt={selectedMember.name}
-                        />
-                        <AvatarFallback className="text-xl">
-                          {selectedMember.fallback}
-                        </AvatarFallback>
-                      </Avatar>
+                      <AvatarWithFallback avatar={selectedMember?.user?.image} />
                       <div>
                         <CardTitle className="text-2xl">
-                          {selectedMember.name}
+                          {selectedMember.user.name}
                         </CardTitle>
                         <div className="flex items-center gap-2 mt-1">
                           <Badge
@@ -133,20 +128,23 @@ export default function WorkspaceMembersPage() {
                             className="flex items-center gap-1"
                           >
                             <Eye className="h-3 w-3" />
-                            {selectedMember.role}
+                            {selectedMember.accessLevel}
                           </Badge>
                           <p className="text-sm text-muted-foreground flex items-center gap-1">
                             <Mail className="h-4 w-4" />
-                            {selectedMember.email}
+                            {selectedMember.user.email}
                           </p>
                         </div>
                       </div>
                     </div>
 
-                    <Button variant="destructive" size="sm" className="gap-2">
-                      <Trash2 className="h-4 w-4" />
-                      Remove User
-                    </Button>
+                    {
+                      selectedMember.accessLevel !== AccessLevel.OWNER &&
+                      (<Button variant="destructive" size="sm" className="gap-2">
+                        <Trash2 className="h-4 w-4" />
+                        Remove User
+                      </Button>)
+                    }
                   </div>
                 </CardHeader>
 

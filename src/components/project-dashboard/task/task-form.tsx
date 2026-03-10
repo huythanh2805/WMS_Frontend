@@ -33,7 +33,7 @@ import {
 import { Textarea } from '@/components/ui/textarea';
 import { taskSchame } from '@/lib/task-schame';
 import { WorkspaceMember } from '@/types';
-import { TaskPriority, TaskStatus } from '@/instants';
+import { TaskPriority, TaskStatus } from '@/enums';
 import WorkspaceMemberSelect from '../workspace-member-select';
 type FormValues = z.infer<typeof taskSchame>;
 interface TaskDialogProps {

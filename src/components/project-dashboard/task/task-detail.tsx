@@ -26,7 +26,7 @@ import { CalendarIcon } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import Link from '@tiptap/extension-link';
 import { RichTextToolbar } from './tool-bar';
-import { priorityColor, statusColor, TaskPriority, TaskStatus } from '@/instants';
+import { priorityColor, statusColor, TaskPriority, TaskStatus } from '@/enums';
 import { useApi } from '@/hooks/use-api';
 import { Comment, Task } from '@/types';
 import { formatLocalDate } from '@/utils/format-date';

@@ -5,43 +5,26 @@ import { FormControl } from '../ui/form'
 import { useWorkspaceStore } from '@/stores/workspace-store'
 import { useApi } from '@/hooks/use-api'
 import { WorkspaceMember } from '@/types'
+import useWorkspaceMember from '@/hooks/use-workspace-member'
 
 type Props = {
     onValueChange: (value: string) => void,
     defaultValue: string | null
 }
 
-function WorkspaceMemberSelect({onValueChange, defaultValue}: Props) {
-    const { workspaceId } = useWorkspaceStore();
-    const { loading, request } = useApi();
-    const [workspaceMembers, setWorkSpaceMembers] = useState<
-        WorkspaceMember[] | null
-    >(null);
+function WorkspaceMemberSelect({ onValueChange, defaultValue }: Props) {
+    const { setWorkSpaceMembers, workspaceMembers } = useWorkspaceMember()
     const [value, setValue] = useState(defaultValue ?? "")
 
-
-    const fetchWorkspaceMembers = async () => {
-        if (!loading && workspaceId) {
-            const res = await request({
-                url: `/workspace-member/${workspaceId}`,
-                method: 'get',
-            });
-            const result: WorkspaceMember[] = res?.data?.items;
-            setWorkSpaceMembers(result);
-        }
-    };
-    React.useEffect(() => {
-        fetchWorkspaceMembers();
-    }, [workspaceId]);
     return (
         <div>
             <Select
                 onValueChange={onValueChange}
                 defaultValue={value}
             >
-                    <SelectTrigger>
-                        <SelectValue placeholder="Select assignee" />
-                    </SelectTrigger>
+                <SelectTrigger>
+                    <SelectValue placeholder="Select assignee" />
+                </SelectTrigger>
                 <SelectContent>
                     {workspaceMembers &&
                         workspaceMembers.map((member) => (

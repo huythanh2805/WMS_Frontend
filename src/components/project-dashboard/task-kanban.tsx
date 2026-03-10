@@ -22,7 +22,7 @@ import { cn } from '@/lib/utils';
 import KanbanColumn from './task-kanban-column';
 import { Task } from '@/types'; // Assume Task now includes position: number
 import useTask from '@/hooks/use-task';
-import { TaskStatus } from '@/instants';
+import { TaskStatus } from '@/enums';
 
 const columns: { id: TaskStatus; title: string; color: string }[] = [
   { id: TaskStatus.TODO, title: 'To Do', color: 'bg-blue-500' },

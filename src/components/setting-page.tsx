@@ -9,20 +9,48 @@ import { Label } from '@/components/ui/label';
 import { Separator } from '@/components/ui/separator';
 import { Card, CardContent } from '@/components/ui/card';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-
+import { useWorkspaceStore } from '@/stores/workspace-store';
+import { useApi } from '@/hooks/use-api';
+import { Invitation } from '@/types';
+import { debounce } from "lodash";
+import { toast } from 'sonner';
+import { Skeleton } from './ui/skeleton';
 export function WorkspaceSettings() {
+  const [invitedEmail, setInvitedEmail] = React.useState<string>("")
+  const { workspaceId } = useWorkspaceStore()
+  const { request, loading } = useApi<Invitation>()
   const inviteLink =
     'https://daily-tm.vercel.app/workspace-invite/e1e122a-fcc0-4704-a655-7a783de70c57/join/xxihUn';
 
   const handleCopy = () => {
     navigator.clipboard.writeText(inviteLink);
-    // toast.success("Link copied!");
+    toast.success("Link copied!");
   };
 
   const handleReset = () => {
     // logic reset link
   };
-
+  const handleInvitation = async () => {
+    await request({
+      url: '/invitation/send',
+      method: "post",
+      data: {
+        email: invitedEmail.trim(),
+        workspaceId
+      }
+    }, {
+      onSuccess: () => {
+        setInvitedEmail("")
+      }
+    })
+  }
+  const handleInvite = React.useCallback(
+    debounce(() => {
+      handleInvitation()
+    }, 300),
+    [invitedEmail]
+  );
+  console.log({ invitedEmail })
   return (
     <div className="mx-auto max-w-3xl space-y-10 py-10 px-4 sm:px-6 lg:px-8">
       {/* Section 1: General Settings */}
@@ -88,16 +116,22 @@ export function WorkspaceSettings() {
         </div>
 
         <div className="space-y-4">
-          <div className="flex gap-2">
-            <Input
-              placeholder="Enter email address"
-              className="h-10 flex-1 bg-background"
-            />
-            <Button variant="outline" size="sm" className="h-10 px-5">
-              <UserPlus className="mr-2 h-4 w-4" />
-              Invite
-            </Button>
-          </div>
+          {
+            workspaceId ?
+              <div className="flex gap-2">
+                <Input
+                  placeholder="Enter email address"
+                  className="h-10 flex-1 bg-background"
+                  value={invitedEmail}
+                  onChange={e => setInvitedEmail(e.target.value)}
+                />
+                <Button onClick={() => handleInvite()} variant="outline" size="sm" className="h-10 px-5">
+                  <UserPlus className="mr-2 h-4 w-4" />
+                  Invite
+                </Button>
+              </div>
+              : <Skeleton className='h-10 w-full' />
+          }
 
           <div className="space-y-2">
             <Label className="text-sm font-medium">Invite Link</Label>

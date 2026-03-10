@@ -46,21 +46,23 @@ export function AvatarWithFallback({
   // Tính fallback text: lấy 2 chữ cái đầu, uppercase
   const fallbackText = name
     ? name
-        .trim()
-        .split(/\s+/)
-        .map((word) => word[0])
-        .join('')
-        .toUpperCase()
-        .slice(0, 2)
+      .trim()
+      .split(/\s+/)
+      .map((word) => word[0])
+      .join('')
+      .toUpperCase()
+      .slice(0, 2)
     : 'U';
-
+  console.log({ avatar })
   return (
     <Avatar className={cn(size, className)}>
       {avatar && (
         <AvatarImage
           src={avatar}
           alt={name || 'Avatar'}
-          // fallback khi ảnh lỗi sẽ tự động chuyển sang AvatarFallback
+          onLoadingStatusChange={(status) => {
+            console.log(status)
+          }}
         />
       )}
       <AvatarFallback className={cn("text-xs font-medium", fallbackClassName)}>

@@ -24,7 +24,7 @@ import { ProjectOverview } from '@/types/custome-type';
 import { RecentComments } from './recent-comments';
 import { AvatarWithFallback } from '../avatar-with-fallback';
 import { Task } from '@/types';
-import { TaskStatus } from '@/instants';
+import { TaskStatus } from '@/enums';
 
 interface ProjectDashboardProps {
   projectId: string;

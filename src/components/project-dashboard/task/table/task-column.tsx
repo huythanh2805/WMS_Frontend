@@ -30,7 +30,7 @@ import {
 } from '@/components/ui/dropdown-menu';
 
 import { userSchema } from '@/lib/user-schame';
-import { TaskPriority, TaskStatus } from '@/instants';
+import { TaskPriority, TaskStatus } from '@/enums';
 import { formatLocalDate } from '@/utils/format-date';
 
 export const taskSchemaColumns = z.object({

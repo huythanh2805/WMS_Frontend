@@ -1,4 +1,4 @@
-import { AccessLevel, FileType, TaskPriority, TaskStatus } from '@/instants';
+import { AccessLevel, FileType, InvitationStatus, TaskPriority, TaskStatus } from '@/enums';
 import { User } from './user';
 
 export type Workspace = {
@@ -87,3 +87,16 @@ export type Activity = {
   createdAt: Date;
   user: User,
 }
+export type Invitation = {
+  id: string;
+  email: string;
+  token: string;
+  workspaceId: string;
+  invitedById: string;
+  accessLevel: AccessLevel;
+  status: InvitationStatus;
+  expiresAt: Date;
+  createdAt: Date;
+  workspace: Workspace;
+  invitedBy: User
+};

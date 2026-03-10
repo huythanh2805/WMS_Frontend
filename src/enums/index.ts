@@ -23,6 +23,11 @@ export enum FileType {
   VIDEO = "VIDEO",
   OTHER = "OTHER",
 }
+export enum InvitationStatus {
+  PENDING = "PENDING",
+  ACCEPTED = "ACCEPTED",
+  EXPIRED = "EXPIRED",
+}
 // Get color by enum
 export const statusColor = (status: TaskStatus) => {
   switch (status) {
