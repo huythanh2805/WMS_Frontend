@@ -43,7 +43,6 @@ export function WorkspaceSwitcher({
 
   const personalWorkspaces = workspaces.filter((ws) => ws.isPersonal);
   const teamWorkspaces = workspaces.filter((ws) => !ws.isPersonal);
-
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>

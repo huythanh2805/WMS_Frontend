@@ -53,19 +53,16 @@ export function AvatarWithFallback({
       .toUpperCase()
       .slice(0, 2)
     : 'U';
-  console.log({ avatar })
   return (
     <Avatar className={cn(size, className)}>
       {avatar && (
         <AvatarImage
           src={avatar}
           alt={name || 'Avatar'}
-          onLoadingStatusChange={(status) => {
-            console.log(status)
-          }}
+          onLoadingStatusChange={(status) => {}}
         />
       )}
-      <AvatarFallback className={cn("text-xs font-medium", fallbackClassName)}>
+      <AvatarFallback className={cn("text-sm font-medium bg-white/15", fallbackClassName)}>
         {fallbackText}
       </AvatarFallback>
     </Avatar>

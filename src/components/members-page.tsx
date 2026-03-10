@@ -19,30 +19,8 @@ import useWorkspaceMember from '@/hooks/use-workspace-member';
 import { AvatarWithFallback } from './avatar-with-fallback';
 import { WorkspaceMember } from '@/types';
 import { AccessLevel } from '@/enums';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select';
 
-// Fake data - sau này fetch từ API
-const members = [
-  {
-    id: 'akwasi',
-    name: 'Akwasi Asante',
-    email: 'akwasi@example.com',
-    role: 'OWNER',
-    projects: 0,
-    avatar: '/avatars/akwasi.jpg', // thay bằng URL thật hoặc placeholder
-    fallback: 'AA',
-  },
-  {
-    id: 'codewave',
-    name: 'Codwave',
-    email: 'codewavewithasante@gmail.com',
-    role: 'VIEWER',
-    projects: 0,
-    avatar: '/avatars/codewave.jpg',
-    fallback: 'C',
-  },
-];
-
-type Member = (typeof members)[number];
 
 export default function WorkspaceMembersPage() {
   const { workspaceMembers, setWorkSpaceMembers, loading } = useWorkspaceMember()
@@ -98,9 +76,8 @@ export default function WorkspaceMembersPage() {
                           </Badge>
                         </div>
                         <p className="text-xs text-muted-foreground">
-                          {/* {member.} project
-                          {member.projects !== 1 ? 's' : ''} */}
-                          0 project
+                          {member?.projectAccess?.length} project
+                          {member?.projectAccess?.length !== 1 ? 's' : ''}
                         </p>
                       </div>
                     </div>
@@ -151,21 +128,102 @@ export default function WorkspaceMembersPage() {
                 <Separator />
 
                 <CardContent className="pt-6 space-y-6">
-                  <div>
-                    <h3 className="text-lg font-medium mb-4">
+                  <div className="space-y-4">
+                    <h3 className="text-lg font-semibold tracking-tight">
                       Assigned Projects
                     </h3>
-                    <div className="border rounded-lg overflow-hidden">
-                      <div className="bg-muted px-4 py-3 font-medium grid grid-cols-[3fr_1fr] text-sm">
+
+                    <div className="border rounded-xl overflow-hidden bg-card shadow-sm">
+                      {/* Header */}
+                      <div className="bg-muted/50 px-6 py-3 grid grid-cols-[minmax(200px,3fr)_minmax(120px,1fr)_minmax(100px,1fr)] text-sm font-medium text-muted-foreground border-b">
                         <div>Project</div>
-                        <div>Access</div>
+                        <div className='px-2.5'>Access</div>
+                        <div className="text-center">Chức năng</div>
                       </div>
-                      <div className="divide-y">
-                        {/* Nếu có project thật thì map ở đây */}
-                        <div className="px-4 py-6 text-center text-muted-foreground">
-                          No projects assigned yet
-                        </div>
+
+                      {/* Body */}
+                      <div className="divide-y divide-border">
+                        {/* Trường hợp chưa có project */}
+                        {selectedMember.projectAccess.length === 0 ? (
+                          <div className="px-6 py-12 text-center">
+                            <p className="text-muted-foreground text-sm">
+                              No projects assigned yet
+                            </p>
+                            <p className="text-xs text-muted-foreground mt-1">
+                              Invite or assign projects to this member
+                            </p>
+                          </div>
+                        ) : (
+                          /* Map projects thật ở đây */
+                          selectedMember.projectAccess.map((project) => (
+                            <div
+                              key={project.id}
+                              className="px-6 py-4 grid grid-cols-[minmax(200px,3fr)_minmax(120px,1fr)_minmax(100px,auto)] items-center hover:bg-muted/30 transition-colors"
+                            >
+                              {/* Project name */}
+                              <div className="font-medium text-foreground truncate">
+                                {project?.project?.name}
+                              </div>
+
+                              {/* Access level */}
+                              <div>
+                                <span
+                                  className={cn(
+                                    "inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium",
+                                    project.accessLevel === "OWNER"
+                                      ? "bg-emerald-100 text-emerald-800 dark:bg-emerald-900/30 dark:text-emerald-400"
+                                      : project.accessLevel === AccessLevel.MEMBER
+                                        ? "bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400"
+                                        : project.accessLevel === AccessLevel.VIEWER
+                                          ? "bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-300"
+                                          : "bg-orange-100 text-orange-800 dark:bg-orange-900/30 dark:text-orange-400"
+                                  )}
+                                >
+                                  {project.accessLevel}
+                                </span>
+                              </div>
+
+                              {/* Chức năng - ô input hoặc nút */}
+                              <div className="flex justify-end items-center gap-2">
+                                {/* Ví dụ: input để thay đổi access level */}
+                                <Select
+                                  defaultValue={project.accessLevel}
+                                  onValueChange={(value) => {
+                                    if (value === "NONE") {
+                                      // Xử lý remove khỏi project
+                                      console.log("Remove user from project:", project.id);
+                                      // Gọi API remove hoặc mutate
+                                    } else {
+                                      // Xử lý thay đổi access level
+                                      console.log("Change access level to:", value, "for project:", project.id);
+                                      // Gọi API update ProjectAccess
+                                    }
+                                  }}
+                                >
+                                  <SelectTrigger className="h-8 w-[140px] text-sm">
+                                    <SelectValue placeholder="Select access" />
+                                  </SelectTrigger>
+                                  <SelectContent>
+                                    <SelectItem value={AccessLevel.OWNER}>Owner</SelectItem>
+                                    <SelectItem value={AccessLevel.MEMBER}>Member</SelectItem>
+                                    <SelectItem value={AccessLevel.VIEWER}>Viewer</SelectItem>
+                                    <SelectItem value="NONE" className="text-destructive font-medium">
+                                      Remove
+                                    </SelectItem>
+                                  </SelectContent>
+                                </Select>
+                              </div>
+                            </div>
+                          ))
+                        )}
                       </div>
+                    </div>
+
+                    {/* Optional: Nút Assign thêm project */}
+                    <div className="flex justify-end">
+                      <button className="inline-flex items-center justify-center rounded-md text-sm font-medium h-9 px-4 bg-primary text-primary-foreground hover:bg-primary/90 transition-colors">
+                        Assign Project
+                      </button>
                     </div>
                   </div>
 

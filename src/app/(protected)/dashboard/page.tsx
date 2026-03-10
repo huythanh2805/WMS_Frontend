@@ -61,15 +61,6 @@ import {
 import { Separator } from '@/components/ui/separator';
 
 export default function Dasboard() {
-  const router = useRouter();
-
-  // Handle logout
-  // const handleLogOut = async () => {
-  //   await axiosAuth.get('/auth/logout');
-  //   setAccessToken('');
-  //   setUser(null);
-  //   router.replace('/');
-  // };
   return (
     <div className="@container/main flex flex-1 flex-col gap-2">
       <div className="flex flex-col gap-4 py-4 md:gap-6 md:py-6">

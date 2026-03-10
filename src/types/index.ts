@@ -25,8 +25,19 @@ export type WorkspaceMember = {
   user: User;
   workspaceId: string;
   accessLevel: AccessLevel;
+  projectAccess: ProjectAccess[]
   createdAt: string;
   updatedAt: string;
+};
+export type ProjectAccess = {
+  id: string;
+  workspaceMemberId: string;
+  WorkspaceMember: WorkspaceMember,
+  projectId: string;
+  project: Project;
+  accessLevel: AccessLevel;
+  createdAt: Date;
+  updatedAt: Date;
 };
 export type Task = {
   id: string;

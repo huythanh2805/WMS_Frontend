@@ -43,7 +43,7 @@ const data = {
   navSecondary: [
     {
       title: 'Settings',
-      url: '#',
+      url: '/dashboard/settings',
       icon: IconSettings,
     },
     {
@@ -84,7 +84,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const router = useRouter();
   const params = useParams()
   const projectId = params.projectId as string
-  const { user } = useUserStore();
+  const { user, isLoading } = useUserStore();
   const { setWorkspaceId } = useWorkspaceStore();
   const { loading: isWorkSpaceLoading, request: workspaceRequest } = useApi();
   const { loading: isProjectLoading, request: projectRequest } = useApi<FindAllResponse<Project>>();
@@ -107,6 +107,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       method: 'get',
     });
     const result: Workspace[] = res?.data?.items;
+    if(!result) return 
     // Set active-workspace and add isPersonal field
     setActiveWorkspaceID(result[0]?.id);
     setWorkspaces(
@@ -117,7 +118,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   };
   React.useEffect(() => {
     fetchWorkSpaces();
-  }, []);
+  }, [user]);
   // Fetching projects
   const fetchProjects = async () => {
     const res = await projectRequest({
@@ -136,7 +137,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       fetchProjects();
       setWorkspaceId(activeWorkspaceID);
     }
-  }, [activeWorkspaceID]);
+  }, [activeWorkspaceID, user]);
   const handleOnProjectModelOpen = (isOpen: boolean) => {
     setIsCreateProjectModalOpen(isOpen);
   };
@@ -200,7 +201,9 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         <NavSecondary items={data.navSecondary} className="mt-auto" />
       </SidebarContent>
       <SidebarFooter>
-        <NavUser user={data.user} />
+        {
+          <NavUser user={user}/>
+        }
       </SidebarFooter>
     </Sidebar>
   );
