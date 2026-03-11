@@ -2,7 +2,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 
 // Danh sách route
-const publicRoutes = ['/', '/auth/login', '/auth/register'];
+const publicRoutes = ['/', '/auth/login', '/auth/register', "/auth/callback"];
 const protectedRoutes = ['/dashboard', '/onboarding', '/verify'];
 
 export async function middleware(request: NextRequest) {

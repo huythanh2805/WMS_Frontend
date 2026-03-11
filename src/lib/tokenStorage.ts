@@ -1,7 +1,7 @@
 // src/lib/tokenStorage.ts
 
 export const setAccessToken = (accessToken: string | null): void => {
-  document.cookie = `accessToken=${accessToken}; path=/; secure; sameSite=strict`;
+  document.cookie = `accessToken=${accessToken}; path=/; secure`;
 };
 
 export const getAccessToken = (): string | null | undefined => {
@@ -13,5 +13,5 @@ export const getAccessToken = (): string | null | undefined => {
 
 export const clearAccessToken = (): void => {
   document.cookie =
-    'accessToken=; path=/; expires=Thu, 01 Jan 1970 00:00:00 UTC; secure; sameSite=strict';
+    'accessToken=; path=/; expires=Thu, 01 Jan 1970 00:00:00 UTC; secure';
 };
