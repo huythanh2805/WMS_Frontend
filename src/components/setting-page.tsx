@@ -15,7 +15,10 @@ import { Invitation } from '@/types';
 import { debounce } from "lodash";
 import { toast } from 'sonner';
 import { Skeleton } from './ui/skeleton';
+import { RemoveAlrtDialog } from './remove-alert.dialog';
+import useWorkspace from '@/hooks/use-workspace';
 export function WorkspaceSettings() {
+  const { workspace } = useWorkspace()
   const [invitedEmail, setInvitedEmail] = React.useState<string>("")
   const { workspaceId } = useWorkspaceStore()
   const { request, loading } = useApi<Invitation>()
@@ -50,7 +53,10 @@ export function WorkspaceSettings() {
     }, 300),
     [invitedEmail]
   );
-  console.log({ invitedEmail })
+  // Delete workspace 
+  const handleDeleteWorkspace = async (workspaceId: string) => {
+    
+  }
   return (
     <div className="mx-auto max-w-3xl space-y-10 py-10 px-4 sm:px-6 lg:px-8">
       {/* Section 1: General Settings */}
@@ -174,10 +180,21 @@ export function WorkspaceSettings() {
             This action cannot be undone. All data will be permanently deleted.
           </AlertDescription>
           <div className="mt-4">
-            <Button variant="destructive" size="sm" className="h-9 px-5">
-              <Trash2 className="mr-2 h-4 w-4" />
-              Delete Workspace
-            </Button>
+            (
+            {
+              workspace && (
+                <RemoveAlrtDialog
+                  subject={workspace}
+                  getId={(workspace) => workspace.id}
+                  getName={(workspace) => workspace.name}
+                  title="Xóa Workspace"
+                  description={`Bạn có chắc muốn xóa ${workspace.name} không?`}
+                  confirmText="Xóa Workspace"
+                  onConfirm={handleDeleteWorkspace}
+                />
+              )
+            }
+            )
           </div>
         </Alert>
       </section>

@@ -33,6 +33,7 @@ import { Project, Workspace } from '@/types';
 import { useUserStore } from '@/stores/user-store';
 import { Skeleton } from './ui/skeleton';
 import { useWorkspaceStore } from '@/stores/workspace-store';
+import useWorkspace from '@/hooks/use-workspace';
 
 const data = {
   user: {
@@ -86,6 +87,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const projectId = params.projectId as string
   const { user, isLoading } = useUserStore();
   const { setWorkspaceId } = useWorkspaceStore();
+  const {fetchWorkspaces, workspaces, setWorkspaces} = useWorkspace()
   const { loading: isWorkSpaceLoading, request: workspaceRequest } = useApi();
   const { loading: isProjectLoading, request: projectRequest } = useApi<FindAllResponse<Project>>();
   const [workspaces, setWorkspaces] = React.useState<Workspace[]>([]);

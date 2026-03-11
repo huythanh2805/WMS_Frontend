@@ -17,17 +17,72 @@ import { Trash2, Mail, Eye, Save } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import useWorkspaceMember from '@/hooks/use-workspace-member';
 import { AvatarWithFallback } from './avatar-with-fallback';
-import { WorkspaceMember } from '@/types';
+import { ProjectAccess, WorkspaceMember } from '@/types';
 import { AccessLevel } from '@/enums';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select';
+import { useApi } from '@/hooks/use-api';
+import { AssignProjectDialog } from './assign-project-dialog';
+import { RemoveAlrtDialog } from './remove-alert.dialog';
 
 
 export default function WorkspaceMembersPage() {
+  const { request } = useApi<WorkspaceMember>()
   const { workspaceMembers, setWorkSpaceMembers, loading } = useWorkspaceMember()
   const [selectedMember, setSelectedMember] = useState<WorkspaceMember>();
   useEffect(() => {
-    if (workspaceMembers) setSelectedMember(workspaceMembers[0])
+    if (workspaceMembers && !selectedMember) setSelectedMember(workspaceMembers[0])
   }, [workspaceMembers])
+
+  const handleChangeAccessLevel = async (projectAccessId: string, accessLevel: AccessLevel) => {
+    await request({
+      url: "/project-access/" + projectAccessId,
+      method: "patch",
+      data: {
+        accessLevel
+      }
+    })
+  }
+  // Delete workspace-member 
+  const handleDeleteWorkspaceMember = async (workspaceMemberId: string) => {
+    await request({
+      url: "/workspace-member/" + workspaceMemberId,
+      method: "delete",
+    }, {
+      onSuccess: (data) => {
+        setWorkSpaceMembers(pre => {
+          if (!pre) return pre
+          return pre.filter(item => item.id != data.data.id)
+        })
+        if (workspaceMembers) setSelectedMember(workspaceMembers[0])
+      }
+    })
+  }
+  // Callback after assigning project
+  const onAssign = (projectAccess: ProjectAccess) => {
+    setWorkSpaceMembers((prev) => {
+      if (!prev) return prev;
+
+      const updated = prev.map((workspaceMember) =>
+        workspaceMember.id === projectAccess.workspaceMemberId
+          ? {
+            ...workspaceMember,
+            projectAccess: [
+              ...(workspaceMember.projectAccess ?? []),
+              projectAccess,
+            ],
+          }
+          : workspaceMember
+      );
+
+      const newSelected = updated.find(
+        (m) => m.id === projectAccess.workspaceMemberId
+      );
+
+      setSelectedMember(newSelected);
+
+      return updated;
+    });
+  };
   return (
     <div className="min-h-screen bg-background p-4 md:p-6 lg:p-8">
       <div className="mx-auto max-w-7xl">
@@ -117,10 +172,17 @@ export default function WorkspaceMembersPage() {
 
                     {
                       selectedMember.accessLevel !== AccessLevel.OWNER &&
-                      (<Button variant="destructive" size="sm" className="gap-2">
-                        <Trash2 className="h-4 w-4" />
-                        Remove User
-                      </Button>)
+                      (
+                        <RemoveAlrtDialog
+                          subject={selectedMember}
+                          getId={(selectedMember)=> selectedMember.id}
+                          getName={(selectedMember) => selectedMember?.user?.name as any}
+                          title="Xóa thành viên"
+                          description={`Bạn có chắc muốn xóa ${selectedMember.user.name} khỏi workspace?`}
+                          confirmText="Xóa thành viên"
+                          onConfirm={handleDeleteWorkspaceMember}
+                        />
+                      )
                     }
                   </div>
                 </CardHeader>
@@ -155,14 +217,14 @@ export default function WorkspaceMembersPage() {
                           </div>
                         ) : (
                           /* Map projects thật ở đây */
-                          selectedMember.projectAccess.map((project) => (
+                          selectedMember.projectAccess.map((projectAccess) => (
                             <div
-                              key={project.id}
+                              key={projectAccess.id}
                               className="px-6 py-4 grid grid-cols-[minmax(200px,3fr)_minmax(120px,1fr)_minmax(100px,auto)] items-center hover:bg-muted/30 transition-colors"
                             >
                               {/* Project name */}
                               <div className="font-medium text-foreground truncate">
-                                {project?.project?.name}
+                                {projectAccess?.project?.name}
                               </div>
 
                               {/* Access level */}
@@ -170,16 +232,16 @@ export default function WorkspaceMembersPage() {
                                 <span
                                   className={cn(
                                     "inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium",
-                                    project.accessLevel === "OWNER"
+                                    projectAccess.accessLevel === "OWNER"
                                       ? "bg-emerald-100 text-emerald-800 dark:bg-emerald-900/30 dark:text-emerald-400"
-                                      : project.accessLevel === AccessLevel.MEMBER
+                                      : projectAccess.accessLevel === AccessLevel.MEMBER
                                         ? "bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400"
-                                        : project.accessLevel === AccessLevel.VIEWER
+                                        : projectAccess.accessLevel === AccessLevel.VIEWER
                                           ? "bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-300"
                                           : "bg-orange-100 text-orange-800 dark:bg-orange-900/30 dark:text-orange-400"
                                   )}
                                 >
-                                  {project.accessLevel}
+                                  {projectAccess.accessLevel}
                                 </span>
                               </div>
 
@@ -187,18 +249,8 @@ export default function WorkspaceMembersPage() {
                               <div className="flex justify-end items-center gap-2">
                                 {/* Ví dụ: input để thay đổi access level */}
                                 <Select
-                                  defaultValue={project.accessLevel}
-                                  onValueChange={(value) => {
-                                    if (value === "NONE") {
-                                      // Xử lý remove khỏi project
-                                      console.log("Remove user from project:", project.id);
-                                      // Gọi API remove hoặc mutate
-                                    } else {
-                                      // Xử lý thay đổi access level
-                                      console.log("Change access level to:", value, "for project:", project.id);
-                                      // Gọi API update ProjectAccess
-                                    }
-                                  }}
+                                  defaultValue={projectAccess.accessLevel}
+                                  onValueChange={(value) => handleChangeAccessLevel(projectAccess.id, value as AccessLevel)}
                                 >
                                   <SelectTrigger className="h-8 w-[140px] text-sm">
                                     <SelectValue placeholder="Select access" />
@@ -207,9 +259,6 @@ export default function WorkspaceMembersPage() {
                                     <SelectItem value={AccessLevel.OWNER}>Owner</SelectItem>
                                     <SelectItem value={AccessLevel.MEMBER}>Member</SelectItem>
                                     <SelectItem value={AccessLevel.VIEWER}>Viewer</SelectItem>
-                                    <SelectItem value="NONE" className="text-destructive font-medium">
-                                      Remove
-                                    </SelectItem>
                                   </SelectContent>
                                 </Select>
                               </div>
@@ -221,20 +270,14 @@ export default function WorkspaceMembersPage() {
 
                     {/* Optional: Nút Assign thêm project */}
                     <div className="flex justify-end">
-                      <button className="inline-flex items-center justify-center rounded-md text-sm font-medium h-9 px-4 bg-primary text-primary-foreground hover:bg-primary/90 transition-colors">
-                        Assign Project
-                      </button>
+                      <AssignProjectDialog
+                        memberName={selectedMember?.user?.name || null}
+                        memberId={selectedMember.id}
+                        callbackify={onAssign}
+                      />
                     </div>
                   </div>
 
-                  {/* Có thể thêm các field edit role, permissions ở đây sau */}
-                </CardContent>
-
-                <CardContent className="flex justify-end pt-2">
-                  <Button className="gap-2">
-                    <Save className="h-4 w-4" />
-                    Save Changes
-                  </Button>
                 </CardContent>
               </Card>
             ) : (

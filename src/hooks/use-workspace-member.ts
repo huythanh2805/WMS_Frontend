@@ -11,7 +11,6 @@ function useWorkspaceMember() {
              WorkspaceMember[] | null
          >(null);
      
-     
          const fetchWorkspaceMembers = async () => {
              if (!loading && workspaceId) {
                  const res = await request({

@@ -8,6 +8,7 @@ export type Workspace = {
   inviteCode: string;
   inviteAt: string;
   ownerId: string;
+  projects: Project[],
   createdAt: string;
   updatedAt: string;
 };
