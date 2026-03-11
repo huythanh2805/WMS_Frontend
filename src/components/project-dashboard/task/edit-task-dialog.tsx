@@ -12,10 +12,9 @@ import {
 } from '@/components/ui/dialog';
 import { taskSchame } from '@/lib/task-schame';
 import TaskForm from './task-form';
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { useApi } from '@/hooks/use-api';
-import { Task, WorkspaceMember } from '@/types';
-import { useWorkspaceStore } from '@/stores/workspace-store';
+import { Task } from '@/types';
 import { Skeleton } from '@/components/ui/skeleton';
 
 type FormValues = z.infer<typeof taskSchame>;
@@ -24,12 +23,17 @@ interface EditTaskDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   taskId: string | null;
-  callBack?: (value: Task) => void
+  callBack?: (value: Task) => void;
 }
 
-export function EditTaskDialog({ open, onOpenChange, taskId, callBack }: EditTaskDialogProps) {
-  const { loading, request } = useApi()
-  const { loading: isFetchTaskLoading, request: isFetchTaskRequest } = useApi()
+export function EditTaskDialog({
+  open,
+  onOpenChange,
+  taskId,
+  callBack,
+}: EditTaskDialogProps) {
+  const { loading, request } = useApi();
+  const { loading: isFetchTaskLoading, request: isFetchTaskRequest } = useApi();
   const form = useForm<FormValues>({
     resolver: zodResolver(taskSchame),
     defaultValues: {
@@ -44,37 +48,43 @@ export function EditTaskDialog({ open, onOpenChange, taskId, callBack }: EditTas
   });
 
   async function onSubmit(values: FormValues) {
-    await request({
-      url: `/task/${taskId}`,
-      method: 'patch',
-      data: { ...values }
-    }, {
-      onSuccess: (data) => {
-        if (callBack) callBack(data.data)
+    await request(
+      {
+        url: `/task/${taskId}`,
+        method: 'patch',
+        data: { ...values },
+      },
+      {
+        onSuccess: (data) => {
+          if (callBack) callBack(data.data);
+        },
       }
-    });
+    );
     onOpenChange(false);
   }
 
   // Fetching task to edit
   const fetchTaskById = async () => {
-    await isFetchTaskRequest({
-      url: `/task/${taskId}`,
-      method: 'get',
-    }, {
-      onSuccess: (data) => {
-        const result = data?.data
-        form.reset({
-          title: result.title,
-          assigneeId: result.assigneeId,
-          priority: result.priority,
-          startDate: new Date(result.startDate),
-          dueDate: new Date(result.dueDate),
-          status: result.status,
-          description: result.description,
-        })
+    await isFetchTaskRequest(
+      {
+        url: `/task/${taskId}`,
+        method: 'get',
+      },
+      {
+        onSuccess: (data) => {
+          const result = data?.data;
+          form.reset({
+            title: result.title,
+            assigneeId: result.assigneeId,
+            priority: result.priority,
+            startDate: new Date(result.startDate),
+            dueDate: new Date(result.dueDate),
+            status: result.status,
+            description: result.description,
+          });
+        },
       }
-    });
+    );
   };
   useEffect(() => {
     if (!taskId) return;
@@ -92,17 +102,16 @@ export function EditTaskDialog({ open, onOpenChange, taskId, callBack }: EditTas
             Make changes to the task here. Click Update Task when you're done.
           </DialogDescription>
         </DialogHeader>
-        {
-          !isFetchTaskLoading ? (
-            <TaskForm
-              form={form}
-              onSubmit={onSubmit}
-              onOpenChange={onOpenChange}
-              type="edit"
-            />
-          ) :
-            <Skeleton className='w-full h-[85vh]' />
-        }
+        {!isFetchTaskLoading ? (
+          <TaskForm
+            form={form}
+            onSubmit={onSubmit}
+            onOpenChange={onOpenChange}
+            type="edit"
+          />
+        ) : (
+          <Skeleton className="w-full h-[85vh]" />
+        )}
       </DialogContent>
     </Dialog>
   );

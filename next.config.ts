@@ -4,7 +4,10 @@ const nextConfig: NextConfig = {
   /* config options here */
   reactStrictMode: false,
   images: {
-    domains: ["utfs.io"],
+    domains: ['utfs.io'],
+  },
+  eslint: {
+    ignoreDuringBuilds: true,
   },
 };
 

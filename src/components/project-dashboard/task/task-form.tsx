@@ -32,7 +32,6 @@ import {
 } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
 import { taskSchame } from '@/lib/task-schame';
-import { WorkspaceMember } from '@/types';
 import { TaskPriority, TaskStatus } from '@/enums';
 import WorkspaceMemberSelect from '../workspace-member-select';
 type FormValues = z.infer<typeof taskSchame>;
@@ -42,12 +41,7 @@ interface TaskDialogProps {
   onSubmit: (values: FormValues) => void;
   onOpenChange: (open: boolean) => void;
 }
-function TaskForm({
-  form,
-  onSubmit,
-  onOpenChange,
-  type,
-}: TaskDialogProps) {
+function TaskForm({ form, onSubmit, onOpenChange, type }: TaskDialogProps) {
   return (
     <div>
       <Form {...form}>
@@ -75,7 +69,10 @@ function TaskForm({
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>assignee</FormLabel>
-                  <WorkspaceMemberSelect defaultValue={field.value} onValueChange={field.onChange} />
+                  <WorkspaceMemberSelect
+                    defaultValue={field.value}
+                    onValueChange={field.onChange}
+                  />
                   <FormMessage />
                 </FormItem>
               )}

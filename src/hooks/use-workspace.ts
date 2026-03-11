@@ -1,7 +1,6 @@
-import React from "react";
-import { useApi } from "./use-api";
-import { Workspace } from "@/types";
-import { useWorkspaceStore } from "@/stores/workspace-store";
+import { useApi } from './use-api';
+import { Workspace } from '@/types';
+import { useWorkspaceStore } from '@/stores/workspace-store';
 
 function useWorkspace() {
   const { request, loading } = useApi();
@@ -20,7 +19,7 @@ function useWorkspace() {
     if (!loading && id) {
       await request({
         url: `/workspace/${id}`,
-        method: "delete",
+        method: 'delete',
       });
 
       removeWorkspace(id);
@@ -28,21 +27,20 @@ function useWorkspace() {
   };
 
   // update
-  const updateWorkSpaceById = async (
-    id: string,
-    data: Partial<Workspace>
-  ) => {
+  const updateWorkSpaceById = async (id: string, data: Partial<Workspace>) => {
     if (!loading && id) {
-       await request({
-        url: `/workspace/${id}`,
-        method: "patch",
-        data,
-      },{
-        onSuccess: (data) => {
+      await request(
+        {
+          url: `/workspace/${id}`,
+          method: 'patch',
+          data,
+        },
+        {
+          onSuccess: (data) => {
             updateWorkspace(id, data.data);
+          },
         }
-      });
-    
+      );
     }
   };
 
@@ -50,7 +48,7 @@ function useWorkspace() {
   const fetchWorkspaces = async () => {
     const res = await request({
       url: `/workspace`,
-      method: "get",
+      method: 'get',
     });
 
     const result: Workspace[] = res?.data?.items;
@@ -63,17 +61,20 @@ function useWorkspace() {
   // fetch by id
   const fetchWorkSpaceById = async (id: string): Promise<Workspace | null> => {
     if (!loading && id) {
-      const res = await request({
-        url: `/workspace/${id}`,
-        method: "get",
-      },{
-        onSuccess: (data) => {
+      const res = await request(
+        {
+          url: `/workspace/${id}`,
+          method: 'get',
+        },
+        {
+          onSuccess: (data) => {
             setWorkspace(data.data);
+          },
         }
-      });
-      return res?.data
+      );
+      return res?.data;
     }
-    return null
+    return null;
   };
 
   return {

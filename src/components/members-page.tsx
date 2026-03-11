@@ -1,9 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
 import {
   Card,
   CardContent,
@@ -13,50 +11,63 @@ import {
 } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { Trash2, Mail, Eye, Save } from 'lucide-react';
+import { Mail, Eye } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import useWorkspaceMember from '@/hooks/use-workspace-member';
 import { AvatarWithFallback } from './avatar-with-fallback';
 import { ProjectAccess, WorkspaceMember } from '@/types';
 import { AccessLevel } from '@/enums';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from './ui/select';
 import { useApi } from '@/hooks/use-api';
 import { AssignProjectDialog } from './assign-project-dialog';
 import { RemoveAlrtDialog } from './remove-alert.dialog';
 
-
 export default function WorkspaceMembersPage() {
-  const { request } = useApi<WorkspaceMember>()
-  const { workspaceMembers, setWorkSpaceMembers, loading } = useWorkspaceMember()
+  const { request } = useApi<WorkspaceMember>();
+  const { workspaceMembers, setWorkSpaceMembers, loading } =
+    useWorkspaceMember();
   const [selectedMember, setSelectedMember] = useState<WorkspaceMember>();
   useEffect(() => {
-    if (workspaceMembers && !selectedMember) setSelectedMember(workspaceMembers[0])
-  }, [workspaceMembers])
+    if (workspaceMembers && !selectedMember)
+      setSelectedMember(workspaceMembers[0]);
+  }, [workspaceMembers]);
 
-  const handleChangeAccessLevel = async (projectAccessId: string, accessLevel: AccessLevel) => {
+  const handleChangeAccessLevel = async (
+    projectAccessId: string,
+    accessLevel: AccessLevel
+  ) => {
     await request({
-      url: "/project-access/" + projectAccessId,
-      method: "patch",
+      url: '/project-access/' + projectAccessId,
+      method: 'patch',
       data: {
-        accessLevel
-      }
-    })
-  }
-  // Delete workspace-member 
+        accessLevel,
+      },
+    });
+  };
+  // Delete workspace-member
   const handleDeleteWorkspaceMember = async (workspaceMemberId: string) => {
-    await request({
-      url: "/workspace-member/" + workspaceMemberId,
-      method: "delete",
-    }, {
-      onSuccess: (data) => {
-        setWorkSpaceMembers(pre => {
-          if (!pre) return pre
-          return pre.filter(item => item.id != data.data.id)
-        })
-        if (workspaceMembers) setSelectedMember(workspaceMembers[0])
+    await request(
+      {
+        url: '/workspace-member/' + workspaceMemberId,
+        method: 'delete',
+      },
+      {
+        onSuccess: (data) => {
+          setWorkSpaceMembers((pre) => {
+            if (!pre) return pre;
+            return pre.filter((item) => item.id != data.data.id);
+          });
+          if (workspaceMembers) setSelectedMember(workspaceMembers[0]);
+        },
       }
-    })
-  }
+    );
+  };
   // Callback after assigning project
   const onAssign = (projectAccess: ProjectAccess) => {
     setWorkSpaceMembers((prev) => {
@@ -65,12 +76,12 @@ export default function WorkspaceMembersPage() {
       const updated = prev.map((workspaceMember) =>
         workspaceMember.id === projectAccess.workspaceMemberId
           ? {
-            ...workspaceMember,
-            projectAccess: [
-              ...(workspaceMember.projectAccess ?? []),
-              projectAccess,
-            ],
-          }
+              ...workspaceMember,
+              projectAccess: [
+                ...(workspaceMember.projectAccess ?? []),
+                projectAccess,
+              ],
+            }
           : workspaceMember
       );
 
@@ -102,41 +113,42 @@ export default function WorkspaceMembersPage() {
             <CardContent>
               <ScrollArea className="h-fit pr-4">
                 <div className="space-y-3">
-                  {workspaceMembers && workspaceMembers.map((member) => (
-                    <div
-                      key={member.id}
-                      onClick={() => setSelectedMember(member)}
-                      className={cn(
-                        'flex items-center gap-4 p-4 rounded-lg border cursor-pointer transition-colors hover:bg-accent',
-                        selectedMember?.id === member.id &&
-                        'border-primary bg-accent/50'
-                      )}
-                    >
-                      <AvatarWithFallback avatar={member?.user?.image} />
+                  {workspaceMembers &&
+                    workspaceMembers.map((member) => (
+                      <div
+                        key={member.id}
+                        onClick={() => setSelectedMember(member)}
+                        className={cn(
+                          'flex items-center gap-4 p-4 rounded-lg border cursor-pointer transition-colors hover:bg-accent',
+                          selectedMember?.id === member.id &&
+                            'border-primary bg-accent/50'
+                        )}
+                      >
+                        <AvatarWithFallback avatar={member?.user?.image} />
 
-                      <div className="flex-1 min-w?-0">
-                        <div className="flex items-center gap-2">
-                          <p className="text-sm font-medium truncate">
-                            {member?.user?.name}
+                        <div className="flex-1 min-w?-0">
+                          <div className="flex items-center gap-2">
+                            <p className="text-sm font-medium truncate">
+                              {member?.user?.name}
+                            </p>
+                            <Badge
+                              variant={
+                                member.accessLevel === AccessLevel.OWNER
+                                  ? 'destructive'
+                                  : 'secondary'
+                              }
+                              className="text-xs"
+                            >
+                              {member?.accessLevel}
+                            </Badge>
+                          </div>
+                          <p className="text-xs text-muted-foreground">
+                            {member?.projectAccess?.length} project
+                            {member?.projectAccess?.length !== 1 ? 's' : ''}
                           </p>
-                          <Badge
-                            variant={
-                              member.accessLevel === AccessLevel.OWNER
-                                ? 'destructive'
-                                : 'secondary'
-                            }
-                            className="text-xs"
-                          >
-                            {member?.accessLevel}
-                          </Badge>
                         </div>
-                        <p className="text-xs text-muted-foreground">
-                          {member?.projectAccess?.length} project
-                          {member?.projectAccess?.length !== 1 ? 's' : ''}
-                        </p>
                       </div>
-                    </div>
-                  ))}
+                    ))}
                 </div>
               </ScrollArea>
             </CardContent>
@@ -149,7 +161,9 @@ export default function WorkspaceMembersPage() {
                 <CardHeader className="pb-4">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-4">
-                      <AvatarWithFallback avatar={selectedMember?.user?.image} />
+                      <AvatarWithFallback
+                        avatar={selectedMember?.user?.image}
+                      />
                       <div>
                         <CardTitle className="text-2xl">
                           {selectedMember.user.name}
@@ -170,20 +184,19 @@ export default function WorkspaceMembersPage() {
                       </div>
                     </div>
 
-                    {
-                      selectedMember.accessLevel !== AccessLevel.OWNER &&
-                      (
-                        <RemoveAlrtDialog
-                          subject={selectedMember}
-                          getId={(selectedMember)=> selectedMember.id}
-                          getName={(selectedMember) => selectedMember?.user?.name as any}
-                          title="Xóa thành viên"
-                          description={`Bạn có chắc muốn xóa ${selectedMember.user.name} khỏi workspace?`}
-                          confirmText="Xóa thành viên"
-                          onConfirm={handleDeleteWorkspaceMember}
-                        />
-                      )
-                    }
+                    {selectedMember.accessLevel !== AccessLevel.OWNER && (
+                      <RemoveAlrtDialog
+                        subject={selectedMember}
+                        getId={(selectedMember) => selectedMember.id}
+                        getName={(selectedMember) =>
+                          selectedMember?.user?.name as any
+                        }
+                        title="Xóa thành viên"
+                        description={`Bạn có chắc muốn xóa ${selectedMember.user.name} khỏi workspace?`}
+                        confirmText="Xóa thành viên"
+                        onConfirm={handleDeleteWorkspaceMember}
+                      />
+                    )}
                   </div>
                 </CardHeader>
 
@@ -199,7 +212,7 @@ export default function WorkspaceMembersPage() {
                       {/* Header */}
                       <div className="bg-muted/50 px-6 py-3 grid grid-cols-[minmax(200px,3fr)_minmax(120px,1fr)_minmax(100px,1fr)] text-sm font-medium text-muted-foreground border-b">
                         <div>Project</div>
-                        <div className='px-2.5'>Access</div>
+                        <div className="px-2.5">Access</div>
                         <div className="text-center">Chức năng</div>
                       </div>
 
@@ -231,14 +244,16 @@ export default function WorkspaceMembersPage() {
                               <div>
                                 <span
                                   className={cn(
-                                    "inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium",
-                                    projectAccess.accessLevel === "OWNER"
-                                      ? "bg-emerald-100 text-emerald-800 dark:bg-emerald-900/30 dark:text-emerald-400"
-                                      : projectAccess.accessLevel === AccessLevel.MEMBER
-                                        ? "bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400"
-                                        : projectAccess.accessLevel === AccessLevel.VIEWER
-                                          ? "bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-300"
-                                          : "bg-orange-100 text-orange-800 dark:bg-orange-900/30 dark:text-orange-400"
+                                    'inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium',
+                                    projectAccess.accessLevel === 'OWNER'
+                                      ? 'bg-emerald-100 text-emerald-800 dark:bg-emerald-900/30 dark:text-emerald-400'
+                                      : projectAccess.accessLevel ===
+                                          AccessLevel.MEMBER
+                                        ? 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400'
+                                        : projectAccess.accessLevel ===
+                                            AccessLevel.VIEWER
+                                          ? 'bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-300'
+                                          : 'bg-orange-100 text-orange-800 dark:bg-orange-900/30 dark:text-orange-400'
                                   )}
                                 >
                                   {projectAccess.accessLevel}
@@ -250,15 +265,26 @@ export default function WorkspaceMembersPage() {
                                 {/* Ví dụ: input để thay đổi access level */}
                                 <Select
                                   defaultValue={projectAccess.accessLevel}
-                                  onValueChange={(value) => handleChangeAccessLevel(projectAccess.id, value as AccessLevel)}
+                                  onValueChange={(value) =>
+                                    handleChangeAccessLevel(
+                                      projectAccess.id,
+                                      value as AccessLevel
+                                    )
+                                  }
                                 >
                                   <SelectTrigger className="h-8 w-[140px] text-sm">
                                     <SelectValue placeholder="Select access" />
                                   </SelectTrigger>
                                   <SelectContent>
-                                    <SelectItem value={AccessLevel.OWNER}>Owner</SelectItem>
-                                    <SelectItem value={AccessLevel.MEMBER}>Member</SelectItem>
-                                    <SelectItem value={AccessLevel.VIEWER}>Viewer</SelectItem>
+                                    <SelectItem value={AccessLevel.OWNER}>
+                                      Owner
+                                    </SelectItem>
+                                    <SelectItem value={AccessLevel.MEMBER}>
+                                      Member
+                                    </SelectItem>
+                                    <SelectItem value={AccessLevel.VIEWER}>
+                                      Viewer
+                                    </SelectItem>
                                   </SelectContent>
                                 </Select>
                               </div>
@@ -277,7 +303,6 @@ export default function WorkspaceMembersPage() {
                       />
                     </div>
                   </div>
-
                 </CardContent>
               </Card>
             ) : (

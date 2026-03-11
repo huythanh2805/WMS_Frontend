@@ -13,7 +13,7 @@ type Props = {
 };
 
 function TaskTable({ projectId }: Props) {
-  const router = useRouter()
+  const router = useRouter();
   const { loading, request } = useApi();
   const [isUpdateDialogOpen, setIsUpdateDialogOpen] = useState<boolean>(false);
   const [isDeleteDialogOpen, setisDeleteDialogOpen] = useState<boolean>(false);
@@ -48,32 +48,31 @@ function TaskTable({ projectId }: Props) {
   };
   // Callback when update successfully
   const onUpdateTaskSuccess = (value: Task) => {
-    setTasks(tasks => {
-      if (!tasks) return tasks
+    setTasks((tasks) => {
+      if (!tasks) return tasks;
 
-      return tasks.map(task =>
+      return tasks.map((task) =>
         task.id === value.id ? { ...task, ...value } : task
-      )
-    })
-  }
+      );
+    });
+  };
   const onDeleteTaskSuccess = (taskId: string) => {
-    setTasks(tasks => {
-      if (!tasks) return tasks
+    setTasks((tasks) => {
+      if (!tasks) return tasks;
 
-      return tasks.filter(task =>
-        task.id !== taskId
-      )
-    })
-  }
+      return tasks.filter((task) => task.id !== taskId);
+    });
+  };
   const handleClickDetail = (taskId: string) => {
-    router.push(`/dashboard/${projectId}/task/${taskId}`)
+    router.push(`/dashboard/${projectId}/task/${taskId}`);
   };
   return (
     <div>
       {!loading && tasks !== null && (
         <DataTable<TaskColumn>
           key={tasks.length}
-          columns={taskColumns} data={tasks}
+          columns={taskColumns}
+          data={tasks}
           meta={{ onOpenUpdateDialogChange, onOpenDeleteDialogChange }}
           onClickDetail={handleClickDetail}
         />
@@ -89,7 +88,7 @@ function TaskTable({ projectId }: Props) {
         onOpenChange={onOpenDeleteDialogChange}
         taskId={taskId}
         callBack={onDeleteTaskSuccess}
-      // taskTitle={}
+        // taskTitle={}
       />
     </div>
   );

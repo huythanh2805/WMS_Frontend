@@ -44,7 +44,7 @@ export function CreateWorkSpaceDialog({
   open,
   onOpenChange,
   fetchWorkSpace,
-  setActiveWorkspaceID
+  setActiveWorkspaceID,
 }: CreateProjectDialogProps) {
   const { loading, request } = useApi<Workspace>();
   const form = useForm<FormValues>({
@@ -67,7 +67,7 @@ export function CreateWorkSpaceDialog({
           onSuccess: async (data) => {
             console.log('Create Success', data);
             await fetchWorkSpace();
-            setActiveWorkspaceID(data.data.id)
+            setActiveWorkspaceID(data.data.id);
           },
         }
       );

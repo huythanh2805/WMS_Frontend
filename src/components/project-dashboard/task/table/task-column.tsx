@@ -248,7 +248,8 @@ export const taskColumns: ColumnDef<TaskColumn>[] = [
   {
     id: 'actions',
     cell: ({ row, table }) => {
-      const { onOpenUpdateDialogChange, onOpenDeleteDialogChange } = table.options.meta as {
+      const { onOpenUpdateDialogChange, onOpenDeleteDialogChange } = table
+        .options.meta as {
         onOpenUpdateDialogChange: (open: boolean, taskId?: string) => void;
         onOpenDeleteDialogChange: (open: boolean, taskId?: string) => void;
       };
@@ -267,8 +268,8 @@ export const taskColumns: ColumnDef<TaskColumn>[] = [
           <DropdownMenuContent align="end" className="w-32">
             <DropdownMenuItem
               onClick={(e) => {
-                e.stopPropagation()
-                onOpenUpdateDialogChange?.(true, row.original.id)
+                e.stopPropagation();
+                onOpenUpdateDialogChange?.(true, row.original.id);
               }}
             >
               Edit
@@ -276,9 +277,12 @@ export const taskColumns: ColumnDef<TaskColumn>[] = [
             <DropdownMenuItem>Make a copy</DropdownMenuItem>
             <DropdownMenuItem>Favorite</DropdownMenuItem>
             <DropdownMenuSeparator />
-            <DropdownMenuItem variant="destructive"
+            <DropdownMenuItem
+              variant="destructive"
               onClick={() => onOpenDeleteDialogChange?.(true, row.original.id)}
-            >Delete</DropdownMenuItem>
+            >
+              Delete
+            </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
       );

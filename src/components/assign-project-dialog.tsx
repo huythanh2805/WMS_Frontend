@@ -1,7 +1,7 @@
-"use client";
+'use client';
 
-import { useState } from "react";
-import { Button } from "@/components/ui/button";
+import { useState } from 'react';
+import { Button } from '@/components/ui/button';
 import {
   Dialog,
   DialogContent,
@@ -10,7 +10,7 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "@/components/ui/dialog";
+} from '@/components/ui/dialog';
 import {
   Command,
   CommandEmpty,
@@ -18,17 +18,17 @@ import {
   CommandInput,
   CommandItem,
   CommandList,
-} from "@/components/ui/command";
+} from '@/components/ui/command';
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
-} from "@/components/ui/popover";
-import { Check, ChevronsUpDown } from "lucide-react";
-import { cn } from "@/lib/utils";
-import useWorkspace from "@/hooks/use-workspace";
-import { Project, ProjectAccess } from "@/types";
-import { useApi } from "@/hooks/use-api";
+} from '@/components/ui/popover';
+import { Check, ChevronsUpDown } from 'lucide-react';
+import { cn } from '@/lib/utils';
+import useWorkspace from '@/hooks/use-workspace';
+import { Project, ProjectAccess } from '@/types';
+import { useApi } from '@/hooks/use-api';
 
 interface AssignProjectButtonProps {
   memberName: string | null;
@@ -38,29 +38,31 @@ interface AssignProjectButtonProps {
 export function AssignProjectDialog({
   memberName,
   memberId,
-  callbackify
+  callbackify,
 }: AssignProjectButtonProps) {
   const [open, setOpen] = useState(false);
-  const { request } = useApi<ProjectAccess>()
+  const { request } = useApi<ProjectAccess>();
   const [openCombobox, setOpenCombobox] = useState(false);
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
-  const { workspace } = useWorkspace()
+  const { workspace } = useWorkspace();
   const handleAssign = async () => {
     if (!selectedProject) return;
 
-    await request({
-      url: "/project-access/",
-      method: "post",
-      data: {
-        workspaceMemberId: memberId,
-        projectId: selectedProject.id
+    await request(
+      {
+        url: '/project-access/',
+        method: 'post',
+        data: {
+          workspaceMemberId: memberId,
+          projectId: selectedProject.id,
+        },
+      },
+      {
+        onSuccess: (data) => {
+          if (callbackify) callbackify(data.data);
+        },
       }
-    }, {
-      onSuccess: (data) => {
-        if (callbackify)
-          callbackify(data.data)
-      }
-    })
+    );
 
     // Reset và đóng dialog
     setSelectedProject(null);
@@ -91,9 +93,7 @@ export function AssignProjectDialog({
                 aria-expanded={openCombobox}
                 className="w-full justify-between"
               >
-                {selectedProject
-                  ? selectedProject.name
-                  : "Chọn project..."}
+                {selectedProject ? selectedProject.name : 'Chọn project...'}
                 <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
               </Button>
             </PopoverTrigger>
@@ -110,19 +110,17 @@ export function AssignProjectDialog({
                         value={project.name}
                         onSelect={() => {
                           setSelectedProject(
-                            selectedProject?.id === project.id
-                              ? null
-                              : project
+                            selectedProject?.id === project.id ? null : project
                           );
                           setOpenCombobox(false);
                         }}
                       >
                         <Check
                           className={cn(
-                            "mr-2 h-4 w-4",
+                            'mr-2 h-4 w-4',
                             selectedProject?.id === project.id
-                              ? "opacity-100"
-                              : "opacity-0"
+                              ? 'opacity-100'
+                              : 'opacity-0'
                           )}
                         />
                         {project.name}
@@ -142,7 +140,7 @@ export function AssignProjectDialog({
           <Button
             onClick={handleAssign}
             disabled={!selectedProject}
-            className={cn(!selectedProject && "opacity-70 cursor-not-allowed")}
+            className={cn(!selectedProject && 'opacity-70 cursor-not-allowed')}
           >
             Gán project
           </Button>

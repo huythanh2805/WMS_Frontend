@@ -46,12 +46,12 @@ export function AvatarWithFallback({
   // Tính fallback text: lấy 2 chữ cái đầu, uppercase
   const fallbackText = name
     ? name
-      .trim()
-      .split(/\s+/)
-      .map((word) => word[0])
-      .join('')
-      .toUpperCase()
-      .slice(0, 2)
+        .trim()
+        .split(/\s+/)
+        .map((word) => word[0])
+        .join('')
+        .toUpperCase()
+        .slice(0, 2)
     : 'U';
   return (
     <Avatar className={cn(size, className)}>
@@ -62,7 +62,9 @@ export function AvatarWithFallback({
           onLoadingStatusChange={(status) => {}}
         />
       )}
-      <AvatarFallback className={cn("text-sm font-medium bg-white/15", fallbackClassName)}>
+      <AvatarFallback
+        className={cn('text-sm font-medium bg-white/15', fallbackClassName)}
+      >
         {fallbackText}
       </AvatarFallback>
     </Avatar>

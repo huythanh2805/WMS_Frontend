@@ -32,7 +32,9 @@ const chartConfig = {
 interface ProjectDashboardProps {
   projectOverview: ProjectOverview | null;
 }
-export function TaskContributeChart({ projectOverview }: ProjectDashboardProps) {
+export function TaskContributeChart({
+  projectOverview,
+}: ProjectDashboardProps) {
   const data = React.useMemo(() => {
     return {
       taskDistribution: [

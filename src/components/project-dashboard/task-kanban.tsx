@@ -109,11 +109,11 @@ export function TaskCard({ task }: { task: Task }) {
 }
 
 type Props = {
-  projectId: string
-}
+  projectId: string;
+};
 
 export default function TaskKanban({ projectId }: Props) {
-  const { tasks, setTasks } = useTask({ projectId })
+  const { tasks, setTasks } = useTask({ projectId });
   const [activeTask, setActiveTask] = useState<Task | null>(null);
 
   const sensors = useSensors(
@@ -124,20 +124,19 @@ export default function TaskKanban({ projectId }: Props) {
   const tasksByStatus = useMemo(() => {
     return columns.reduce(
       (acc, col) => {
-        acc[col.id] = tasks
-          .filter((t) => t.status === col.id)
+        acc[col.id] = tasks.filter((t) => t.status === col.id);
         // .sort((a, b) => a.position - b.position);
         return acc;
       },
       {} as Record<TaskStatus, Task[]>
     );
-  }, [tasks])
+  }, [tasks]);
   const handleDragStart = (event: DragStartEvent) => {
     const { active } = event;
 
     if (!active.data.current) return;
 
-    if (active.data.current.type === "TASK") {
+    if (active.data.current.type === 'TASK') {
       setActiveTask(active.data.current.task);
     }
   };
@@ -152,8 +151,8 @@ export default function TaskKanban({ projectId }: Props) {
 
     if (activeId === overId) return;
 
-    const isActiveTask = active.data.current?.type === "TASK";
-    const isOverTask = over.data.current?.type === "TASK";
+    const isActiveTask = active.data.current?.type === 'TASK';
+    const isOverTask = over.data.current?.type === 'TASK';
     if (!isActiveTask) return;
     // Dropping a task over another task
     if (isActiveTask && isOverTask) {
@@ -172,7 +171,7 @@ export default function TaskKanban({ projectId }: Props) {
       });
     }
 
-    const isOverColumn = over.data.current?.type === "COLUMN";
+    const isOverColumn = over.data.current?.type === 'COLUMN';
 
     // Dropping a task over a column
     if (isActiveTask && isOverColumn) {

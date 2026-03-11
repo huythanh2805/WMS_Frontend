@@ -136,7 +136,12 @@ export function RichTextToolbar({ editor, className }: RichTextToolbarProps) {
             return;
           }
 
-          editor.chain().focus().extendMarkRange('link').setLink({ href: url }).run();
+          editor
+            .chain()
+            .focus()
+            .extendMarkRange('link')
+            .setLink({ href: url })
+            .run();
         }}
         className={editor.isActive('link') ? 'bg-muted' : ''}
         title="Insert Link"

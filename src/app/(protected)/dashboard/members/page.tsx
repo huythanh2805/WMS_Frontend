@@ -1,9 +1,7 @@
 import WorkspaceMembersPage from '@/components/members-page';
 import React from 'react';
 
-type Props = {};
-
-function MembersPage({}: Props) {
+function MembersPage() {
   return (
     <div>
       <WorkspaceMembersPage />

@@ -13,7 +13,7 @@ import {
 import { taskSchame } from '@/lib/task-schame';
 import TaskForm from './task-form';
 import { useApi } from '@/hooks/use-api';
-import React, { useState } from 'react';
+import React from 'react';
 import { Task } from '@/types';
 
 type FormValues = z.infer<typeof taskSchame>;
@@ -22,14 +22,14 @@ interface EditTaskDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   projectId: string;
-  callback?: (value: Task) => void
+  callback?: (value: Task) => void;
 }
 
 export function CreateTaskDialog({
   open,
   onOpenChange,
   projectId,
-  callback
+  callback,
 }: EditTaskDialogProps) {
   const { loading, request } = useApi<Task>();
   const form = useForm<FormValues>({
@@ -56,8 +56,8 @@ export function CreateTaskDialog({
         },
         {
           onSuccess: (data) => {
-            if(callback) callback(data.data)
-            form.reset()
+            if (callback) callback(data.data);
+            form.reset();
           },
         }
       );

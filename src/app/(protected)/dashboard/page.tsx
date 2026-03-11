@@ -1,14 +1,7 @@
 'use client';
 import { ChartAreaInteractive } from '@/components/chart-area-interactive';
-import { DataTable, DragHandle } from '@/components/data-table';
+import { DragHandle } from '@/components/data-table';
 import { SectionCards } from '@/components/section-cards';
-import data from './data.json';
-import axiosAuth from '@/axios/instant';
-import { setAccessToken } from '@/lib/tokenStorage';
-import { useUserStore } from '@/stores/user-store';
-import { useRouter } from 'next/navigation';
-import { useEffect } from 'react';
-import { fetchUserInfomation } from '@/utils/auth';
 import * as React from 'react';
 
 import {

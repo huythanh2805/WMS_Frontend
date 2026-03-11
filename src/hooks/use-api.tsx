@@ -3,14 +3,14 @@ import { AxiosRequestConfig } from 'axios';
 import axiosAuth from '@/axios/instant';
 import { toast } from 'sonner';
 export type ApiResponse<T> = {
-  success: boolean
-  message: string
-  data: T
-}
+  success: boolean;
+  message: string;
+  data: T;
+};
 export type FindAllResponse<T> = {
-  count: number,
-  items: T[]
-}
+  count: number;
+  items: T[];
+};
 type ApiOptions<T> = {
   successMessage?: string;
   errorMessage?: string;
@@ -55,11 +55,11 @@ export function useApi<T = any>() {
         }
       }
 
-       options?.onSuccess?.(res.data);
+      options?.onSuccess?.(res.data);
 
       return res.data;
     } catch (error: any) {
-      console.log({error})
+      console.log({ error });
       const message =
         error?.response?.data?.message ||
         options?.errorMessage ||

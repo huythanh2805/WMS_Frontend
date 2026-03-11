@@ -10,8 +10,8 @@ import {
   AlertCircle,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Card, CardContent } from '@/components/ui/card';
+import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { cn } from '@/lib/utils';
 import { TaskContributeChart } from './pie-chart';
@@ -32,19 +32,23 @@ interface ProjectDashboardProps {
 
 function ProjectDashboardUI({ projectId }: ProjectDashboardProps) {
   const [isCreateTaskModelOpen, setIsCreateTaskModelOpen] = useState(false);
-  const { workspaceId } = useWorkspaceStore()
-  const { loading, request } = useApi<ProjectOverview>()
-  const [projectOverview, setProjectOverview] = useState<ProjectOverview | null>(null)
+  const { workspaceId } = useWorkspaceStore();
+  const { loading, request } = useApi<ProjectOverview>();
+  const [projectOverview, setProjectOverview] =
+    useState<ProjectOverview | null>(null);
   // Fetching project overview
   const fetchProjectOverview = async () => {
-    await request({
-      url: `/project/overview/${workspaceId}/${projectId}`,
-      method: 'get',
-    }, {
-      onSuccess: (data) => {
-        setProjectOverview(data.data)
+    await request(
+      {
+        url: `/project/overview/${workspaceId}/${projectId}`,
+        method: 'get',
+      },
+      {
+        onSuccess: (data) => {
+          setProjectOverview(data.data);
+        },
       }
-    });
+    );
   };
   useEffect(() => {
     if (!projectId || !workspaceId) return;
@@ -100,16 +104,22 @@ function ProjectDashboardUI({ projectId }: ProjectDashboardProps) {
       newOverview.taskOverdue.total = total;
       newOverview.taskNotStarted.total = total;
 
-      newOverview.taskCompleted.percent = calcPercent(newOverview.taskCompleted.count);
-      newOverview.taskInProgress.percent = calcPercent(newOverview.taskInProgress.count);
-      newOverview.taskOverdue.percent = calcPercent(newOverview.taskOverdue.count);
-      newOverview.taskNotStarted.percent = calcPercent(newOverview.taskNotStarted.count);
+      newOverview.taskCompleted.percent = calcPercent(
+        newOverview.taskCompleted.count
+      );
+      newOverview.taskInProgress.percent = calcPercent(
+        newOverview.taskInProgress.count
+      );
+      newOverview.taskOverdue.percent = calcPercent(
+        newOverview.taskOverdue.count
+      );
+      newOverview.taskNotStarted.percent = calcPercent(
+        newOverview.taskNotStarted.count
+      );
 
       return newOverview;
     });
-
-
-  }
+  };
   return (
     <div className="flex flex-col h-full space-y-6 p-6 pt-0 bg-background">
       {/* Header: Project name + New Task + Settings */}
@@ -117,11 +127,13 @@ function ProjectDashboardUI({ projectId }: ProjectDashboardProps) {
         <div className="flex items-center gap-3">
           <AvatarWithFallback
             name={projectOverview?.project.name}
-            className='h-12 w-12 '
-            fallbackClassName='text-lg'
+            className="h-12 w-12 "
+            fallbackClassName="text-lg"
           />
           <div>
-            <h1 className="text-2xl font-bold">{projectOverview?.project?.name}</h1>
+            <h1 className="text-2xl font-bold">
+              {projectOverview?.project?.name}
+            </h1>
             <p className="text-sm text-muted-foreground">
               Manage project tasks and activities
             </p>

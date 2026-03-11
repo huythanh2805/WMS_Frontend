@@ -23,7 +23,7 @@ export function NavSecondary({
     icon: Icon;
   }[];
 } & React.ComponentPropsWithoutRef<typeof SidebarGroup>) {
-  const router = useRouter()
+  const router = useRouter();
   return (
     <SidebarGroup {...props}>
       <SidebarGroupContent>

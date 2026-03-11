@@ -13,5 +13,5 @@ export const getAccessToken = (): string | null | undefined => {
 
 export const clearAccessToken = (): void => {
   document.cookie =
-    "accessToken=; path=/; expires=Thu, 01 Jan 1970 00:00:00 UTC; secure; sameSite=strict";
+    'accessToken=; path=/; expires=Thu, 01 Jan 1970 00:00:00 UTC; secure; sameSite=strict';
 };

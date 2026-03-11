@@ -3,7 +3,6 @@
 import { formatDistanceToNow } from 'date-fns';
 import { vi } from 'date-fns/locale';
 import Link from 'next/link';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { User } from '@/types/user';
@@ -28,31 +27,30 @@ export interface Comment {
 
 // Props cho component
 interface RecentCommentsProps {
-  projectId: string
+  projectId: string;
 }
 
-export function RecentComments({
-  projectId
-}: RecentCommentsProps) {
-  const { loading, request } = useApi<FindAllResponse<Comment>>()
-  const [comments, setComments] = useState<Comment[]>([])
+export function RecentComments({ projectId }: RecentCommentsProps) {
+  const { loading, request } = useApi<FindAllResponse<Comment>>();
+  const [comments, setComments] = useState<Comment[]>([]);
   // Fetching latest comments
   const fetchLatestComments = async () => {
-    await request({
-      url: `/comment/project/${projectId}`,
-      method: 'get',
-    }, {
-      onSuccess: (data) => {
-        if (data.data) setComments(data.data.items)
+    await request(
+      {
+        url: `/comment/project/${projectId}`,
+        method: 'get',
+      },
+      {
+        onSuccess: (data) => {
+          if (data.data) setComments(data.data.items);
+        },
       }
-    });
+    );
   };
   useEffect(() => {
     if (!projectId) return;
     fetchLatestComments();
   }, [projectId]);
-
-
 
   if (comments.length === 0) {
     return (
@@ -89,7 +87,10 @@ export function RecentComments({
                   className="flex gap-3 rounded-lg border bg-card p-3 hover:bg-accent/50 transition-colors"
                 >
                   {/* avatar */}
-                  <AvatarWithFallback avatar={comment.user.image} className="h-9 w-9" />
+                  <AvatarWithFallback
+                    avatar={comment.user.image}
+                    className="h-9 w-9"
+                  />
 
                   <div className="flex-1 space-y-1">
                     <div className="flex items-center gap-2 text-sm">
@@ -101,9 +102,7 @@ export function RecentComments({
                       </span>
                     </div>
 
-                    <p className="text-sm line-clamp-2">
-                      {comment.content}
-                    </p>
+                    <p className="text-sm line-clamp-2">{comment.content}</p>
 
                     {comment.task && (
                       <div className="text-xs text-muted-foreground mt-1">

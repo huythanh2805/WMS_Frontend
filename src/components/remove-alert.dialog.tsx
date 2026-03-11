@@ -9,10 +9,10 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
   AlertDialogTrigger,
-} from "@/components/ui/alert-dialog";
+} from '@/components/ui/alert-dialog';
 
-import { Button } from "@/components/ui/button";
-import { Trash2 } from "lucide-react";
+import { Button } from '@/components/ui/button';
+import { Trash2 } from 'lucide-react';
 
 interface RemoveAlrtDialogProps<T> {
   subject: T;
@@ -35,16 +35,17 @@ export function RemoveAlrtDialog<T>({
   getId,
   getName,
   onConfirm,
-  title = "Xác nhận xóa",
+  title = 'Xác nhận xóa',
   description,
-  confirmText = "Xóa",
-  cancelText = "Hủy",
+  confirmText = 'Xóa',
+  cancelText = 'Hủy',
   trigger,
 }: RemoveAlrtDialogProps<T>) {
-  const name = getName ? getName(subject) : "mục này";
+  const name = getName ? getName(subject) : 'mục này';
 
   const finalDescription =
-    description ?? `Bạn có chắc chắn muốn xóa ${name}? Hành động này không thể hoàn tác.`;
+    description ??
+    `Bạn có chắc chắn muốn xóa ${name}? Hành động này không thể hoàn tác.`;
 
   return (
     <AlertDialog>
@@ -64,7 +65,7 @@ export function RemoveAlrtDialog<T>({
           <AlertDialogTitle>{title}</AlertDialogTitle>
 
           <AlertDialogDescription>
-             {description ?? `Bạn có chắc chắn muốn xóa ${name}?`}
+            {description ?? `Bạn có chắc chắn muốn xóa ${name}?`}
           </AlertDialogDescription>
         </AlertDialogHeader>
 

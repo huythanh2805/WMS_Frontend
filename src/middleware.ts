@@ -3,13 +3,14 @@ import { NextRequest, NextResponse } from 'next/server';
 
 // Danh sách route
 const publicRoutes = ['/', '/auth/login', '/auth/register'];
-const protectedRoutes = ['/dashboard', '/onboarding', "/verify"];
+const protectedRoutes = ['/dashboard', '/onboarding', '/verify'];
 
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
   // Lấy cookie refreshToken từ request
   const refreshToken = request.cookies.get('refreshToken')?.value;
+  console.log({refreshToken})
 
   const isPublic =
     publicRoutes.includes(pathname) || pathname.startsWith('/auth/');

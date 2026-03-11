@@ -37,7 +37,8 @@ export function ProjectSwitcher({
   onCreateNew,
   className,
 }: ProjectSwitcherProps) {
-  const currentProject = projects.find((p) => p.id === currentProjectId) || projects[0]
+  const currentProject =
+    projects.find((p) => p.id === currentProjectId) || projects[0];
   return (
     <div className={cn('space-y-1', className)}>
       {/* Header giống như ảnh: PROJECTS + nút + */}

@@ -29,9 +29,8 @@ import { useParams, useRouter } from 'next/navigation';
 import { CreateProjectDialog } from './project-dashboard/create-project';
 import { CreateWorkSpaceDialog } from './create-workspace-dialog';
 import { FindAllResponse, useApi } from '@/hooks/use-api';
-import { Project, Workspace } from '@/types';
+import { Project } from '@/types';
 import { useUserStore } from '@/stores/user-store';
-import { Skeleton } from './ui/skeleton';
 import { useWorkspaceStore } from '@/stores/workspace-store';
 import useWorkspace from '@/hooks/use-workspace';
 
@@ -83,19 +82,20 @@ const data = {
 };
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const router = useRouter();
-  const params = useParams()
-  const projectId = params.projectId as string
+  const params = useParams();
+  const projectId = params.projectId as string;
   const { user, isLoading } = useUserStore();
   const { setWorkspaceId, setWorkspaces, workspaces } = useWorkspaceStore();
-  const {fetchWorkspaces} = useWorkspace()
+  const { fetchWorkspaces } = useWorkspace();
   const { loading: isWorkSpaceLoading, request: workspaceRequest } = useApi();
-  const { loading: isProjectLoading, request: projectRequest } = useApi<FindAllResponse<Project>>();
+  const { loading: isProjectLoading, request: projectRequest } =
+    useApi<FindAllResponse<Project>>();
   // const [workspaces, setWorkspaces] = React.useState<Workspace[]>([]);
   const [activeWorkspaceID, setActiveWorkspaceID] = React.useState<
     string | null
   >(null);
   const [projects, setProjects] = React.useState<Project[]>([]);
-  const [activeProjectID, setActiveProjectID] = React.useState<string | null >(
+  const [activeProjectID, setActiveProjectID] = React.useState<string | null>(
     null
   );
   const [isCreateProjectModelOpen, setIsCreateProjectModalOpen] =
@@ -104,8 +104,8 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
     React.useState(false);
   // Fetching workspaces
   const onFetchWorkspaces = async () => {
-    const result = await fetchWorkspaces()
-    if(!result) return 
+    const result = await fetchWorkspaces();
+    if (!result) return;
     // Set active-workspace and add isPersonal field
     setActiveWorkspaceID(result[0]?.id);
     setWorkspaces(
@@ -124,10 +124,11 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       method: 'get',
     });
     const projects = res?.data?.items;
-    if(!projects) return
+    if (!projects) return;
     // set projects and activeProjectId
-    const activeProject = projects.find((p) => p.id === projectId) || projects[0]
-    setActiveProjectID(activeProject?.id || "");
+    const activeProject =
+      projects.find((p) => p.id === projectId) || projects[0];
+    setActiveProjectID(activeProject?.id || '');
     setProjects(projects);
   };
   React.useEffect(() => {
@@ -199,11 +200,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
 
         <NavSecondary items={data.navSecondary} className="mt-auto" />
       </SidebarContent>
-      <SidebarFooter>
-        {
-          <NavUser user={user}/>
-        }
-      </SidebarFooter>
+      <SidebarFooter>{<NavUser user={user} />}</SidebarFooter>
     </Sidebar>
   );
 }

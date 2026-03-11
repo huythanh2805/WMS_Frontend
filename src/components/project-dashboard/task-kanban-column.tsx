@@ -18,9 +18,9 @@ export default function KanbanColumn({
   const { setNodeRef, isOver } = useDroppable({
     id: column.id,
     data: {
-    type: 'COLUMN',
-    columnId: column.id,
-  },
+      type: 'COLUMN',
+      columnId: column.id,
+    },
   });
 
   return (

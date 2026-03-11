@@ -95,10 +95,10 @@ export function DragHandle({ id }: { id: number | string }) {
 
 function DraggableRow<T extends { id: UniqueIdentifier }>({
   row,
-  onClickDetail
+  onClickDetail,
 }: {
   row: Row<T>;
-  onClickDetail: (taskId: string) => void
+  onClickDetail: (taskId: string) => void;
 }) {
   const { transform, transition, setNodeRef, isDragging } = useSortable({
     id: row.original.id,
@@ -125,9 +125,9 @@ function DraggableRow<T extends { id: UniqueIdentifier }>({
   );
 }
 type TaskMetaType = {
-  onOpenUpdateDialogChange: (open: boolean, taskId: string) => void,
-  onOpenDeleteDialogChange: (open: boolean, taskId: string) => void,
-}
+  onOpenUpdateDialogChange: (open: boolean, taskId: string) => void;
+  onOpenDeleteDialogChange: (open: boolean, taskId: string) => void;
+};
 export function DataTable<TData extends { id: UniqueIdentifier }>({
   data: initialData,
   columns,
@@ -137,7 +137,7 @@ export function DataTable<TData extends { id: UniqueIdentifier }>({
   data: TData[];
   columns: ColumnDef<TData>[];
   meta?: TaskMetaType;
-  onClickDetail: (taskId: string) => void
+  onClickDetail: (taskId: string) => void;
 }) {
   const [data, setData] = React.useState(() => initialData);
   const [rowSelection, setRowSelection] = React.useState({});
@@ -300,9 +300,9 @@ export function DataTable<TData extends { id: UniqueIdentifier }>({
                           {header.isPlaceholder
                             ? null
                             : flexRender(
-                              header.column.columnDef.header,
-                              header.getContext()
-                            )}
+                                header.column.columnDef.header,
+                                header.getContext()
+                              )}
                         </TableHead>
                       );
                     })}
@@ -316,7 +316,11 @@ export function DataTable<TData extends { id: UniqueIdentifier }>({
                     strategy={verticalListSortingStrategy}
                   >
                     {table.getRowModel().rows.map((row) => (
-                      <DraggableRow key={row.id} row={row} onClickDetail={onClickDetail} />
+                      <DraggableRow
+                        key={row.id}
+                        row={row}
+                        onClickDetail={onClickDetail}
+                      />
                     ))}
                   </SortableContext>
                 ) : (

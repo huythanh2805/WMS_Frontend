@@ -1,18 +1,16 @@
 'use client';
 
-import { useState } from 'react';
 import FullCalendar from '@fullcalendar/react';
 import dayGridPlugin from '@fullcalendar/daygrid';
 import interactionPlugin from '@fullcalendar/interaction';
 import { EventDropArg, EventInput } from '@fullcalendar/core';
 import useTask from '@/hooks/use-task';
-import { Task } from '@/types';
 
 type Props = {
-  projectId: string
-}
-export default function TaskCalender({projectId} : Props) {
-  const {updateTask, tasks, setTasks} = useTask({projectId})
+  projectId: string;
+};
+export default function TaskCalender({ projectId }: Props) {
+  const { updateTask, tasks, setTasks } = useTask({ projectId });
 
   const handleEventDrop = (info: EventDropArg) => {
     const date = info.event.start;
@@ -27,10 +25,10 @@ export default function TaskCalender({projectId} : Props) {
     // const formatted = localDate.toLocaleDateString('sv-SE');
     const formatted = new Date(localDate.toLocaleDateString('sv-SE'));
     // sv-SE => format yyyy-mm-dd chuẩn
-    const updatedTask = tasks.find(item => item.id === info.event.id)
-    updateTask({...updatedTask, dueDate: formatted })
+    const updatedTask = tasks.find((item) => item.id === info.event.id);
+    updateTask({ ...updatedTask, dueDate: formatted });
     setTasks((prev) =>
-      prev.map((task) => 
+      prev.map((task) =>
         task.id === info.event.id ? { ...task, dueDate: formatted } : task
       )
     );

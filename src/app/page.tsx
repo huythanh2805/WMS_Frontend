@@ -1,5 +1,4 @@
 'use client';
-import axiosAuth from '@/axios/instant';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 const apiUrl = process.env.NEXT_PUBLIC_API_URL;
