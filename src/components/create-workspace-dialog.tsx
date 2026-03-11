@@ -24,6 +24,7 @@ import {
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { useApi } from '@/hooks/use-api';
+import { Workspace } from '@/types';
 
 const formSchema = z.object({
   name: z.string().min(1, 'Project name is required'),
@@ -36,14 +37,16 @@ interface CreateProjectDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   fetchWorkSpace: () => void;
+  setActiveWorkspaceID: (workspaceId: string) => void;
 }
 
 export function CreateWorkSpaceDialog({
   open,
   onOpenChange,
   fetchWorkSpace,
+  setActiveWorkspaceID
 }: CreateProjectDialogProps) {
-  const { loading, request } = useApi();
+  const { loading, request } = useApi<Workspace>();
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -61,9 +64,10 @@ export function CreateWorkSpaceDialog({
           data: { ...values, inviteCode: crypto.randomUUID().split('-')[0] },
         },
         {
-          onSuccess: (data) => {
+          onSuccess: async (data) => {
             console.log('Create Success', data);
-            fetchWorkSpace();
+            await fetchWorkSpace();
+            setActiveWorkspaceID(data.data.id)
           },
         }
       );

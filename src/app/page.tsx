@@ -5,16 +5,6 @@ import Link from 'next/link';
 const apiUrl = process.env.NEXT_PUBLIC_API_URL;
 
 export default function Home() {
-  function handleTestApi() {
-    axiosAuth
-      .get('/user')
-      .then((response) => {
-        console.log('API Response:', response);
-      })
-      .catch((error) => {
-        console.error('API Error:', error);
-      });
-  }
   function handleSignIn() {
     window.location.href = apiUrl + '/auth/google';
   }
@@ -36,9 +26,6 @@ export default function Home() {
           </Button>
           <Button variant="outline" onClick={handleSignIn}>
             Sign In
-          </Button>
-          <Button variant="outline" onClick={handleTestApi}>
-            GetUser
           </Button>
         </div>
       </div>

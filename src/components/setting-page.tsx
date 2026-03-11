@@ -11,17 +11,21 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { useWorkspaceStore } from '@/stores/workspace-store';
 import { useApi } from '@/hooks/use-api';
-import { Invitation } from '@/types';
+import { Invitation, Workspace } from '@/types';
 import { debounce } from "lodash";
 import { toast } from 'sonner';
 import { Skeleton } from './ui/skeleton';
 import { RemoveAlrtDialog } from './remove-alert.dialog';
 import useWorkspace from '@/hooks/use-workspace';
+import { useRouter } from 'next/navigation';
 export function WorkspaceSettings() {
-  const { workspace } = useWorkspace()
-  const [invitedEmail, setInvitedEmail] = React.useState<string>("")
+  const router = useRouter()
   const { workspaceId } = useWorkspaceStore()
+  const { workspace, deleteWorkSpaceById, updateWorkSpaceById, fetchWorkSpaceById } = useWorkspace()
+  const [invitedEmail, setInvitedEmail] = React.useState<string>("")
   const { request, loading } = useApi<Invitation>()
+  const [name, setName] = React.useState<string>('')
+  const [description, setDescription] = React.useState<string>('')
   const inviteLink =
     'https://daily-tm.vercel.app/workspace-invite/e1e122a-fcc0-4704-a655-7a783de70c57/join/xxihUn';
 
@@ -55,8 +59,26 @@ export function WorkspaceSettings() {
   );
   // Delete workspace 
   const handleDeleteWorkspace = async (workspaceId: string) => {
-    
+    await deleteWorkSpaceById(workspaceId)
+    router.replace("/dashboard")
+    window.location.reload()
   }
+  // Update workspace
+  const handleUpdateWorkspace = async () => {
+    if (!workspaceId) return
+    await updateWorkSpaceById(workspaceId, { name, description })
+  }
+  // Fetch current workspace
+  const onInitFetchWorkspace = async () => {
+    if (!workspaceId) return null
+    const data = await fetchWorkSpaceById(workspaceId)
+    if(!data) return
+    setName(data?.name)
+    setDescription(data?.description)
+  }
+  React.useEffect(() => {
+    onInitFetchWorkspace()
+  }, [workspaceId])
   return (
     <div className="mx-auto max-w-3xl space-y-10 py-10 px-4 sm:px-6 lg:px-8">
       {/* Section 1: General Settings */}
@@ -79,8 +101,9 @@ export function WorkspaceSettings() {
               </Label>
               <Input
                 id="name"
-                defaultValue="My Workspace"
                 className="h-10 bg-background"
+                value={name}
+                onChange={e => setName(e.target.value)}
               />
             </div>
 
@@ -92,11 +115,13 @@ export function WorkspaceSettings() {
                 id="description"
                 placeholder="Enter workspace description"
                 className="min-h-[80px] resize-none bg-background"
+                value={description}
+                onChange={e => setDescription(e.target.value)}
               />
             </div>
 
             <div className="flex justify-end">
-              <Button size="sm" className="h-9 px-6">
+              <Button onClick={handleUpdateWorkspace} size="sm" className="h-9 px-6">
                 <Save className="mr-2 h-4 w-4" />
                 Save Changes
               </Button>
@@ -179,8 +204,7 @@ export function WorkspaceSettings() {
           <AlertDescription className="text-sm mt-1">
             This action cannot be undone. All data will be permanently deleted.
           </AlertDescription>
-          <div className="mt-4">
-            (
+          <div className="mt-4 col-start-2 flex w-full justify-end">
             {
               workspace && (
                 <RemoveAlrtDialog
@@ -188,13 +212,15 @@ export function WorkspaceSettings() {
                   getId={(workspace) => workspace.id}
                   getName={(workspace) => workspace.name}
                   title="Xóa Workspace"
-                  description={`Bạn có chắc muốn xóa ${workspace.name} không?`}
+                  description={<>
+                    Bạn có chắc muốn xóa{" "}
+                    <span className="font-semibold">{workspace.name}</span> không?
+                  </>}
                   confirmText="Xóa Workspace"
                   onConfirm={handleDeleteWorkspace}
                 />
               )
             }
-            )
           </div>
         </Alert>
       </section>

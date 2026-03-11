@@ -86,11 +86,11 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const params = useParams()
   const projectId = params.projectId as string
   const { user, isLoading } = useUserStore();
-  const { setWorkspaceId } = useWorkspaceStore();
-  const {fetchWorkspaces, workspaces, setWorkspaces} = useWorkspace()
+  const { setWorkspaceId, setWorkspaces, workspaces } = useWorkspaceStore();
+  const {fetchWorkspaces} = useWorkspace()
   const { loading: isWorkSpaceLoading, request: workspaceRequest } = useApi();
   const { loading: isProjectLoading, request: projectRequest } = useApi<FindAllResponse<Project>>();
-  const [workspaces, setWorkspaces] = React.useState<Workspace[]>([]);
+  // const [workspaces, setWorkspaces] = React.useState<Workspace[]>([]);
   const [activeWorkspaceID, setActiveWorkspaceID] = React.useState<
     string | null
   >(null);
@@ -103,12 +103,8 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const [isCreateWorkspaceModelOpen, setIsCreateWorkspaceModalOpen] =
     React.useState(false);
   // Fetching workspaces
-  const fetchWorkSpaces = async () => {
-    const res = await workspaceRequest({
-      url: '/workspace',
-      method: 'get',
-    });
-    const result: Workspace[] = res?.data?.items;
+  const onFetchWorkspaces = async () => {
+    const result = await fetchWorkspaces()
     if(!result) return 
     // Set active-workspace and add isPersonal field
     setActiveWorkspaceID(result[0]?.id);
@@ -119,7 +115,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
     );
   };
   React.useEffect(() => {
-    fetchWorkSpaces();
+    onFetchWorkspaces();
   }, [user]);
   // Fetching projects
   const fetchProjects = async () => {
@@ -166,7 +162,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       <SidebarContent>
         <WorkspaceSwitcher
           currentWorkspaceId={activeWorkspaceID}
-          workspaces={workspaces}
+          workspaces={workspaces || []}
           onWorkspaceChange={(id) => {
             setActiveWorkspaceID(id);
             console.log('Chuyển sang workspace:', id);
@@ -176,9 +172,10 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
 
         {/* Create Workspace dialog */}
         <CreateWorkSpaceDialog
-          fetchWorkSpace={fetchWorkSpaces}
+          fetchWorkSpace={onFetchWorkspaces}
           open={isCreateWorkspaceModelOpen}
           onOpenChange={handleOnWorkspaceModelOpen}
+          setActiveWorkspaceID={setActiveWorkspaceID}
         />
 
         <NavDocuments items={data.documents} />

@@ -22,7 +22,7 @@ interface RemoveAlrtDialogProps<T> {
   onConfirm: (id: string) => void;
 
   title?: string;
-  description?: string;
+  description?: React.ReactNode | string;
 
   confirmText?: string;
   cancelText?: string;
@@ -64,7 +64,7 @@ export function RemoveAlrtDialog<T>({
           <AlertDialogTitle>{title}</AlertDialogTitle>
 
           <AlertDialogDescription>
-            {finalDescription}
+             {description ?? `Bạn có chắc chắn muốn xóa ${name}?`}
           </AlertDialogDescription>
         </AlertDialogHeader>
 
