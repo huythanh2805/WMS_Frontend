@@ -50,11 +50,9 @@ axiosAuth.interceptors.response.use(
     const originalRequest = error.config as InternalAxiosRequestConfig & {
       _retry?: boolean;
     };
-     console.log("this is axios interceptor")
      // Nếu lỗi 401 và chưa retry
      if (error.response?.status === 401 && !originalRequest._retry) {
        originalRequest._retry = true;
-       console.log("this is axios unauthorized")
       if (!isRefreshing) {
         isRefreshing = true;
         try {
@@ -64,7 +62,6 @@ axiosAuth.interceptors.response.use(
             {},
             { withCredentials: true }
           );
-          console.log({tokens})
           // Set access token mới vào storage để các request sau dùng
           setAccessToken(tokens.data.accessToken);
           isRefreshing = false;
