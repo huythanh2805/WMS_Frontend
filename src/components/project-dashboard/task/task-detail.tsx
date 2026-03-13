@@ -231,6 +231,7 @@ export default function TaskDetail({ taskId, projectId }: TaskDetailProps) {
                 open={isTaskEditOpen}
                 onOpenChange={handleOnTaskEditOpen}
                 taskId={taskId}
+                projectId={projectId}
               />
             </div>
           </div>

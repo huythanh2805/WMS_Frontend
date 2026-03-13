@@ -250,9 +250,9 @@ export const taskColumns: ColumnDef<TaskColumn>[] = [
     cell: ({ row, table }) => {
       const { onOpenUpdateDialogChange, onOpenDeleteDialogChange } = table
         .options.meta as {
-        onOpenUpdateDialogChange: (open: boolean, taskId?: string) => void;
-        onOpenDeleteDialogChange: (open: boolean, taskId?: string) => void;
-      };
+          onOpenUpdateDialogChange: (open: boolean, taskId?: string) => void;
+          onOpenDeleteDialogChange: (open: boolean, taskId?: string) => void;
+        };
       return (
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
@@ -279,7 +279,10 @@ export const taskColumns: ColumnDef<TaskColumn>[] = [
             <DropdownMenuSeparator />
             <DropdownMenuItem
               variant="destructive"
-              onClick={() => onOpenDeleteDialogChange?.(true, row.original.id)}
+              onClick={(e) => {
+                e.stopPropagation(); 
+                onOpenDeleteDialogChange?.(true, row.original.id)
+              }}
             >
               Delete
             </DropdownMenuItem>

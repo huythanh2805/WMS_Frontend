@@ -3,7 +3,7 @@ import { NextRequest, NextResponse } from 'next/server';
 
 // Danh sách route
 const publicRoutes = ['/', '/auth/login', '/auth/register', "/auth/callback"];
-const protectedRoutes = ['/dashboard', '/onboarding', '/verify'];
+const protectedRoutes = ['/dashboard', '/onboarding'];
 
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
