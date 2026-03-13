@@ -29,6 +29,7 @@ import { cn } from '@/lib/utils';
 import useWorkspace from '@/hooks/use-workspace';
 import { Project, ProjectAccess } from '@/types';
 import { useApi } from '@/hooks/use-api';
+import { API_ENDPOINTS } from '@/constants/api-endpoints';
 
 interface AssignProjectButtonProps {
   memberName: string | null;
@@ -50,7 +51,7 @@ export function AssignProjectDialog({
 
     await request(
       {
-        url: '/project-access/',
+        url: API_ENDPOINTS.PROJECT_ACCESS,
         method: 'post',
         data: {
           workspaceMemberId: memberId,

@@ -25,6 +25,7 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { useApi } from '@/hooks/use-api';
 import { Workspace } from '@/types';
+import { API_ENDPOINTS } from '@/constants/api-endpoints';
 
 const formSchema = z.object({
   name: z.string().min(1, 'Project name is required'),
@@ -59,7 +60,7 @@ export function CreateWorkSpaceDialog({
     if (!loading) {
       request(
         {
-          url: '/workspace',
+          url: API_ENDPOINTS.WORKSPACE,
           method: 'post',
           data: { ...values, inviteCode: crypto.randomUUID().split('-')[0] },
         },

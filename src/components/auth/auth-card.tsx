@@ -15,6 +15,7 @@ import { Separator } from '@/components/ui/separator';
 import { FcGoogle } from 'react-icons/fc';
 import Link from 'next/link';
 import { toast } from 'sonner';
+import { API_ENDPOINTS } from '@/constants/api-endpoints';
 
 interface AuthCardProps {
   mode: 'login' | 'register';
@@ -29,8 +30,7 @@ export default function AuthCard({ mode, children }: AuthCardProps) {
     setLoading(true);
     try {
       // Redirect đến NestJS Google OAuth endpoint
-      window.location.href = `${process.env.NEXT_PUBLIC_API_URL}/auth/google`;
-      // Hoặc dùng NextAuth: signIn("google", { callbackUrl: "/onboarding" });
+      window.location.href = `${process.env.NEXT_PUBLIC_API_URL}/${API_ENDPOINTS.LOGIN_GOOGLE}`;
     } catch (err) {
       toast.error('Không thể kết nối với Google');
       setLoading(false);

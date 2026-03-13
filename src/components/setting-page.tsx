@@ -18,6 +18,7 @@ import { Skeleton } from './ui/skeleton';
 import { RemoveAlrtDialog } from './remove-alert.dialog';
 import useWorkspace from '@/hooks/use-workspace';
 import { useRouter } from 'next/navigation';
+import { API_ENDPOINTS } from '@/constants/api-endpoints';
 export function WorkspaceSettings() {
   const router = useRouter();
   const { workspaceId } = useWorkspaceStore();
@@ -45,7 +46,7 @@ export function WorkspaceSettings() {
   const handleInvitation = async () => {
     await request(
       {
-        url: '/invitation/send',
+        url: API_ENDPOINTS.INVITATION_SEND,
         method: 'post',
         data: {
           email: invitedEmail.trim(),

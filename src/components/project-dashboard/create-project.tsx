@@ -25,6 +25,8 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Checkbox } from '@/components/ui/checkbox';
 import { useApi } from '@/hooks/use-api';
+import { useWorkspaceStore } from '@/stores/workspace-store';
+import { API_ENDPOINTS } from '@/constants/api-endpoints';
 
 const formSchema = z.object({
   name: z.string().min(1, 'Project name is required'),
@@ -50,6 +52,7 @@ export function CreateProjectDialog({
   fetchProjects,
 }: CreateProjectDialogProps) {
   const { loading, request } = useApi();
+  const {workspaceId} = useWorkspaceStore()
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -63,7 +66,7 @@ export function CreateProjectDialog({
     if (!loading && activeWorkSpaceId) {
       request(
         {
-          url: '/project',
+          url: API_ENDPOINTS.PROJECT_BY_WORKSPACE_ID(workspaceId as string),
           method: 'post',
           data: { ...values, workspaceId: activeWorkSpaceId },
         },

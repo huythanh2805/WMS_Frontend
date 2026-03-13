@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useApi } from './use-api';
 import { WorkspaceMember } from '@/types';
 import { useWorkspaceStore } from '@/stores/workspace-store';
+import { API_ENDPOINTS } from '@/constants/api-endpoints';
 
 function useWorkspaceMember() {
   const { workspaceId } = useWorkspaceStore();
@@ -13,7 +14,7 @@ function useWorkspaceMember() {
   const fetchWorkspaceMembers = async () => {
     if (!loading && workspaceId) {
       const res = await request({
-        url: `/workspace-member/${workspaceId}`,
+        url: API_ENDPOINTS.WORKSPACE_MEMBER_BY_WORKSPACE_ID(workspaceId),
         method: 'get',
       });
       const result: WorkspaceMember[] = res?.data?.items;

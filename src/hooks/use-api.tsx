@@ -12,6 +12,7 @@ export type FindAllResponse<T> = {
   items: T[];
 };
 type ApiOptions<T> = {
+  showToast?: boolean
   successMessage?: string;
   errorMessage?: string;
   onSuccess?: (data: ApiResponse<T>) => void;
@@ -42,12 +43,13 @@ export function useApi<T = any>() {
     config: AxiosRequestConfig,
     options?: ApiOptions<T>
   ): Promise<ApiResponse<T> | null> => {
+    const showToast = options?.showToast ?? true;
     try {
       setLoading(true);
 
       const res = await axiosAuth(config);
 
-      if (config.method != 'get') {
+      if (showToast && config.method != 'get') {
         if (options?.successMessage) {
           toast.success(options.successMessage);
         } else {
@@ -65,7 +67,9 @@ export function useApi<T = any>() {
         options?.errorMessage ||
         'Something went wrong';
 
-      toast.error(message);
+      if (showToast) {
+        toast.error(message);
+      }
 
       return null;
     } finally {

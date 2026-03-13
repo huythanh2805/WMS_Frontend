@@ -27,6 +27,7 @@ import {
 import { useApi } from '@/hooks/use-api';
 import { AssignProjectDialog } from './assign-project-dialog';
 import { RemoveAlrtDialog } from './remove-alert.dialog';
+import { API_ENDPOINTS } from '@/constants/api-endpoints';
 
 export default function WorkspaceMembersPage() {
   const { request } = useApi<WorkspaceMember>();
@@ -43,7 +44,7 @@ export default function WorkspaceMembersPage() {
     accessLevel: AccessLevel
   ) => {
     await request({
-      url: '/project-access/' + projectAccessId,
+      url: API_ENDPOINTS.PROJECT_ACCESS_BY_ID(projectAccessId),
       method: 'patch',
       data: {
         accessLevel,
@@ -54,7 +55,7 @@ export default function WorkspaceMembersPage() {
   const handleDeleteWorkspaceMember = async (workspaceMemberId: string) => {
     await request(
       {
-        url: '/workspace-member/' + workspaceMemberId,
+        url: API_ENDPOINTS.WORKSPACE_MEMBER_BY_ID(workspaceMemberId),
         method: 'delete',
       },
       {

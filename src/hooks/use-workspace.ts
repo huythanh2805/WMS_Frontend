@@ -1,6 +1,7 @@
 import { useApi } from './use-api';
 import { Workspace } from '@/types';
 import { useWorkspaceStore } from '@/stores/workspace-store';
+import { API_ENDPOINTS } from '@/constants/api-endpoints';
 
 function useWorkspace() {
   const { request, loading } = useApi();
@@ -18,7 +19,7 @@ function useWorkspace() {
   const deleteWorkSpaceById = async (id: string) => {
     if (!loading && id) {
       await request({
-        url: `/workspace/${id}`,
+        url: API_ENDPOINTS.WORKSPACE_BY_ID(id),
         method: 'delete',
       });
 
@@ -31,7 +32,7 @@ function useWorkspace() {
     if (!loading && id) {
       await request(
         {
-          url: `/workspace/${id}`,
+          url: API_ENDPOINTS.WORKSPACE_BY_ID(id),
           method: 'patch',
           data,
         },
@@ -47,7 +48,7 @@ function useWorkspace() {
   // fetch all
   const fetchWorkspaces = async () => {
     const res = await request({
-      url: `/workspace`,
+      url: API_ENDPOINTS.WORKSPACE,
       method: 'get',
     });
 
@@ -63,7 +64,7 @@ function useWorkspace() {
     if (!loading && id) {
       const res = await request(
         {
-          url: `/workspace/${id}`,
+          url: API_ENDPOINTS.WORKSPACE_BY_ID(id),
           method: 'get',
         },
         {

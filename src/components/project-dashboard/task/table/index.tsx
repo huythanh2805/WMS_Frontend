@@ -7,6 +7,7 @@ import { EditTaskDialog } from '../edit-task-dialog';
 import { Task } from '@/types';
 import { DeleteTaskDialog } from '../delete-task-dialog';
 import { useRouter } from 'next/navigation';
+import { API_ENDPOINTS } from '@/constants/api-endpoints';
 
 type Props = {
   projectId: string;
@@ -23,7 +24,7 @@ function TaskTable({ projectId }: Props) {
   const fetchTasks = async () => {
     if (!loading && projectId) {
       const res = await request({
-        url: `/task/project/${projectId}`,
+        url: API_ENDPOINTS.TASK_BY_PROJECT_ID(projectId),
         method: 'get',
       });
       const result: TaskColumn[] = res?.data?.items;

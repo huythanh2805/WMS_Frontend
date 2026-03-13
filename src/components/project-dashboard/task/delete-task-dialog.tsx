@@ -12,6 +12,7 @@ import { Button } from '@/components/ui/button';
 import { Loader2, Trash2 } from 'lucide-react';
 import { useApi } from '@/hooks/use-api';
 import { Task } from '@/types';
+import { API_ENDPOINTS } from '@/constants/api-endpoints';
 
 interface DeleteTaskDialogProps {
   open: boolean;
@@ -33,7 +34,7 @@ export function DeleteTaskDialog({
     if (!taskId) return;
     await request(
       {
-        url: `/task/${taskId}`,
+        url: API_ENDPOINTS.TASK_BY_ID(taskId),
         method: 'delete',
       },
       {

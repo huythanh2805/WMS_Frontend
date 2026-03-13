@@ -33,6 +33,7 @@ import { Project } from '@/types';
 import { useUserStore } from '@/stores/user-store';
 import { useWorkspaceStore } from '@/stores/workspace-store';
 import useWorkspace from '@/hooks/use-workspace';
+import { API_ENDPOINTS } from '@/constants/api-endpoints';
 
 const data = {
   user: {
@@ -65,7 +66,7 @@ const data = {
     },
     {
       name: 'My tasks',
-      url: '/dashboard/tasks',
+      url: '/dashboard/my-tasks',
       icon: IconReport,
     },
     {
@@ -87,7 +88,6 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const { user, isLoading } = useUserStore();
   const { setWorkspaceId, setWorkspaces, workspaces } = useWorkspaceStore();
   const { fetchWorkspaces } = useWorkspace();
-  const { loading: isWorkSpaceLoading, request: workspaceRequest } = useApi();
   const { loading: isProjectLoading, request: projectRequest } =
     useApi<FindAllResponse<Project>>();
   // const [workspaces, setWorkspaces] = React.useState<Workspace[]>([]);
@@ -120,7 +120,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   // Fetching projects
   const fetchProjects = async () => {
     const res = await projectRequest({
-      url: `/project/${activeWorkspaceID}`,
+      url: API_ENDPOINTS.PROJECT_BY_WORKSPACE_ID(activeWorkspaceID as string),
       method: 'get',
     });
     const projects = res?.data?.items;

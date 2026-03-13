@@ -10,7 +10,6 @@ export async function middleware(request: NextRequest) {
 
   // Lấy cookie refreshToken từ request
   const refreshToken = request.cookies.get('refreshToken')?.value;
-  console.log({refreshToken})
 
   const isPublic =
     publicRoutes.includes(pathname) || pathname.startsWith('/auth/');

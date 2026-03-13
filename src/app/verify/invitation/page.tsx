@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { Suspense, useEffect, useState } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
@@ -22,7 +22,7 @@ import {
 import axiosAuth from '@/axios/instant';
 import { AxiosError } from 'axios';
 
-export default function InvitationVerifyPage({
+export default function InvitationVerify({
   searchParams,
 }: {
   searchParams: { token?: string };

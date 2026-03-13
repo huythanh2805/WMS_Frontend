@@ -16,6 +16,7 @@ import { useEffect } from 'react';
 import { useApi } from '@/hooks/use-api';
 import { Task } from '@/types';
 import { Skeleton } from '@/components/ui/skeleton';
+import { API_ENDPOINTS } from '@/constants/api-endpoints';
 
 type FormValues = z.infer<typeof taskSchame>;
 
@@ -50,7 +51,7 @@ export function EditTaskDialog({
   async function onSubmit(values: FormValues) {
     await request(
       {
-        url: `/task/${taskId}`,
+        url: API_ENDPOINTS.TASK_BY_ID(taskId as string),
         method: 'patch',
         data: { ...values },
       },
@@ -67,7 +68,7 @@ export function EditTaskDialog({
   const fetchTaskById = async () => {
     await isFetchTaskRequest(
       {
-        url: `/task/${taskId}`,
+        url: API_ENDPOINTS.TASK_BY_ID(taskId as string),
         method: 'get',
       },
       {

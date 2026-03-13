@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useApi } from './use-api';
 import { Task } from '@/types';
+import { API_ENDPOINTS } from '@/constants/api-endpoints';
 
 type Props = {
   projectId: string;
@@ -13,7 +14,7 @@ function useTask({ projectId }: Props) {
   const fetchTasks = async () => {
     if (!loading && projectId) {
       const res = await request({
-        url: `/task/project/${projectId}`,
+        url: API_ENDPOINTS.TASK_BY_PROJECT_ID(projectId),
         method: 'get',
       });
       const result = res?.data?.items;
@@ -28,7 +29,7 @@ function useTask({ projectId }: Props) {
     if (!loading && data.id) {
       await request(
         {
-          url: '/task/' + data.id,
+          url: API_ENDPOINTS.TASK_BY_ID(data.id) ,
           method: 'patch',
           data: data,
         },

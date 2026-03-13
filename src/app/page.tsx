@@ -1,11 +1,12 @@
 'use client';
 import { Button } from '@/components/ui/button';
+import { API_ENDPOINTS } from '@/constants/api-endpoints';
 import Link from 'next/link';
 const apiUrl = process.env.NEXT_PUBLIC_API_URL;
 
 export default function Home() {
   function handleSignIn() {
-    window.location.href = apiUrl + '/auth/google';
+    window.location.href = apiUrl + API_ENDPOINTS.LOGIN_GOOGLE;
   }
 
   return (

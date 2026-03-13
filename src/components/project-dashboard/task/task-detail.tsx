@@ -34,6 +34,7 @@ import { useUserStore } from '@/stores/user-store';
 import { TaskFileUploader } from '@/components/task-file-uploader';
 import WorkspaceMemberSelect from '../workspace-member-select';
 import { Skeleton } from '@/components/ui/skeleton';
+import { API_ENDPOINTS } from '@/constants/api-endpoints';
 
 type TaskDetailProps = {
   taskId: string;
@@ -82,7 +83,7 @@ export default function TaskDetail({ taskId, projectId }: TaskDetailProps) {
     if (!user?.id || !projectId || !taskId) return;
     await request(
       {
-        url: '/comment',
+        url: API_ENDPOINTS.COMMENT,
         method: 'post',
         data: {
           content: newComment,
@@ -117,7 +118,7 @@ export default function TaskDetail({ taskId, projectId }: TaskDetailProps) {
     });
     await request(
       {
-        url: `/task/${taskId}`,
+        url: API_ENDPOINTS.TASK_BY_ID(taskId),
         method: 'patch',
         data: {
           title,
@@ -132,7 +133,7 @@ export default function TaskDetail({ taskId, projectId }: TaskDetailProps) {
         onSuccess: async (data) => {
           // After update task success, create new documentation
           await request({
-            url: '/documentation',
+            url: API_ENDPOINTS.DOCUMENTATION,
             method: 'post',
             data: {
               taskId,
@@ -154,7 +155,7 @@ export default function TaskDetail({ taskId, projectId }: TaskDetailProps) {
   const fetchTaskById = async () => {
     await isFetchTaskRequest(
       {
-        url: `/task/${taskId}`,
+        url: API_ENDPOINTS.TASK_BY_ID(taskId),
         method: 'get',
       },
       {

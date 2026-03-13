@@ -15,6 +15,7 @@ import TaskForm from './task-form';
 import { useApi } from '@/hooks/use-api';
 import React from 'react';
 import { Task } from '@/types';
+import { API_ENDPOINTS } from '@/constants/api-endpoints';
 
 type FormValues = z.infer<typeof taskSchame>;
 
@@ -50,7 +51,7 @@ export function CreateTaskDialog({
     if (!loading) {
       await request(
         {
-          url: `/task`,
+          url: API_ENDPOINTS.TASK,
           method: 'post',
           data: { projectId, ...values },
         },

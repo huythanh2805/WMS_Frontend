@@ -5,6 +5,7 @@ import { Activity } from '@/types';
 import { useEffect, useState } from 'react';
 import { Skeleton } from '../ui/skeleton';
 import { AvatarWithFallback } from '../avatar-with-fallback';
+import { API_ENDPOINTS } from '@/constants/api-endpoints';
 
 type Props = {
   projectId: string;
@@ -17,7 +18,7 @@ function RecentActivities({ projectId }: Props) {
   const fetchActivitiesByProjectId = async () => {
     await request(
       {
-        url: `/activity/project/${projectId}`,
+        url: API_ENDPOINTS.ACTIVITY_BY_PROJECT_ID(projectId),
         method: 'get',
       },
       {

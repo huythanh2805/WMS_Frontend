@@ -15,6 +15,7 @@ import { Button } from '@/components/ui/button';
 import { useRouter } from 'next/navigation';
 import { LoginData, loginSchema } from '@/lib/auth-schema';
 import { toast } from 'sonner';
+import { API_ENDPOINTS } from '@/constants/api-endpoints';
 
 interface LoginFormProps {
   onSubmit?: (data: LoginData) => Promise<void>; // Optional override
@@ -30,7 +31,7 @@ export default function LoginForm({ onSubmit }: LoginFormProps) {
 
   const handleSubmit = async (data: LoginData) => {
     try {
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/login`, {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/${API_ENDPOINTS.LOGIN_GOOGLE}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(data),

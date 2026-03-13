@@ -9,6 +9,7 @@ import { User } from '@/types/user';
 import { FindAllResponse, useApi } from '@/hooks/use-api';
 import { useEffect, useState } from 'react';
 import { AvatarWithFallback } from '../avatar-with-fallback';
+import { API_ENDPOINTS } from '@/constants/api-endpoints';
 
 // Định nghĩa type cho Comment (dựa trên schema Prisma của bạn)
 export interface Comment {
@@ -37,7 +38,7 @@ export function RecentComments({ projectId }: RecentCommentsProps) {
   const fetchLatestComments = async () => {
     await request(
       {
-        url: `/comment/project/${projectId}`,
+        url: API_ENDPOINTS.COMMENT_BY_PROJECT_ID(projectId),
         method: 'get',
       },
       {

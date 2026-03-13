@@ -25,6 +25,7 @@ import { RecentComments } from './recent-comments';
 import { AvatarWithFallback } from '../avatar-with-fallback';
 import { Task } from '@/types';
 import { TaskStatus } from '@/enums';
+import { API_ENDPOINTS } from '@/constants/api-endpoints';
 
 interface ProjectDashboardProps {
   projectId: string;
@@ -40,7 +41,7 @@ function ProjectDashboardUI({ projectId }: ProjectDashboardProps) {
   const fetchProjectOverview = async () => {
     await request(
       {
-        url: `/project/overview/${workspaceId}/${projectId}`,
+        url: API_ENDPOINTS.PROJECT_OVERVIEW(workspaceId as string, projectId),
         method: 'get',
       },
       {
