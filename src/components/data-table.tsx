@@ -98,7 +98,7 @@ function DraggableRow<T extends { id: UniqueIdentifier }>({
   onClickDetail,
 }: {
   row: Row<T>;
-  onClickDetail: (taskId: string) => void;
+  onClickDetail?: (taskId: string) => void;
 }) {
   const { transform, transition, setNodeRef, isDragging } = useSortable({
     id: row.original.id,
@@ -106,7 +106,11 @@ function DraggableRow<T extends { id: UniqueIdentifier }>({
 
   return (
     <TableRow
-      onClick={() => onClickDetail(row.original.id as string)}
+      onClick={() => {
+        if(onClickDetail){
+          onClickDetail(row.original.id as string)
+        }
+      }}
       data-state={row.getIsSelected() && 'selected'}
       data-dragging={isDragging}
       ref={setNodeRef}
@@ -137,7 +141,7 @@ export function DataTable<TData extends { id: UniqueIdentifier }>({
   data: TData[];
   columns: ColumnDef<TData>[];
   meta?: TaskMetaType;
-  onClickDetail: (taskId: string) => void;
+  onClickDetail?: (taskId: string) => void;
 }) {
   const [data, setData] = React.useState(() => initialData);
   const [rowSelection, setRowSelection] = React.useState({});

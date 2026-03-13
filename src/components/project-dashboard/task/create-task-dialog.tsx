@@ -19,7 +19,7 @@ import { API_ENDPOINTS } from '@/constants/api-endpoints';
 
 type FormValues = z.infer<typeof taskSchame>;
 
-interface EditTaskDialogProps {
+interface CreateTaskDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   projectId: string;
@@ -31,7 +31,7 @@ export function CreateTaskDialog({
   onOpenChange,
   projectId,
   callback,
-}: EditTaskDialogProps) {
+}: CreateTaskDialogProps) {
   const { loading, request } = useApi<Task>();
   const form = useForm<FormValues>({
     resolver: zodResolver(taskSchame),
@@ -51,7 +51,7 @@ export function CreateTaskDialog({
     if (!loading) {
       await request(
         {
-          url: API_ENDPOINTS.TASK,
+          url: API_ENDPOINTS.CREATE_TASK(projectId),
           method: 'post',
           data: { projectId, ...values },
         },

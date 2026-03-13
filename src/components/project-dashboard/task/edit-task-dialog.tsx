@@ -24,6 +24,7 @@ interface EditTaskDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   taskId: string | null;
+  projectId: string | null;
   callBack?: (value: Task) => void;
 }
 
@@ -32,6 +33,7 @@ export function EditTaskDialog({
   onOpenChange,
   taskId,
   callBack,
+  projectId
 }: EditTaskDialogProps) {
   const { loading, request } = useApi();
   const { loading: isFetchTaskLoading, request: isFetchTaskRequest } = useApi();
@@ -49,9 +51,10 @@ export function EditTaskDialog({
   });
 
   async function onSubmit(values: FormValues) {
+    if(!taskId || !projectId) return
     await request(
       {
-        url: API_ENDPOINTS.TASK_BY_ID(taskId as string),
+        url: API_ENDPOINTS.EDIT_TASK_BY_ID(projectId ,taskId as string),
         method: 'patch',
         data: { ...values },
       },
@@ -66,6 +69,7 @@ export function EditTaskDialog({
 
   // Fetching task to edit
   const fetchTaskById = async () => {
+    if(!taskId ) return
     await isFetchTaskRequest(
       {
         url: API_ENDPOINTS.TASK_BY_ID(taskId as string),

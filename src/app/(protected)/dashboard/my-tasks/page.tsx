@@ -1,10 +1,13 @@
+import MyTasksTable from '@/components/my-tasks'
 import React from 'react'
 
 type Props = {}
 
 function MyTasksPage({}: Props) {
   return (
-    <div>MyTasksPage</div>
+    <div>
+      <MyTasksTable />
+    </div>
   )
 }
 

@@ -26,10 +26,10 @@ function useTask({ projectId }: Props) {
   }, [projectId]);
   // Update
   const updateTask = async (data: Partial<Task>, callback?: () => void) => {
-    if (!loading && data.id) {
+    if (!loading && data.id && data.projectId) {
       await request(
         {
-          url: API_ENDPOINTS.TASK_BY_ID(data.id) ,
+          url: API_ENDPOINTS.EDIT_TASK_BY_ID(data.projectId, data.id) ,
           method: 'patch',
           data: data,
         },

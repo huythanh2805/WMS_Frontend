@@ -18,6 +18,7 @@ interface DeleteTaskDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   taskId: string | null;
+  projectId: string | null;
   callBack?: (id: string) => void;
   taskTitle?: string;
 }
@@ -27,14 +28,15 @@ export function DeleteTaskDialog({
   onOpenChange,
   taskId,
   callBack,
+  projectId,
   taskTitle = 'nhiệm vụ này',
 }: DeleteTaskDialogProps) {
   const { loading: isDeleting, request } = useApi<Task>();
   const handleDelete = async () => {
-    if (!taskId) return;
+    if (!taskId || !projectId) return;
     await request(
       {
-        url: API_ENDPOINTS.TASK_BY_ID(taskId),
+        url: API_ENDPOINTS.DELETE_TASK_BY_ID(projectId, taskId),
         method: 'delete',
       },
       {

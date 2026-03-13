@@ -2,38 +2,33 @@
 import { DataTable } from '@/components/data-table';
 import { useApi } from '@/hooks/use-api';
 import React, { useState } from 'react';
-import { TaskColumn, taskColumns } from './task-column';
-import { EditTaskDialog } from '../edit-task-dialog';
 import { Task } from '@/types';
-import { DeleteTaskDialog } from '../delete-task-dialog';
 import { useRouter } from 'next/navigation';
 import { API_ENDPOINTS } from '@/constants/api-endpoints';
+import { TaskColumn, taskColumns } from './project-dashboard/task/table/task-column';
+import { useUserStore } from '@/stores/user-store';
 
-type Props = {
-  projectId: string;
-};
-
-function TaskTable({ projectId }: Props) {
+function MyTasksTable() {
   const router = useRouter();
   const { loading, request } = useApi();
+  const {user} = useUserStore()
   const [isUpdateDialogOpen, setIsUpdateDialogOpen] = useState<boolean>(false);
   const [isDeleteDialogOpen, setisDeleteDialogOpen] = useState<boolean>(false);
   const [taskId, setTaskId] = useState<string | null>(null);
   const [tasks, setTasks] = useState<TaskColumn[] | null>(null);
 
   const fetchTasks = async () => {
-    if (!loading && projectId) {
+    if(!user?.id) return
       const res = await request({
-        url: API_ENDPOINTS.TASK_BY_PROJECT_ID(projectId),
+        url: API_ENDPOINTS.TASK_BY_USER_ID(user?.id),
         method: 'get',
       });
       const result: TaskColumn[] = res?.data?.items;
       setTasks(result);
-    }
   };
   React.useEffect(() => {
     fetchTasks();
-  }, [projectId]);
+  }, [user?.id]);
   // Functions which has passed to collumns through meta props
   const onOpenUpdateDialogChange = (open: boolean, taskId?: string) => {
     setIsUpdateDialogOpen(open);
@@ -64,37 +59,33 @@ function TaskTable({ projectId }: Props) {
       return tasks.filter((task) => task.id !== taskId);
     });
   };
-  const handleClickDetail = (taskId: string) => {
-    router.push(`/dashboard/${projectId}/task/${taskId}`);
-  };
+  if(tasks === undefined) return <div className='w-full h-full flex items-center justify-center'>No Tasks found...</div>
+ console.log({tasks})
   return (
     <div>
-      {!loading && tasks !== null && (
+      {!loading && tasks !== null &&  (
         <DataTable<TaskColumn>
-          key={tasks.length}
+          key={tasks?.length}
           columns={taskColumns}
           data={tasks}
           meta={{ onOpenUpdateDialogChange, onOpenDeleteDialogChange }}
-          onClickDetail={handleClickDetail}
         />
       )}
-      <EditTaskDialog
+      {/* <EditTaskDialog
         onOpenChange={onOpenUpdateDialogChange}
         open={isUpdateDialogOpen}
         taskId={taskId}
-        projectId={projectId}
         callBack={onUpdateTaskSuccess}
       />
       <DeleteTaskDialog
         open={isDeleteDialogOpen}
         onOpenChange={onOpenDeleteDialogChange}
         taskId={taskId}
-        projectId={projectId}
         callBack={onDeleteTaskSuccess}
         // taskTitle={}
-      />
+      /> */}
     </div>
   );
 }
 
-export default TaskTable;
+export default MyTasksTable;
